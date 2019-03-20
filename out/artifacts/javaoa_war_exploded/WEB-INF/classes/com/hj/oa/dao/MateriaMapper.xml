@@ -1,0 +1,1146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.MateriaMapper">
+	<insert id="insertMatertia" parameterType="Materia">
+		insert into t_mt
+		(materiaCode,classfiy,brand,createTime,spec,package1,unit,
+		price,supplier,functionChina,functionEnglish,diff)
+		values
+		(#{materiaCode},#{classfiy},#{brand},#{createTime},#{spec},
+		#{package1},#{unit},#{price},#{supplier},#{functionChina},
+		#{functionEnglish},#{diff})
+	</insert>
+	<insert id="insertMaStock" parameterType="String">
+		insert into t_mt_stock
+		(materiaCode)
+		values
+		(#{materiaCode})
+	</insert>
+
+	<select id="isExistCode" parameterType="String" resultType="Integer">
+		select count(id)
+		from t_mt
+		where materiaCode = #{materiaCode}
+	</select>
+
+	<select id="findAll" resultType="Materia">
+		select * from t_mt
+	</select>
+
+	<select id="findAll2" resultType="Materia">
+		select * from t_mt a
+		left join
+		t_mt_stock b
+		on a.materiaCode = b.materiaCode
+	</select>
+
+	<select id="findApplyByCode" parameterType="String" resultType="MateriaDetail">
+		select * from t_mt_macode
+		where code = #{code}
+	</select>
+
+	<select id="findWarehouse" parameterType="String" resultType="Warehouse">
+		select (warehouse1-cache1) warehouse1,(warehouse2-cache2)
+		warehouse2,(warehouse3-cache3) warehouse3
+		from t_mt_stock
+		where
+		materiaCode = #{code}
+	</select>
+
+	<select id="findWarehouse2" parameterType="String" resultType="Warehouse">
+		select warehouse1,warehouse2,warehouse3
+		from t_mt_stock
+		where
+		materiaCode = #{code}
+	</select>
+
+	<update id="updateStockCache" parameterType="Warehouse">
+		update t_mt_stock
+		<trim prefix="set" suffixOverrides=",">
+			<if test="cache1 != null and cache1 != 0">
+				cache1 = cache1 + #{cache1},
+			</if>
+			<if test="cache2 != null and cache2 != 0">
+				cache2 = cache2 + #{cache2},
+			</if>
+			<if test="cache3 != null and cache3 != 0">
+				cache3 = cache3 + #{cache3},
+			</if>
+		</trim>
+		where materiaCode = #{materiaCode}
+	</update>
+
+	<insert id="materiaRecord" parameterType="MateriaRecord">
+		insert into t_mt_record
+		(personId,dayStr,warehouse,type,bz,receivedType,temp)
+		values
+		(#{personId},#{dayStr},#{warehouse},#{type},#{bz},#{receivedType},#{temp})
+	</insert>
+
+	<insert id="materiaRecordDetail" parameterType="MateriaRecord">
+		insert into
+		t_mt_record_detail
+		(materiaCode,num,stock,temp)
+		values
+		(#{materiaCode},#{num},#{stock},#{temp})
+	</insert>
+
+	<update id="updateStock" parameterType="Warehouse">
+		update t_mt_stock
+		set materiaCode = #{materiaCode}
+		<if test="warehouse1 != null">
+			,warehouse1 = #{warehouse1}
+		</if>
+		<if test="warehouse2 != null">
+			,warehouse2 = #{warehouse2}
+		</if>
+		<if test="warehouse3 != null">
+			,warehouse3 = #{warehouse3}
+		</if>
+		where materiaCode = #{materiaCode}
+	</update>
+
+	<!-- 物料申领开始 -->
+	<insert id="insertMaApply" parameterType="MateriaApply">
+		insert into
+		t_mt_mtapply
+		(empId,use1,code,warehouse,dayStr,bz,dId,pId,mId,aId,currentId,status,type,url,url2,fId,faId)
+		values
+		(#{empId},#{use1},#{code},#{warehouse},#{dayStr},#{bz},#{dId},
+		#{pId},#{mId},#{aId},#{currentId},#{status},#{type},#{url},#{url2},#{fId},#{faId})
+	</insert>
+	<insert id="insertApplyDetail" parameterType="MateriaDetail">
+		insert into
+		t_mt_macode
+		(code,materiaCode,num)
+		values
+		(#{code},#{materiaCode},#{num})
+	</insert>
+	<!-- 物料申领结束 -->
+
+	<!-- 物料申领审批开始 -->
+	<select id="findApproveById" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and status != -1 and
+		status != 5 and type = 1
+		order by id desc
+	</select>
+
+	<select id="findApplyById" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where id = #{id}
+	</select>
+
+	<select id="findMtByCode" parameterType="String" resultType="Materia">
+		select * from t_mt_macode a
+		left join t_mt b
+		on a.materiaCode =
+		b.materiaCode
+		where code = #{code}
+	</select>
+	<update id="updateApply" parameterType="MateriaApply">
+		update t_mt_mtapply
+		set status = #{status}
+		<if test="dOpinion != null and dOpinion != ''">
+			,dOpinion = #{dOpinion}
+			,dDayStr = #{dDayStr}
+			,dResult =
+			#{dResult}
+		</if>
+		<if test="pOpinion != null and pOpinion != ''">
+			,pOpinion = #{pOpinion}
+			,pDayStr = #{pDayStr}
+			,pResult =
+			#{pResult}
+		</if>
+		<if test="mOpinion != null and mOpinion != ''">
+			,mOpinion = #{mOpinion}
+			,mDayStr = #{mDayStr}
+			,mResult =
+			#{mResult}
+		</if>
+		<if test="aOpinion != null and aOpinion != ''">
+			,aOpinion = #{aOpinion}
+			,aDayStr = #{aDayStr}
+			,aResult =
+			#{aResult}
+		</if>
+		<if test="faOpinion != null and faOpinion != ''">
+			,faOpinion = #{faOpinion}
+			,faDayStr = #{faDayStr}
+			,faResult
+			= #{faResult}
+		</if>
+		<if test="fOpinion != null and fOpinion != ''">
+			,fOpinion = #{fOpinion}
+			,fDayStr = #{fDayStr}
+			,fResult =
+			#{fResult}
+		</if>
+		<if test="currentId != null">
+			,currentId = #{currentId}
+		</if>
+		where id = #{id}
+	</update>
+	<!-- 物料申领审批结束 -->
+
+	<!-- 申请审批记录start -->
+	<select id="findMyApplyRecord" parameterType="int" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 1
+		order by id
+		desc
+	</select>
+	<select id="findMySpRecord" parameterType="int" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where ((dId = #{id} and dOpinion is not
+		null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId = #{id} and
+		mOpinion
+		is not null) or (aId = #{id} and aOpinion
+		is not null)) and
+		type = 1
+		order by id desc
+	</select>
+	<select id="findMySpRecord2" parameterType="MateriaApply"
+		resultType="MateriaApply">
+		select *,b.name from t_mt_mtapply a
+		left join t_emp b
+		on a.empId = b.id
+		where ((dId = #{dId} and dOpinion is not null)
+		or (pId = #{dId} and
+		pOpinion
+		is not null)
+		or (mId = #{dId} and mOpinion
+		is not null) or (aId
+		= #{dId} and aOpinion
+		is not null)) and type = 1
+		<if test="empId != 0 and empId != null">
+			and a.empId = #{empId}
+		</if>
+		<if test="code != '' and code != null">
+			and a.code LIKE CONCAT('%',#{code},'%')
+		</if>
+		order by a.id desc
+	</select>
+	<select id="findMySpIds" parameterType="int" resultType="Integer">
+		select
+		empId from t_mt_mtapply
+		where ((dId = #{id} and dOpinion is not null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId = #{id} and mOpinion
+		is not null) or (aId = #{id} and aOpinion
+		is not null)) and type = 1
+		group by empId
+		order by id desc
+	</select>
+	<!-- 申请审批记录end -->
+
+	<!-- 物料采购申请start -->
+	<insert id="savePurchase" parameterType="MateriaPurchase">
+		insert into
+		t_mt_purchase
+		(empId,dayStr,number,reason,deadline,url,bz,purType,dId,pId,mId,status,currentId,url2)
+		values
+		(#{empId},#{dayStr},#{number},#{reason},#{deadline},#{url},#{bz},#{purType},
+		#{dId},#{pId},#{mId},#{status},#{currentId},#{url2})
+	</insert>
+
+	<insert id="savePurchase3" parameterType="MateriaPurchase">
+		insert into
+		t_mt_purchase
+		(empId,dayStr,number,reason,bz,purType,totalMoney,dId,pId,mId,fId,status,currentId,outId,url)
+		values
+		(#{empId},#{dayStr},#{number},#{reason},#{bz},#{purType},#{totalMoney},
+		#{dId},#{pId},#{mId},#{fId},#{status},#{currentId},#{outId},#{url})
+	</insert>
+
+	<insert id="savePurchase2" parameterType="MateriaPurchaseDetail">
+		insert into
+		t_mt_purchase_detail
+		(number,name,brand,spec,package1,unit,others,needNum,access)
+		values
+		(#{number},#{name},#{brand},#{spec},#{package1},#{unit},#{others},#{needNum},#{access})
+	</insert>
+	<insert id="savePurchase4" parameterType="MateriaPurchaseDetail">
+		insert into
+		t_mt_purchase_detail
+		(number,name,brand,spec,package1,unit,needNum,stock,purNum,price,totalMoney,deadline,otherCost,reason)
+		values
+		(#{number},#{name},#{brand},#{spec},#{package1},#{unit},#{needNum},#{stock},#{purNum},#{price},
+		#{totalMoney},#{deadline},#{otherCost},#{reason})
+	</insert>
+
+	<!-- 物料采购申请end -->
+
+	<!-- 物料请购审批start -->
+	<select id="findPurchase" parameterType="Integer" resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where currentId = #{id} and status != -1
+		and status != 4 and purType = 1
+		order by id desc
+	</select>
+	<select id="findPurchase2" parameterType="Integer" resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where currentId = #{id} and status != -1
+		and status != 5 and purType = 2
+		order by id desc
+	</select>
+	<select id="findPurchaseById" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where id = #{id}
+	</select>
+	<select id="findPurchaseAllById" parameterType="Integer"
+		resultType="MateriaMail">
+		select b.name
+		materiaCode,b.spec,b.unit,b.package1,b.needNum num from t_mt_purchase
+		a
+		left join t_mt_purchase_detail b
+		on a.number = b.number
+		where a.id =
+		#{id}
+	</select>
+	<select id="findPurDetail" parameterType="Integer" resultType="MateriaPurchaseDetail">
+		select * from t_mt_purchase_detail
+		where number = #{number}
+	</select>
+	<update id="insertStatus" parameterType="MateriaPurchase">
+		update t_mt_purchase set
+		empId = #{empId}
+		<if test="dResult != null and dResult != ''">
+			,dResult = #{dResult}
+			,dOpinion = #{dOpinion}
+			,dDayStr =
+			#{dDayStr}
+		</if>
+		<if test="pResult != null and pResult != ''">
+			,pResult = #{pResult}
+			,pOpinion = #{pOpinion}
+			,pDayStr =
+			#{pDayStr}
+		</if>
+		<if test="mResult != null and mResult != ''">
+			,mResult = #{mResult}
+			,mOpinion = #{mOpinion}
+			,mDayStr =
+			#{mDayStr}
+		</if>
+		<if test="fResult != null and fResult != ''">
+			,fResult = #{fResult}
+			,fOpinion = #{fOpinion}
+			,fDayStr =
+			#{fDayStr}
+		</if>
+		,currentId = #{currentId}
+		,status = #{status}
+		where id = #{id}
+
+	</update>
+	<!-- 物料请购审批end -->
+
+	<!-- 物料请购记录start -->
+	<select id="findPurchaseRecord3" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select a.*,b.deptId from t_mt_purchase a
+		left join t_emp b
+		on a.empId = b.id
+		where b.deptId = #{id} and a.purType
+		= 1 and a.status
+		= 4 and isDeal = 0
+		order by id desc
+	</select>
+	<select id="findPurchaseRecord4" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select a.*,b.deptId from t_mt_purchase a
+		left join t_emp b
+		on a.empId = b.id
+		where b.deptId = #{id} and a.purType
+		= 1 and a.status
+		= 4 and isDeal = 1
+		order by id desc
+	</select>
+
+	<select id="findPurchaseRecordByArray" resultType="MateriaPurchase">
+		select
+		a.*,b.deptId from t_mt_purchase a
+		left join t_emp b
+		on a.empId = b.id
+		where
+		a.purType
+		= 1 and a.status
+		= 4 and isDeal = 1
+		order by id desc
+	</select>
+
+	<select id="findPurchaseRecordByArray2" resultType="MateriaPurchase">
+		select a.*,b.deptId from t_mt_purchase a
+		left join t_emp b
+		on a.empId =
+		b.id
+		where
+		a.purType
+		= 1 and a.status
+		= 4 and isDeal = 0
+		and deptId in
+		<foreach collection="deptIds" item="deptId" index="index"
+			open="(" close=")" separator=",">
+			#{deptId}
+		</foreach>
+		order by id desc
+	</select>
+
+	<select id="findPurchaseRecordByArray3" resultType="MateriaPurchase">
+		select
+		a.*,b.deptId from t_mt_purchase a
+		left join t_emp b
+		on a.empId = b.id
+		where
+		a.purType
+		= 1 and a.status
+		= 4 and isDeal = 0
+		order by id desc
+	</select>
+
+	<select id="findPurchaseRecord" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where empId = #{id} and purType
+		= 1
+		order by id desc
+	</select>
+	<select id="findPurchaseRecord2" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where empId = #{id} and purType
+		= 2
+		order by id desc
+	</select>
+	<select id="findPurchaseRecord5" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where empId = #{id} and purType
+		= 2 and isDeal = 0
+		and outId is not null
+		order by id desc
+	</select>
+	<select id="findMyApproveRecord" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where
+		(dId = #{id} and dOpinion
+		is not null) or
+		(pId = #{id} and pOpinion is not
+		null) or
+		(mId = #{id}
+		and mOpinion is not null)
+		and purType = 1
+		order by id desc
+	</select>
+	<select id="findMyApproveRecord2" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where
+		(dId = #{id} and dOpinion
+		is not null) or
+		(pId = #{id} and pOpinion is not
+		null) or
+		(mId = #{id}
+		and mOpinion is not null) or
+		(fId = #{id}
+		and fOpinion is not null)
+		and
+		purType = 2
+		order by id desc
+	</select>
+	<!-- 物料请购记录end -->
+
+	<!-- 物料报废信息start -->
+	<insert id="saveReject" parameterType="MateriaApply">
+		insert into t_mt_mtapply
+		(empId,code,warehouse,dayStr,bz,type,dId,pId,fId,faId,mId,status,currentId,aId,url)
+		values
+		(#{empId},#{code},#{warehouse},#{dayStr},#{bz},#{type},#{dId},#{pId},
+		#{fId},#{faId},#{mId},#{status},#{currentId},#{aId},#{url})
+	</insert>
+	<insert id="saveRejectDetail" parameterType="MateriaDetail">
+		insert into
+		t_mt_macode
+		(code,materiaCode,num,reason)
+		values
+		(#{code},#{materiaCode},#{num},#{reason})
+	</insert>
+	<select id="findRejectById" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and status != -1 and
+		status != 6 and type = 2
+		order by id desc
+	</select>
+	<!-- 物料报废信息end -->
+
+	<!-- 物料报废记录start -->
+	<select id="findMyRejectList" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 2
+		order by id desc
+	</select>
+	<select id="findMyRejectList2" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where ((dId = #{id} and dOpinion
+		is not null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId = #{id}
+		and mOpinion
+		is not null) or (aId = #{id} and aOpinion
+		is not null) or
+		(faId = #{id} and faOpinion
+		is not null) or (fId = #{id} and fOpinion
+		is not null)) and type = 2
+		order by id desc
+	</select>
+	<!-- 物料报废记录end -->
+
+	<!-- 物料调拨申请start -->
+	<insert id="saveAllot" parameterType="MateriaApply">
+		insert into
+		t_mt_mtapply
+		(empId,use1,code,warehouse,warehouse2,dayStr,bz,dId,pid,mId,currentId,status,type,url)
+		values
+		(#{empId},#{use1},#{code},#{warehouse},#{warehouse2},#{dayStr},#{bz},#{dId},
+		#{pId},#{mId},#{currentId},#{status},#{type},#{url})
+	</insert>
+	<select id="findMyAllotList" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and type = 3
+		order by
+		id desc
+	</select>
+	<select id="findMyAllotList2" parameterType="String" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where (warehouse2 = #{warehouse} or
+		warehouse = #{warehouse})and type = 3
+		and status = 4 and isDeal = 0
+		order by id desc
+	</select>
+	<select id="findMyAllotList3" parameterType="String" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where warehouse2 = #{warehouse} and type = 3
+		and status = 4 and isDeal = 1
+		order by id desc
+	</select>
+	<update id="updateStatus" parameterType="MateriaApply">
+		update t_mt_mtapply set
+		empId = #{empId}
+		<if test="dResult != null and dResult != ''">
+			,dResult = #{dResult}
+			,dOpinion = #{dOpinion}
+			,dDayStr =
+			#{dDayStr}
+		</if>
+		<if test="pResult != null and pResult != ''">
+			,pResult = #{pResult}
+			,pOpinion = #{pOpinion}
+			,pDayStr =
+			#{pDayStr}
+		</if>
+		<if test="mResult != null and mResult != ''">
+			,mResult = #{mResult}
+			,mOpinion = #{mOpinion}
+			,mDayStr =
+			#{mDayStr}
+		</if>
+		,currentId = #{currentId}
+		,status = #{status}
+		where id = #{id}
+	</update>
+	<select id="findAllotList" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 3
+		order by id
+		desc
+	</select>
+	<select id="findAllotList2" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where ((dId = #{id} and dOpinion
+		is not null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId = #{id}
+		and mOpinion
+		is
+		not null) or (aId = #{id} and aOpinion
+		is not null)) and type = 3
+		order
+		by id desc
+	</select>
+	<!-- 物料调拨申请end -->
+
+	<!-- 物料出库申请start -->
+	<insert id="saveOutware" parameterType="MateriaApply">
+		insert
+		into t_mt_mtapply
+		(empId,use1,code,warehouse,dayStr,bz,dId,pid,mId,currentId,status,type)
+		values (#{empId},#{use1},#{code},#{warehouse},#{dayStr},#{bz},#{dId},
+		#{pId},#{mId},#{currentId},#{status},#{type})
+	</insert>
+	<select id="findOutwareList" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and type = 4
+		order by
+		id desc
+	</select>
+	<select id="findMyOutwareList" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 4
+		order by id desc
+	</select>
+	<select id="myOutwareList2" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where type = 4 and ((dId = #{id} and
+		dOpinion
+		is not null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId =
+		#{id}
+		and mOpinion
+		is
+		not null) or (aId = #{id} and aOpinion
+		is not null))
+		order
+		by id desc
+	</select>
+
+	<!-- 物料出库申请end -->
+
+	<!-- 入库查询start -->
+	<select id="findAllInware" parameterType="MateriaRecord"
+		resultType="MateriaRecord">
+		select * from
+		(t_mt_record a
+		right join t_mt_record_detail b
+		on a.temp =
+		b.temp left join t_mt c
+		on b.materiaCode = c.materiaCode
+		)
+		where 1 = 1
+		<if test="warehouse != null and warehouse != ''">
+			and warehouse = #{warehouse}
+		</if>
+		<if test="receivedType != null and receivedType != ''">
+			and receivedType = #{receivedType}
+		</if>
+		<if test="dayStr1 != null and dayStr1 != ''">
+			and dayStr between #{dayStr1} and #{dayStr2}
+		</if>
+		<if test="materiaCode != null and materiaCode != ''">
+			and c.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		and type = #{type}
+		order by dayStr desc
+	</select>
+	<!-- 入库查询end -->
+
+	<select id="findAllCost" parameterType="MateriaRecord"
+		resultType="MateriaRecord">
+		select a.*,b.*,c.* from t_mt_mtapply a
+		left join t_mt_macode b
+		on a.code
+		= b.code
+		left join t_mt c
+		on c.materiaCode = b.materiaCode
+		where 1 = 1
+		<if test="warehouse != null and warehouse != ''">
+			and a.warehouse = #{warehouse}
+		</if>
+		and a.status = #{status}
+		<if test="materiaCode != null and materiaCode != ''">
+			and b.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="personId != null and personId != ''">
+			and a.empId = #{personId}
+		</if>
+		<if test="dayStr1 != null and dayStr1 != ''">
+			and a.dayStr between #{dayStr1} and #{dayStr2}
+		</if>
+		and type = #{type}
+		order by a.id desc
+	</select>
+
+	<select id="findAllStock" resultType="Materia" parameterType="Materia">
+		select
+		a.id,a.materiaCode,a.spec,a.classfiy,a.brand,a.package1,(b.warehouse1-b.cache1)
+		warehouse1,(b.warehouse2-b.cache2) warehouse2,
+		(b.warehouse3-b.cache3)
+		warehouse3
+		from
+		t_mt a
+		left join t_mt_stock b
+		on a.materiaCode =
+		b.materiaCode
+		where
+		1 = 1
+		<if test="materiaCode != null and materiaCode != ''">
+			and a.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="spec != null and spec != ''">
+			and a.spec LIKE CONCAT('%',#{spec},'%')
+		</if>
+		<if test="others != null and others != ''">
+			and (a.spec LIKE CONCAT('%',#{others},'%')
+			or a.brand LIKE
+			CONCAT('%',#{others},'%')
+			or a.package1 LIKE CONCAT('%',#{others},'%')
+			or a.classfiy LIKE CONCAT('%',#{others},'%')
+			)
+		</if>
+		order by
+		a.id desc
+	</select>
+
+	<select id="findAllById" parameterType="Integer" resultType="Materia">
+		select * from t_mt a
+		left join t_mt_stock b
+		on a.materiaCode =
+		b.materiaCode
+		where a.id = #{id}
+	</select>
+
+	<select id="findMaByWarehouse" parameterType="Materia"
+		resultType="Materia">
+		select a.materiaCode,a.warehouse1,a.warehouse2,a.warehouse3,b.* from
+		t_mt_stock a
+		left join t_mt b
+		on a.materiaCode =
+		b.materiaCode
+		where 1 = 1
+		<if test="warehouse1 != null and warehouse1 != ''">
+			<![CDATA[ and a.warehouse1 <> 0 ]]>
+		</if>
+		<if test="warehouse2 != null and warehouse2 != ''">
+			<![CDATA[ and a.warehouse2 <> 0 ]]>
+		</if>
+		<if test="warehouse3 != null and warehouse3 != ''">
+			<![CDATA[ and a.warehouse3 <> 0 ]]>
+		</if>
+		<if test="materiaCode != null and materiaCode != ''">
+			and b.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+			<!-- and b.materiaCode LIKE #{materiaCode} -->
+		</if>
+		<if test="spec != null and spec != ''">
+			and b.spec LIKE CONCAT('%',#{spec},'%')
+			<!-- and a.spec LIKE #{spec} -->
+		</if>
+		<if test="all != null and all != ''">
+			<!-- and CONCAT(b.materiaCode,b.spec,b.classfiy, -->
+			<!-- b.brand,b.package1,b.unit,b.functionChina,b.functionEnglish,b.diff) 
+				LIKE CONCAT('%',#{all},'%') -->
+			<!-- and a.spec LIKE #{spec} -->
+			and (
+			b.materiaCode LIKE CONCAT('%',#{all},'%')
+			or b.spec LIKE
+			CONCAT('%',#{all},'%')
+			or b.classfiy LIKE CONCAT('%',#{all},'%')
+			or
+			b.brand LIKE CONCAT('%',#{all},'%')
+			or b.package1 LIKE
+			CONCAT('%',#{all},'%')
+			or b.unit LIKE CONCAT('%',#{all},'%')
+			or
+			b.functionChina LIKE CONCAT('%',#{all},'%')
+			or b.functionEnglish LIKE
+			CONCAT('%',#{all},'%')
+			or b.diff LIKE CONCAT('%',#{all},'%')
+			)
+		</if>
+		order by a.id desc
+	</select>
+
+	<select id="findMaByWarehouse2" parameterType="Materia"
+		resultType="Materia">
+		select *
+		t_mt
+		where 1 = 1
+		<if test="materiaCode != null and materiaCode != ''">
+			and b.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+			<!-- and b.materiaCode LIKE #{materiaCode} -->
+		</if>
+		<if test="spec != null and spec != ''">
+			and b.spec LIKE CONCAT('%',#{spec},'%')
+			<!-- and a.spec LIKE #{spec} -->
+		</if>
+		<if test="all != null and all != ''">
+			<!-- and CONCAT(b.materiaCode,b.spec,b.classfiy, -->
+			<!-- b.brand,b.package1,b.unit,b.functionChina,b.functionEnglish,b.diff) 
+				LIKE CONCAT('%',#{all},'%') -->
+			<!-- and a.spec LIKE #{spec} -->
+			and (
+			b.materiaCode LIKE CONCAT('%',#{all},'%')
+			or b.spec LIKE
+			CONCAT('%',#{all},'%')
+			or b.classfiy LIKE CONCAT('%',#{all},'%')
+			or
+			b.brand LIKE CONCAT('%',#{all},'%')
+			or b.package1 LIKE
+			CONCAT('%',#{all},'%')
+			or b.unit LIKE CONCAT('%',#{all},'%')
+			or
+			b.functionChina LIKE CONCAT('%',#{all},'%')
+			or b.functionEnglish LIKE
+			CONCAT('%',#{all},'%')
+			or b.diff LIKE CONCAT('%',#{all},'%')
+			)
+		</if>
+		order by a.id desc
+	</select>
+
+	<select id="findById" parameterType="Integer" resultType="Materia">
+		select
+		* from t_mt
+		where id = #{id}
+	</select>
+
+	<select id="findCodeById" parameterType="Integer" resultType="Materia">
+		select * from t_mt_macode
+		where id = #{id}
+	</select>
+
+	<update id="updateRealNum" parameterType="Materia">
+		update t_mt_macode
+		set
+		realNum = #{realNum}
+		where id = #{id}
+	</update>
+
+	<update id="updateStatus2" parameterType="MateriaPurchase">
+		update t_mt_purchase
+		set isDeal = #{status}
+		where id = #{id}
+	</update>
+	<update id="updateIsDeal" parameterType="Integer">
+		update t_mt_mtapply
+		set
+		isDeal = 1
+		where id = #{id}
+	</update>
+
+	<update id="updateMateria" parameterType="Materia">
+		update t_stock_detail
+		set
+		once = #{once}
+		, spNum = #{spNum}
+		, pcsNum = #{pcsNum}
+		, oc = #{oc}
+		,mininum = #{mininum}
+		where materiaCode = #{materiaCode}
+		and warehouse =
+		#{warehouse}
+	</update>
+
+	<select id="findIdByCode" parameterType="String" resultType="Integer">
+		select id from t_stock_detail
+		where materiaCode = #{code}
+	</select>
+
+	<select id="findStockByCode" parameterType="String" resultType="Integer">
+		select id from t_mt_stock
+		where materiaCode = #{code}
+	</select>
+
+	<update id="updateMateriaById">
+		update t_stock_detail
+		set
+		materiaCode = #{code}
+		where id
+		= #{id}
+	</update>
+	<update id="updateStockById">
+		update t_mt_stock
+		set materiaCode = #{code}
+		where id =
+		#{id}
+	</update>
+
+	<update id="updateMtDetail" parameterType="Materia">
+		update t_mt
+		set
+		materiaCode = #{materiaCode},
+		classfiy = #{classfiy} ,
+		brand = #{brand}
+		,
+		spec = #{spec} ,
+		package1 = #{package1} ,
+		unit = #{unit} ,
+		diff =
+		#{diff} ,
+		functionChina = #{functionChina} ,
+		functionEnglish =
+		#{functionEnglish},
+		supplier = #{supplier},
+		url2 = #{url2}
+		where id =
+		#{id}
+	</update>
+
+	<select id="findFirstStock" parameterType="MateriaRecord"
+		resultType="Integer">
+		<![CDATA[
+		select b.stock from t_mt_record a
+		left join t_mt_record_detail b
+		on a.temp = b.temp
+		where dayStr < #{dayStr}
+		and materiaCode = #{materiaCode} and warehouse = #{warehouse}
+		order by dayStr desc limit 0,1
+		]]>
+	</select>
+
+	<select id="findOutware" parameterType="MateriaRecord"
+		resultType="Integer">
+		select num from t_mt_record a
+		left join t_mt_record_detail b
+		on a.temp = b.temp
+		where materiaCode = #{materiaCode} and warehouse =
+		#{warehouse} and type = #{type}
+		order by dayStr desc
+	</select>
+	<select id="findStockDetail" parameterType="MateriaRecord"
+		resultType="Materia">
+		select * from t_stock_detail
+		where warehouse = #{warehouse}
+		and materiaCode = #{materiaCode}
+	</select>
+	<insert id="insertStockDetail" parameterType="Materia">
+		insert into
+		t_stock_detail (warehouse,materiaCode)
+		values
+		(#{warehouse},#{materiaCode})
+	</insert>
+
+	<update id="updateMateriaPhoto" parameterType="Materia">
+		update t_mt
+		set url
+		= #{url}
+		where id = #{id}
+	</update>
+	<update id="updatePurchaseStatus" parameterType="MateriaPurchase">
+		update
+		t_mt_purchase
+		set status = #{status}
+		where id = #{id}
+	</update>
+	<update id="insertMould" parameterType="Mould">
+		update t_mt_mould
+		set url
+		= #{url}
+		where type = #{type}
+	</update>
+
+	<select id="findMouldByType" parameterType="String" resultType="String">
+		select url from t_mt_mould
+		where type = #{type}
+	</select>
+
+	<select id="findInwareList" parameterType="Integer" resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where currentId = #{id}
+		and purType = 3
+		and
+		isDeal = 0
+		and (status = 1 or status = 2)
+		order by id desc
+	</select>
+	<select id="findInwareList2" parameterType="Integer" resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where purType = 3
+		and isDeal = 0
+		and status =
+		3
+		order by id desc
+	</select>
+	<select id="findInwareList3" resultType="MateriaApply">
+		select *
+		from
+		t_mt_mtapply a
+		left join t_materia_dept b
+		on a.warehouse  = b.warehouse
+		where a.type = 5
+		and a.isDeal = 0
+		and a.status = 3
+		and a.currentId = b.AdminId
+		and a.warehouse = #{warehouse}
+		order by a.id desc
+	</select>
+	<select id="findInwareRecord" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select * from t_mt_purchase
+		where empId = #{id}
+		and purType =
+		3
+		order by id desc
+	</select>
+	<update id="updatePurchase" parameterType="Integer">
+		update
+		t_mt_purchase
+		set isDeal = 1
+		where id = #{id}
+	</update>
+	<select id="selectAllMould" resultType="Mould">
+		select * from t_mt_mould
+	</select>
+	<select id="findMyInwareList" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 5
+		order by id desc
+	</select>
+	<select id="findInwareRecordList" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and type
+		= 5 and status = 1
+		order by id desc
+	</select>
+	<select id="findInwareRecordList2" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and type
+		= 5 and status = 2
+		order by id desc
+	</select>
+
+	<select id="findMateriaByCode" parameterType="String"
+		resultType="Materia">
+		select * from t_mt_mtapply
+		where currentId = #{id} and type
+		= 5 and status = 2
+		order by id desc
+	</select>
+
+	<delete id="deleteRecordByCode">
+		delete from t_mt_record_detail
+		where materiaCode =
+		#{materiaCode}
+		and temp = #{temp}
+	</delete>
+
+	<select id="findTempByCode" resultType="String">
+		select b.temp from
+		t_mt_record_detail a
+		left join t_mt_record b
+		on a.temp = b.temp
+		where
+		warehouse = #{warehouse}
+		and materiaCode = #{materiaCode}
+	</select>
+
+	<select id="findMateriaByMateriaCode" parameterType="String"
+		resultType="Materia">
+		select * from t_mt
+		where materiaCode = #{materiaCode}
+	</select>
+
+	<select id="findPurchaseByMateriaCode" parameterType="String"
+		resultType="Materia">
+		select *,name materiaCode from t_mt_purchase_detail
+		where
+		number = #{materiaCode} and name = '0'
+	</select>
+
+	<select id="findTotalStock" parameterType="String" resultType="Double">
+		select sum(warehouse1 + warehouse2 + warehouse3) from t_mt_stock
+		where
+		materiaCode = #{materiaCode}
+	</select>
+
+	<!-- 删除物料编码 -->
+	<delete id="deleteCode" parameterType="String">
+		delete from t_mt
+		where
+		materiaCode = #{materiaCode}
+	</delete>
+	<delete id="deleteApplyRecord" parameterType="String">
+		delete from
+		t_mt_macode
+		where materiaCode = #{materiaCode}
+	</delete>
+	<delete id="deletePurchaseRecord" parameterType="String">
+		delete from
+		t_mt_purchase_detail
+		where name = #{materiaCode}
+	</delete>
+	<delete id="deleteRecord" parameterType="String">
+		delete from
+		t_mt_record_detail
+		where materiaCode = #{materiaCode}
+	</delete>
+	<delete id="deleteStockRecord" parameterType="String">
+		delete from
+		t_mt_stock
+		where materiaCode = #{materiaCode}
+	</delete>
+	<delete id="deleteStockDetail" parameterType="String">
+		delete from
+		t_stock_detail
+		where materiaCode = #{materiaCode}
+	</delete>
+
+	<update id="updateOutwareRealNum">
+		update t_mt_macode
+		set realNum
+		= #{realNum}
+		where
+		materiaCode = #{materiaCode} and code = #{code}
+	</update>
+
+	<select id="findApplyAllById" parameterType="Integer"
+		resultType="MateriaMail">
+		select b.materiaCode,b.num,c.spec,c.unit,c.package1 from
+		t_mt_mtapply a
+		left join t_mt_macode b
+		on a.code = b.code
+		left join t_mt
+		c
+		on b.materiaCode = c.materiaCode
+		where a.id = #{id}
+	</select>
+	<select id="findPurchaseAllById2" parameterType="Integer"
+		resultType="MateriaMail">
+		select a.totalMoney,b.name
+		materiaCode,b.spec,b.package1,b.unit,b.purNum,b.price num,b.otherCost
+		from t_mt_purchase a
+		left join t_mt_purchase_detail b
+		on a.number = b.number
+		where a.id = #{id}
+	</select>
+
+	<select id="findAllWarehouse" resultType="String" >
+		select warehouse from t_materia_dept
+	</select>
+
+	<select id="findAdminIdByWarehouse" resultType="Integer" parameterType="String">
+		SELECT ADMINID T_MATERIA_DEPT from t_materia_dept 
+		WHERE WAREHOUSE = #{warehouse}
+	</select>
+	
+	<select id="findIdByWarehouse" resultType="Integer" parameterType="String">
+		SELECT ID T_MATERIA_DEPT from t_materia_dept 
+		WHERE WAREHOUSE = #{warehouse}
+	</select>
+	
+	<select id="findWarehouse3" resultType="String" parameterType="Integer">
+		SELECT WAREHOUSE FROM t_materia_dept WHERE ADMINID = #{ID}
+	</select>
+	
+	
+
+
+</mapper>

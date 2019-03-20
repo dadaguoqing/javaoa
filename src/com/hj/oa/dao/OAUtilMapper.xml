@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.OAUtilMapper">
+
+	<!-- 获取某个员工病假，年假的剩余信息 -->
+	<select id="getEmpNianjiaById" parameterType="int" resultType="EmpNianjia">
+		select * from t_emp_nianjia where empId = #{empId}
+	</select>
+	
+	<!-- 获取所有员工病假，年假的剩余信息 -->
+	<select id="findAllNianjia" resultType="EmpNianjia">
+		select * from t_emp_nianjia
+	</select>
+	
+	<!-- 获取所有员工病假，年假的剩余信息 -->
+	<select id="findAllNianjia2" resultType="EmpNianjia">
+		select n.*, e.name as empName from t_emp e 
+		left join t_emp_nianjia n 
+		on e.id = n.empId
+		where e.id != 1 and e.status = 0
+		order by n.nianjia, e.pinyin
+	</select>
+	
+	<select id="findAllNianjiaByTechDept" resultType="EmpNianjia">
+		select n.*, e.name as empName from t_emp e 
+		left join t_emp_nianjia n 
+		on e.id = n.empId
+		left join t_dept as dept on e.deptId = dept.id
+		where e.id != 1 and e.status = 0 and dept.pid = 2
+		order by n.nianjia, e.pinyin
+	</select>
+	
+	<select id="findAllNianjiaByDept" resultType="EmpNianjia">
+		select n.*, e.name as empName from t_emp e 
+		left join t_emp_nianjia n 
+		on e.id = n.empId
+		left join t_dept as dept on e.deptId = dept.id
+		where e.id != 1 and e.status = 0 and dept.id in (${depts})
+		order by n.nianjia, e.pinyin
+	</select>
+	
+	<select id="findLeaveDayDetailByTime" resultType="LeaveDayDetail">
+		select * from t_leave_day_detail where dayStr between #{beginTime} and #{endTime} and empId = #{empId}
+	</select>
+	
+	<select id="findLeaveDayDetailByDay" parameterType="String" resultType="LeaveDayDetail">
+		select * from t_leave_day_detail where dayStr = #{dayStr}
+	</select>
+	
+	<select id="findLeaveDayDetailByDayAndEmp" resultType="LeaveDayDetail">
+		select * from t_leave_day_detail where dayStr = #{dayStr} and empId = #{empId}
+	</select>
+	
+	<select id="findNianjiaRecordByEmpId" resultType="NianjiaRecord">
+		select * from t_emp_nianjia_record where empId = #{empId} and type=#{type} order by id desc
+	</select>
+	
+	<select id="findAllNianjiaRecord" resultType="NianjiaRecord">
+		select rcd.*, emp.name as empName from t_emp_nianjia_record as rcd
+		left join t_emp as emp on rcd.empId = emp.id
+		where rcd.dayStr &lt; '2014年10月14日' and rcd.bz='请假扣除' order by id desc 
+	</select>
+	
+	<select id="findHistoryRecod" resultType="NianjiaRecord">
+		select name as tempName, dayStr, timeLen, type, bz from t_temp_nianjia order by name, dayStr
+	</select>
+	
+	<insert id="addLeaveDayDetail">
+		insert into t_leave_day_detail
+			( empId, leaveId, dayStr, beginTime, endTime, beginTimeInt, endTimeInt, 
+			type, timeLen, dkTimeLen, sjTimeLen, waichu )
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			( #{item.empId}, #{item.leaveId}, #{item.dayStr}, #{item.beginTime}, #{item.endTime}, #{item.beginTimeInt}, 
+			#{item.endTimeInt}, 
+			#{item.type}, #{item.timeLen}, #{item.dkTimeLen}, #{item.sjTimeLen}, #{item.waichu} )
+		</foreach>
+	</insert>
+	
+	<delete id="deleteLeaveDayDetailByDay">
+		delete from t_leave_day_detail where dayStr = #{dayStr} and empId = #{empId}
+	</delete>
+		
+	<insert id="addEmpNianjia">
+		insert into t_emp_nianjia
+			( empId, nianjia, bingjia )
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			( #{item.empId}, #{item.nianjia}, #{item.bingjia} )
+		</foreach>
+			
+	</insert>
+	
+	<insert id="addAnEmpNianjia">
+		insert into t_emp_nianjia
+			( empId, nianjia, bingjia )
+		values
+			( #{item.empId}, #{item.nianjia}, #{item.bingjia} )
+			
+	</insert>
+	
+	<insert id="addAnEmpNianjiaBak">
+		insert into t_emp_nianjia_bak
+			( empId, nianjia, bingjia )
+		values
+			( #{item.empId}, #{item.nianjia}, #{item.bingjia} )
+			
+	</insert>
+	
+	<insert id="addCheckin">
+		insert into t_checkin
+			( empId, dayStr, checkin, checkout, checkinInt, checkoutInt)
+		values
+		<foreach collection="list" item="item" separator=",">
+			( #{item.empId}, #{item.dayStr}, #{item.checkin}, #{item.checkout}, #{item.checkinInt}, #{item.checkoutInt} )
+		</foreach>
+			
+	</insert>
+	
+	<insert id="addEmpDaySummer">
+		insert into t_emp_day_sum
+			( empId, timeLen, dkLen, sjLen, dayStr, uncLen, wcLen)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			( #{item.empId}, #{item.timeLen}, #{item.dkLen}, #{item.sjLen}, #{item.dayStr}, #{item.uncLen}, #{item.wcLen} )
+		</foreach>
+	</insert>
+	
+	<insert id="addEmpDaySum">
+		insert into t_emp_day_sum
+			( empId, timeLen, dkLen, sjLen, dayStr, uncLen, wcLen)
+		values
+			( #{item.empId}, #{item.timeLen}, #{item.dkLen}, #{item.sjLen}, #{item.dayStr}, #{item.uncLen}, #{item.wcLen} )
+	</insert>
+	
+	<insert id="addNianjiaRecord" >
+		insert into t_emp_nianjia_record
+			( empId, leaveId, type, dayStr, timeLen, timeLeft, bz)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			( #{item.empId}, #{item.leaveId}, #{item.type}, #{item.dayStr}, #{item.timeLen}, #{item.timeLeft},  #{item.bz} )
+		</foreach>
+	</insert>
+	
+	<delete id="deleteEmpDaySummer">
+		delete from t_emp_day_sum where empId = #{empId} and dayStr in (
+		<foreach collection="list" item="item" index="index" separator=",">
+			#{item.dayStr}
+		</foreach>
+		)
+	</delete>
+	
+	<delete id="deleteEmpDaySumByEmpAndDay">
+		delete from t_emp_day_sum where empId = #{empId} and dayStr = #{dayStr}
+	</delete>
+	
+	<delete id="deleteEmpDaySumByDayAndEmps">
+		delete from t_emp_day_sum where dayStr = #{dayStr} and empId in (
+		<foreach collection="list" item="item" index="index" separator=",">
+			#{item.empId}
+		</foreach>
+		)
+	</delete>
+	
+	<delete id="deleteByDayAndEmpId">
+		delete from t_emp_day_sum where dayStr = #{dayStr} and empId = #{empId}
+	</delete>
+	
+	<delete id="deleteCheckinByDay">
+		delete from t_checkin where dayStr = #{dayStr}
+	</delete>
+	
+	<update id="updateEmpNianjia" parameterType="EmpNianjia">
+		update t_emp_nianjia
+		set 
+			nianjia = #{nianjia},
+			bingjia = #{bingjia}
+		where id = #{id}
+	</update>
+	
+	<update id="updateCheckin" parameterType="CheckIn">
+		update t_checkin
+		set 
+			checkin = #{checkin},
+			checkout = #{checkout},
+			checkinInt = #{checkinInt},
+			checkoutInt = #{checkoutInt}
+		where empId = #{empId} and dayStr = #{dayStr}
+	</update>
+</mapper>

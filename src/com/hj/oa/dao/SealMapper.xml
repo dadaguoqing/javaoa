@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.SealMapper">
+	<resultMap id="BaseResultMap" type="com.hj.oa.bean.Seal">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="seal_company" jdbcType="VARCHAR" property="sealCompany" />
+		<result column="seal_name" jdbcType="VARCHAR" property="sealName" />
+		<result column="seal_unit" jdbcType="VARCHAR" property="sealUnit" />
+		<result column="seal_num" jdbcType="INTEGER" property="sealNum" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, seal_company, seal_name, seal_unit, seal_num, content, status
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_company
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectAllSeal" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_company
+		where status = 1
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_seal_company
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="Seal">
+		insert into t_seal_company (id, seal_company, seal_name,
+		seal_unit, seal_num, content,
+		status)
+		values (#{id,jdbcType=INTEGER}, #{sealCompany,jdbcType=VARCHAR},
+		#{sealName,jdbcType=VARCHAR},
+		#{sealUnit,jdbcType=VARCHAR}, #{sealNum,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="Seal">
+		insert into t_seal_company
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="sealCompany != null">
+				seal_company,
+			</if>
+			<if test="sealName != null">
+				seal_name,
+			</if>
+			<if test="sealUnit != null">
+				seal_unit,
+			</if>
+			<if test="sealNum != null">
+				seal_num,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="sealCompany != null">
+				#{sealCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="sealName != null">
+				#{sealName,jdbcType=VARCHAR},
+			</if>
+			<if test="sealUnit != null">
+				#{sealUnit,jdbcType=VARCHAR},
+			</if>
+			<if test="sealNum != null">
+				#{sealNum,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="Seal">
+		update t_seal_company
+		<set>
+			<if test="sealCompany != null">
+				seal_company = #{sealCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="sealName != null">
+				seal_name = #{sealName,jdbcType=VARCHAR},
+			</if>
+			<if test="sealUnit != null">
+				seal_unit = #{sealUnit,jdbcType=VARCHAR},
+			</if>
+			<if test="sealNum != null">
+				seal_num = #{sealNum,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="Seal">
+		update t_seal_company
+		set seal_company = #{sealCompany,jdbcType=VARCHAR},
+		seal_name = #{sealName,jdbcType=VARCHAR},
+		seal_unit = #{sealUnit,jdbcType=VARCHAR},
+		seal_num = #{sealNum,jdbcType=INTEGER},
+		content = #{content,jdbcType=VARCHAR},
+		status = #{status,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectAllSealType" resultType="SealType">
+		select *,seal_type sealType from 
+		t_seal_type
+		where status = 1
+	</select>
+</mapper>

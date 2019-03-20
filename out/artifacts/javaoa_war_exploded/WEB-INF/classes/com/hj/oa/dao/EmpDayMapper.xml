@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.EmpDayMapper">
+	
+	<select id="findByEmpIdAndDayStr" resultType="EmpDay">
+		select * from t_emp_day 
+		where day between #{begin} and #{end} and empId = #{empId}
+		order by day
+	</select>
+	
+	<select id="findByEmpIdAndDay" resultType="EmpDay">
+		select * from t_emp_day 
+		where day = #{dayStr} and empId = #{empId}
+	</select>
+	
+	<select id="findByDayStr2" resultType="EmpDay">
+		select sum(qjLen) as qjLen, sum(qj2Len) as qj2Len, sum(jiabanLen) as jiabanLen, sum(unCommonTime) as unCommonTime 
+		from t_emp_day 
+		where day between #{begin} and #{end}
+	</select>
+	
+	
+	<select id="findByDaySum" resultType="EmpDay">
+		select e.name as day, e.id as empId, sum(qjLen) as qjLen, sum(qj2Len) as qj2Len, sum(jiabanLen) as jiabanLen, sum(unCommonTime) as unCommonTime 
+		from t_emp_day as ed 
+		inner join t_emp as e on e.id = ed.empId
+		where day between #{begin} and #{end}
+		group by e.name, e.id
+		order by e.id
+	</select>
+	
+	<select id="findByDayAndDeptSum" resultType="EmpDay">
+		select e.name as day, e.id as empId, sum(qjLen) as qjLen, sum(qj2Len) as qj2Len, sum(jiabanLen) as jiabanLen, sum(unCommonTime) as unCommonTime 
+		from t_emp_day as ed 
+		inner join t_emp as e on e.id = ed.empId
+		inner join t_dept as dept on dept.id = e.deptId and dept.id=#{deptId}
+		where day between #{begin} and #{end}
+		group by e.name, e.id
+		order by e.id
+	</select>
+	
+	<select id="findByDayStrAndDept" resultType="EmpDay">
+		select sum(qjLen) as qjLen, sum(qj2Len) as qj2Len, sum(jiabanLen) as jiabanLen, sum(unCommonTime) as unCommonTime from t_emp_day as ed
+		inner join t_emp as emp on emp.id = ed.empId
+		inner join t_dept as dept on emp.deptId = dept.id and dept.id=#{deptId}
+		where day between #{begin} and #{end}
+	</select>
+	
+	<select id="findByDayStr" parameterType="String" resultType="EmpDay">
+		select * from t_emp_day 
+		where day = #{dayStr}
+	</select>
+		
+	<insert id="addEmpDay" parameterType="EmpDay">
+		insert into t_emp_day
+			(empId, day, checkin, checkout, qjst, qjed, qjst2, qjed2, checkinInt, type,
+			checkoutInt, qjstInt, qjedInt, qjst2Int, qjed2Int, jiabanLen, qjLen, qj2Len, unCommonTime)
+		values
+			(#{empId}, #{day}, #{checkin}, #{checkout}, #{qjst}, #{qjed}, #{qjst2}, #{qjed2}, #{checkinInt}, #{type},
+			#{checkoutInt}, #{qjstInt}, #{qjedInt}, #{qjst2Int}, #{qjed2Int}, #{jiabanLen}, #{qjLen}, #{qj2Len}, #{unCommonTime})
+	</insert>
+	
+	<update id="updateEmpDay" parameterType="EmpDay">
+		update 
+			t_emp_day
+		set 
+			checkin = #{checkin}, checkout = #{checkout}, qjst = #{qjst}, 
+			qjed = #{qjed}, qjst2 = #{qjst2}, qjed2 = #{qjed2}, 
+			checkinInt = #{checkinInt}, type = #{type}, checkoutInt = #{checkoutInt}, 
+			qjstInt = #{qjstInt}, qjedInt = #{qjedInt}, qjst2Int = #{qjst2Int},  qjLen  = #{qjLen}, qj2Len  = #{qj2Len},
+			qjed2Int = #{qjed2Int}, jiabanLen = #{jiabanLen}, unCommonTime = #{unCommonTime}
+		where
+			empId = #{empId} and day = #{day}
+	</update>
+	
+</mapper>

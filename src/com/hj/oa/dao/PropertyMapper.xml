@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.PropertyMapper">
+	
+	<select id="findPropTmp" resultType="ZcPropTmp">
+		select * from t_zc_prop_tmp
+	</select>
+	
+	<select id="findPropCode" resultType="ZcProperty">
+		select * from t_zc_prop_code
+	</select>
+	
+	<select id="findPropCodeByName" parameterType="string" resultType="ZcProperty">
+		select * from t_zc_prop_code where name = #{name}
+	</select>
+	
+	<select id="findAllProperty"  resultType="ZcProperty">
+		select * from t_zc_property order by id desc
+	</select>
+	
+	<select id="findStockById"  resultType="int" parameterType="int">
+		select count(*) from  t_zc_property a
+		left join t_zc_place b
+		on a.placeId  = b.id
+		where b.id = #{id}
+	</select>
+	
+	<select id="findPropLog" parameterType="int" resultType="ZcPropLog">
+		select * from t_zc_prop_log where propId = #{propId}
+		order by id desc
+	</select>
+	
+	<select id="findEmpPropLog" resultType="ZcPropLog">
+		select lg.*, p.name as propName, p.code as propCode, p.spec as propSpec 
+		from t_zc_prop_log as lg
+		left join t_zc_property as p on p.id = lg.propId
+		where lg.empId = #{empId} and (lg.type='领用' or lg.type='归还')
+		order by lg.id ${desc}
+	</select>
+	
+	<select id="findLyById" parameterType="int" resultType="ZcPropLy">
+		select * from t_zc_ly where id = #{id}
+	</select>
+	
+	<select id="findCgById" parameterType="int" resultType="ZcPropCg">
+		select * from t_zc_cg where id = #{id}
+	</select>
+	
+	<select id="findZyById" parameterType="int" resultType="ZcPropZy">
+		select * from t_zc_zy where id = #{id}
+	</select>
+	
+	<select id="findWbById" parameterType="int" resultType="ZcPropWb">
+		select * from t_zc_wb where id = #{id}
+	</select>
+	
+	<select id="findMyLySp" parameterType="int" resultType="ZcPropLy">
+		select * from t_zc_ly where currentId = #{empId} and status != -1 and status != 4 order by createTime desc
+	</select>
+	
+	<select id="findMyCgSp" parameterType="int" resultType="ZcPropCg">
+		select * from t_zc_cg where currentId = #{empId} and status != -1 and status != 5 order by createTime desc
+	</select>
+	
+	<select id="findMyCgRecords" parameterType="int" resultType="ZcPropCg">
+		select * from t_zc_cg where proposer = #{empId} order by createTime desc
+	</select>
+	
+	<select id="findCgByStatus" parameterType="int" resultType="ZcPropCg">
+		select * from t_zc_cg where  status = #{status} and cgStatus = 0 order by id
+	</select>
+	
+	<select id="findCgByStatus2" resultType="ZcPropCg">
+		select * from t_zc_cg where cgStatus = 1 order by id
+	</select>
+	
+	<select id="findAutoStoreRecord" resultType="ZcProperty">
+		select * from t_zc_property where addType=#{addType}
+		and storeTime between #{begin} and #{end}
+		order by id desc
+	</select>
+	
+	<select id="findPurchaseProperty" resultType="ZcPropCg" parameterType="ParamBean">
+		select a.proposerName,a.createTime,a.content,b.name,b.money  from t_zc_cg a
+		left join t_zc_cg_prop b
+		on a.id=b.cgId
+		where a.cgStatus = 1 
+		and a.createTime between #{begin} and #{end}
+		order by a. id desc
+	</select>
+	
+	<select id="findAllCg" resultType="ZcPropCg">
+		select * from t_zc_cg order by id desc
+	</select>
+	
+	<select id="findPurchaseByCgId" resultType="ZcProperty" parameterType="int"> 
+		select * from t_zc_cg_prop where id=#{id}  
+	</select>
+	
+	<select id="findLyByEmpId" parameterType="int" resultType="ZcPropLy">
+		select * from t_zc_ly where proposer = #{empId} order by createTime desc
+	</select>
+	
+	<select id="findMyZySp" parameterType="int" resultType="ZcPropZy">
+		select * from t_zc_zy where currentId = #{empId} and status != -1 and status != 5 order by createTime desc
+	</select>
+	
+	<select id="findAllZy" resultType="ZcPropZy">
+		select * from t_zc_zy order by createTime desc
+	</select>
+	
+	<select id="findMyWbSp" resultType="ZcPropWb">
+		select * from t_zc_wb where wb = #{wb} and currentId = #{empId} and status != -1 and status != 4 order by createTime desc
+	</select>
+	
+	<select id="findAllWbByType" resultType="ZcPropWbVo">
+		select w.*, p.code, p.name, p.spec from t_zc_wb as w 
+		left join t_zc_property as p on w.propId = p.id
+		where w.wb = #{wb}
+		order by w.createTime desc
+	</select>
+	
+	<!-- 查询处理的发放资产审批 -->
+	<select id="findUnhanderLySp" resultType="ZcPropLy">
+		select * from t_zc_ly where status = 4 and lyStatus = 0 order by createTime
+	</select>
+	
+	
+	<!-- 查询待归还的资产 -->
+	<select id="findPropForGh" resultType="ZcProperty">
+		select prop.id, prop.code, prop.name, prop.typeId, prop.placeId, prop.spec, prop.price, prop.buyDate,
+		prop.dayStr, emp.id as empId, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where prop.ghStatus = 1
+		order by emp.pinyin
+	</select>
+	
+	<select id="findPropByLy" parameterType="int" resultType="ZcProperty">
+		select * from t_zc_ly_prop 
+		where lyId = #{id}
+	</select>
+	
+	<select id="findPropByCg" parameterType="int" resultType="ZcProperty">
+		select * from t_zc_cg_prop 
+		where cgId = #{id}
+	</select>
+	
+	
+	<select id="findPropByCgAndId" resultType="ZcProperty">
+		select * from t_zc_cg_prop 
+		where id = #{id}
+	</select>
+	
+	<select id="findPropByZy" parameterType="int" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		inner join t_zc_zy_prop as lz on lz.propId = prop.id
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where lz.zyId = #{id}
+	</select>
+	
+	<!-- 资产管理员，按条件查询 -->
+	<select id="findByCond2" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName 
+		from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		
+		where prop.status = 0 
+		order by t.id, prop.code
+	</select>
+	
+	<!-- 资产管理员，按条件查询 -->
+	<select id="findByCond" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName 
+		from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		
+		where prop.status = 0
+		<if test=" showType == 1">
+			and (prop.empId is not null or prop.bz = '公共资产')
+		</if>
+		<if test=" showType == 2">
+			and (prop.empId is null and prop.bz != '公共资产')
+		</if>
+		<if test=" deptId != 0">
+			and emp.deptId = #{deptId}
+		</if>
+		<if test="empId != 0">
+			and emp.id = #{empId}
+		</if>
+		<if test="placeId != 0">
+			and prop.placeId = #{placeId}
+		</if>
+		<if test="typeId != 0">
+			and prop.typeId = #{typeId}
+		</if>
+		<if test="code != null">
+			and prop.code = #{code}
+		</if>
+		
+		order by t.id, prop.code
+	</select>
+	
+	<select id="findAll" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where prop.status = 0
+	</select>
+	
+	<select id="findPropByEmpId" parameterType="int" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where prop.empId = #{id}
+		order by prop.dayStr desc
+	</select>
+	
+	<select id="findPropById" parameterType="int" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where prop.id = #{id}
+	</select>
+	
+	<select id="findAllUnused" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where prop.status = 0 and prop.empId is null
+	</select>
+	
+	<select id="findUnusedProps" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where 
+		prop.status = 0 and prop.empId is null
+		<if test="typeId != 0">
+		and t.id = #{typeId} 
+		</if>
+		<if test="placeId != 0">
+		and p.id = #{placeId} 
+		</if>
+	</select>
+	
+	<select id="findUnusedPropByType" resultType="ZcProperty">
+		select prop.*, emp.name as empName, t.name as type, p.name as placeName from t_zc_property as prop
+		left join t_emp as emp on prop.empId = emp.id
+		left join t_zc_prop_type as t on prop.typeId = t.id
+		left join t_zc_prop_type as tp on t.pid = tp.id
+		left join t_zc_place as p on prop.placeId = p.id
+		where prop.status = 0 and prop.empId is null
+		<if test="typeId != null">
+		and prop.typeId = typeId
+		</if>
+		<if test="pId != null">
+		and tp.id = pId
+		</if>
+	</select>
+	
+	<select id="findAllType" resultType="ZcType">
+		select * from t_zc_prop_type
+	</select>
+	
+	<update id="updateStatus" parameterType="int">
+		update t_zc_cg_prop set cgStatus = 1 where id=#{id} 
+	</update>
+	
+	<select id="findAllPlace" resultType="ZcPlace">
+		select * from t_zc_place
+	</select>
+	
+	<select id="findFirstTypes" resultType="ZcType">
+		select * from t_zc_prop_type where pid is null
+	</select>
+	
+	<select id="findSecondTypes" resultType="ZcType">
+		select * from t_zc_prop_type where pid is not null
+	</select>
+	
+	<select id="findSubTypes" parameterType="int" resultType="ZcType">
+		select * from t_zc_prop_type where pid = #{id}
+	</select>
+	
+	<select id="findTypeById" parameterType="int" resultType="ZcType">
+		select * from t_zc_prop_type where id = #{id}
+	</select>
+	
+	<select id="findPlaceById" parameterType="int" resultType="String">
+		select name from t_zc_place where id = #{id}
+	</select>
+	
+	<insert id="addProperty" parameterType="ZcProperty" useGeneratedKeys="true" keyProperty="id">
+		insert into t_zc_property 
+			(name, code, buyDate, placeId, typeId, unit, price, spec, bz,addType,storeTime) 
+		values
+			(#{name}, #{code}, #{buyDate}, #{placeId}, #{typeId}, #{unit}, #{price}, #{spec}, #{bz},#{addType},#{storeTime})
+	</insert>
+	
+	<insert id="addPlace" parameterType="ZcPlace" >
+		insert into t_zc_place 
+			(name) 
+		values
+			(#{name})
+	</insert>
+	
+	<insert id="addType" parameterType="ZcType" useGeneratedKeys="true" keyProperty="id">
+		insert into t_zc_prop_type
+			(pId, name) 
+		values
+			(#{pId}, #{name})
+	</insert>
+	
+	<insert id="addLy" parameterType="ZcPropLy" useGeneratedKeys="true" keyProperty="id">
+		insert into t_zc_ly
+			(proposer, proposerName,createTime,content,mgrId, mgrCmt,
+			directId, directCmt, bossId, bossCmt, currentId, status)
+		values
+			(#{proposer}, #{proposerName}, #{createTime}, #{content}, #{mgrId}, #{mgrCmt},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status})
+	</insert>
+	
+	<insert id="addCg" parameterType="ZcPropCg" useGeneratedKeys="true" keyProperty="id">
+		insert into t_zc_cg
+			(proposer, proposerName,createTime,content, cgId, caiwuId, caiwuCmt,
+			directId, directCmt, bossId, bossCmt, currentId, status)
+		values
+			(#{proposer}, #{proposerName}, #{createTime}, #{content}, #{cgId}, #{caiwuId}, #{caiwuCmt},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status})
+	</insert>
+	
+	<insert id="addZy" parameterType="ZcPropZy" useGeneratedKeys="true" keyProperty="id">
+		insert into t_zc_zy
+			(proposer, proposerName,uid, uName, createTime,content,mgrId, mgrCmt,mgr2Id, mgr2Cmt,
+			directId, directCmt, bossId, bossCmt, currentId, status)
+		values
+			(#{proposer}, #{proposerName}, #{uid}, #{uName}, #{createTime}, #{content}, 
+			#{mgrId}, #{mgrCmt},#{mgr2Id}, #{mgr2Cmt},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status})
+	</insert>
+	
+	<insert id="addWb" parameterType="ZcPropWb" useGeneratedKeys="true" keyProperty="id">
+		insert into t_zc_wb
+			(proposer, proposerName,propId,money, reason, createTime,content,mgrId, mgrCmt,
+			directId, directCmt, bossId, bossCmt, currentId, status, wb)
+		values
+			(#{proposer}, #{proposerName}, #{propId}, #{money}, #{reason}, #{createTime}, #{content}, #{mgrId}, #{mgrCmt},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status}, #{wb})
+	</insert>
+	
+	<insert id="addZyProp">
+		insert into t_zc_zy_prop
+			(zyId, propId)
+		values
+			(#{zyId}, #{propId})
+	</insert>
+	
+	<insert id="addLyProp">
+		insert into t_zc_ly_prop
+			(lyId, name, bz)
+		values
+			(#{lyId}, #{name}, #{bz})
+	</insert>
+	
+	<insert id="addCgProp">
+		insert into t_zc_cg_prop
+			(cgId, name, bz,unit,price,num,money,brand,type,place)
+		values
+			(#{cgId}, #{name}, #{bz},#{unit},#{price},#{num},#{money},#{brand},#{type},#{place})
+	</insert>
+	
+	<insert id="addPropLog" parameterType="ZcPropLog">
+		insert into t_zc_prop_log
+			(propId, dayStr, info, empId, empName, type)
+		values
+			(#{propId}, #{dayStr}, #{info}, #{empId}, #{empName}, #{type})
+	</insert>
+	
+	<insert id="addPropCode" parameterType="ZcProperty">
+		insert into t_zc_prop_code
+			(num,name)
+		values
+			(#{num}, #{name})
+	</insert>
+	
+	<update id="updatePropCode" parameterType="ZcProperty">
+		update
+			t_zc_prop_code
+		set
+			num = #{num}
+		where 
+			name = #{name}
+	</update>
+	
+	<update id="delProp" parameterType="ZcProperty">
+		update
+			t_zc_property
+		set
+			status = -1,
+			empId = null
+		where 
+			id = #{id}
+	</update>
+	
+	<update id="updateProp" parameterType="ZcProperty">
+		update
+			t_zc_property
+		set 
+			bz = #{bz}
+			<if test="dayStr!=null">
+			,dayStr = #{dayStr}
+			</if>
+			,spec = #{spec}
+			,status = #{status}
+			,ghStatus = #{ghStatus}
+			,placeId = #{placeId}
+			,empId = #{empId}
+		where 
+			id = #{id}
+	</update>
+	
+	<update id="updateWb" parameterType="ZcPropWb">
+		update 
+			t_zc_wb
+		set 
+			status = #{status},
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateLyStatus" parameterType="ZcPropLy">
+		update 
+			t_zc_ly
+		set 
+			lyStatus = #{lyStatus}
+			<if test="lyBz!=null">
+			,
+			lyBz = #{lyBz}
+			</if>
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateCgStatus" parameterType="ZcPropCg">
+		update 
+			t_zc_cg
+		set 
+			cgStatus = #{cgStatus}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateLy" parameterType="ZcPropLy">
+		update 
+			t_zc_ly
+		set 
+			status = #{status},
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateCg" parameterType="ZcPropCg">
+		update 
+			t_zc_cg
+		set 
+			status = #{status},
+			<if test="caiwuCmt!=null">
+			caiwuCmt = #{caiwuCmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateCgStatusForAll" parameterType="ZcPropCg">
+		update 
+			t_zc_cg
+		set 
+			cgStatus = #{cgStatus}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateCgPropMoney">
+		update 
+			t_zc_cg_prop
+		set 
+			money = #{money}
+		where
+			id = #{id}
+	</update>
+	
+	
+	<update id="updateCgPropStatus">
+		update 
+			t_zc_cg_prop
+		set 
+			cgStatus = #{cgStatus},
+			brk = #{brk}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateZy" parameterType="ZcPropZy">
+		update 
+			t_zc_zy
+		set 
+			status = #{status},
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="mgr2Cmt!=null">
+			mgr2Cmt = #{mgr2Cmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	<delete id="deletePlaceById" parameterType="int">
+		delete  from t_zc_place where id=#{id}
+	</delete>
+	<!--  
+	<update id="updateLyProp">
+		update 
+			t_zc_ly_prop
+		set 
+			status = #{status}
+		where
+			lyId = #{lyId} and propId = #{propId}
+	</update>-->
+	
+	<select id="findAddRecodeAll" resultType="ZcProperty">
+		select * from t_zc_property order by id desc
+	</select>
+	
+	<select id="findPropAll" resultType="ZcPropLog" parameterType="ParamBean">
+		select a.dayStr,a.empName,a.info,b.name,b.typeId,b.unit,b.spec,a.type,b.code,b.placeId
+		 from t_zc_prop_log a
+		 inner join t_zc_property b
+		 on a.propId = b.id
+		left join t_prop_log_type c
+		 on  a.type=c.type
+		 where c.id=#{type}
+		 and a.dayStr between #{begin} and #{end}
+		 order by a.id desc
+	</select>
+	
+	<select id="findGrantAll" resultType="ZcPropLy">
+		SELECT a.id,a.proposerName,a.createTime,b.name,b.bz
+		FROM t_zc_ly a
+		LEFT JOIN t_zc_ly_prop b
+		ON a.id=b.lyId
+		ORDER BY a.id desc
+	</select>
+	
+	<select id="findRepairAll" resultType="ZcPropWbVo">
+		SELECT  a.*,b.name,b.code
+		 FROM t_zc_wb a
+		LEFT JOIN t_zc_property b
+		ON a.propId=b.id
+		 WHERE a.wb=0  and a.status=4  or a.status=-1
+		 ORDER BY id desc
+	</select>
+	
+	<update id="updatePlace" parameterType="ZcPlace">
+		update t_zc_place
+		set name = #{name}
+		where id = #{id}
+	</update>
+	
+	
+</mapper>

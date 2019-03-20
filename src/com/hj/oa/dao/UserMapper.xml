@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.UserMapper">
+
+	<!-- 查询通知发布者 -->
+	<select id="findNoticer" resultType="User">
+		select emp.name, emp.id, n.status from t_emp_noticer as n
+		left join
+		t_emp as emp on n.empId = emp.id
+		<if test="status!=null">
+			where n.status = #{status}
+		</if>
+		order by emp.pinyin
+	</select>
+
+	<!-- 根据账号查询 -->
+	<select id="findUserByCode" parameterType="string" resultType="User">
+		select emp.*, dept.name as deptName from t_emp as emp
+		left join t_dept
+		as dept on emp.deptId = dept.id
+		where code = #{code}
+	</select>
+
+	<select id="findById" parameterType="int" resultType="User">
+		select
+		emp.*, dept.name as deptName from t_emp as emp
+		left join t_dept as dept
+		on emp.deptId = dept.id
+		where emp.id = #{id}
+	</select>
+
+	<select id="findUserByRole" parameterType="string" resultType="User">
+		select emp.*, dept.name as deptName from t_emp as emp
+		inner join
+		t_emp_role as er on emp.id = er.empId
+		inner join t_role as r on
+		er.roleId = r.id
+		left join t_dept as dept on emp.deptId = dept.id
+		where
+		r.name = #{name} and emp.status = 0
+	</select>
+
+	<select id="findAll" resultType="User">
+		select emp.*, dept.name as
+		deptName from t_emp as emp
+		left join t_dept as dept on emp.deptId =
+		dept.id
+		where emp.status = 0 order by emp.pinyin
+	</select>
+
+	<select id="findAllUsersStatus" resultType="User">
+		select emp.*,
+		dept.name as deptName from t_emp as emp
+		left join t_dept as dept on
+		emp.deptId = dept.id
+		order by emp.pinyin
+	</select>
+
+	<select id="findAllUsersStatusOrderDept" resultType="User">
+		select
+		emp.*, dept.name as deptName from t_emp as emp
+		left join t_dept as dept
+		on emp.deptId = dept.id
+		order by emp.deptId,emp.pinyin
+	</select>
+
+	<select id="findAllByDeptOrder" resultType="User">
+		select emp.*,
+		dept.name as deptName from t_emp as emp
+		left join t_dept as dept on
+		emp.deptId = dept.id
+		where emp.status = 0
+		order by dept.seq, emp.pinyin
+	</select>
+
+	<select id="findByDept" parameterType="int" resultType="User">
+		select
+		emp.*, dept.name as deptName from t_emp as emp
+		left join t_dept as dept
+		on emp.deptId = dept.id
+		where emp.status = 0 and dept.id = #{deptId}
+		order by emp.pinyin
+	</select>
+
+	<select id="findByDeptStatus" parameterType="int" resultType="User">
+		select emp.*, dept.name as deptName from t_emp as emp
+		left join t_dept
+		as dept on emp.deptId = dept.id
+		where dept.id = #{deptId} order by
+		emp.pinyin
+	</select>
+
+	<!-- 查询直接下属 -->
+	<select id="findDirectSubordinatesForD" resultType="User">
+		select emp.*,
+		dept.name as deptName from t_emp as emp
+		inner join t_dept as dept on
+		emp.id = dept.mgrId
+		inner join t_dept as dept2 on dept2.id = dept.pid
+		where dept2.id = #{deptId} and emp.id != #{empId} and emp.status = 0
+		order by emp.pinyin
+	</select>
+
+	<select id="findDirectSubordinatesForM" parameterType="int"
+		resultType="User">
+		select emp.*, dept.name as deptName from t_emp as emp
+		inner
+		join t_dept as dept on emp.deptId = dept.id
+		where dept.mgrId = #{mgrId}
+		and emp.id != #{mgrId} and emp.status = 0
+		order by emp.pinyin
+	</select>
+
+	<!-- 查询下属 -->
+	<select id="findSubordinatesForD" resultType="User">
+		select emp.*,
+		dept.name as deptName from t_emp as emp
+		left join t_dept as dept on
+		emp.deptId = dept.id
+		inner join t_dept as dept2 on dept2.id = dept.pid
+		where dept2.id = #{deptId} and emp.id != #{empId} and emp.status = 0
+		order by emp.pinyin
+	</select>
+
+	<select id="findAllWithKQ" parameterType="string" resultType="User">
+		<![CDATA[ 
+		select emp.name, emp.id, emp.email, emp.deptId, qj.beginTime as major, qj.endTime as phone1, qj.waichu as edu  from t_emp as emp
+		left join 
+		(select distinct proposer, waichu, beginTime, endTime  from t_qj where status = 4 and beginTime <= #{n} and endTime >= #{n}) as qj on emp.id = qj.proposer
+		where emp.status = 0
+		order by emp.pinyin
+		]]>
+	</select>
+
+	<select id="findAllLeaveAndWaichu" parameterType="string"
+		resultType="User">
+		select emp.name, emp.id, qj.waichu as status from t_emp as
+		emp
+		left join
+		(select distinct proposer, waichu from t_qj where status = 4 and beginTime
+		&lt; #{n} and endTime &gt; #{n}) as qj on emp.id = qj.proposer
+	</select>
+
+	<select id="findUserOnLeave" parameterType="string" resultType="int">
+		select distinct proposer from t_qj where status = 4 and beginTime &lt;
+		#{n} and endTime &gt; #{n}
+	</select>
+
+	<select id="findDeptById" parameterType="int" resultType="Dept">
+		select
+		* from t_dept where id = #{id}
+	</select>
+
+	<select id="findAllDept" resultType="Dept">
+		select * from t_dept order
+		by seq, id
+	</select>
+
+	<select id="findDeptsByMgr" parameterType="int" resultType="Dept">
+		select * from t_dept where mgrId = #{mgrId} order by seq, id
+	</select>
+
+	<select id="findAllSubDept" resultType="Dept">
+		select * from t_dept
+		where pid is not null order by seq, id
+	</select>
+
+	<select id="findOutAccessRoleByCode" resultType="string">
+		select role from
+		t_out_user_role where empCode = #{empCode}
+	</select>
+
+	<select id="findByDeptId" parameterType="int" resultType="User">
+		select
+		* from t_emp where status = 0 and deptId = #{id}
+		order by id
+	</select>
+
+	<!-- 添加一个员工 -->
+	<insert id="addUser" parameterType="User" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_emp
+		(name,code,password,gender,deptId,entryDate,idCardNum,pinyin,
+		birthday, edu, major, collage, grdMonth, phone1, email)
+		values
+		(#{name}, #{code}, #{password}, #{gender}, #{deptId}, #{entryDate},
+		#{idCardNum}, #{pinyin},
+		#{birthday}, #{edu}, #{major}, #{collage}, #{grdMonth}, #{phone1}, #{email})
+	</insert>
+
+	<update id="updateUser" parameterType="User">
+		update t_emp set
+		name = #{name}, code = #{code},
+		gender = #{gender}, deptId = #{deptId},
+		entryDate = #{entryDate}, idCardNum = #{idCardNum},
+		edu = #{edu}, major = #{major}, collage = #{collage}, grdMonth =
+		#{grdMonth},
+		phone1 = #{phone1}, phone2 = #{phone2}, email = #{email}
+
+		where id = #{id}
+	</update>
+
+	<update id="updateUser2" parameterType="User">
+		update t_emp set
+		entryDate = #{entryDate}, grdMonth = #{grdMonth}
+		where id = #{id}
+	</update>
+
+	<update id="updateUserDept" parameterType="User">
+		update t_emp set
+		deptId = #{deptId}
+		where id = #{id}
+	</update>
+
+	<!-- 禁用一个用户 -->
+	<update id="delUser" parameterType="int">
+		update t_emp set status = -1
+		where id = #{id}
+	</update>
+
+	<!-- 删除用户订餐信息 ,取消辞职员工的自动订餐 -->
+	<update id="delOrderDinner" parameterType="int">
+		update
+		t_dc_emp_balance set isAuto=0 where empId = #{id}
+	</update>
+
+	<!-- 修改用户密码 -->
+	<update id="changePassword" parameterType="User">
+		update t_emp set
+		password = #{password} where id = #{id}
+	</update>
+
+	<update id="updatePhoto" parameterType="User">
+		update t_emp set photo =
+		#{photo} where id = #{id}
+	</update>
+
+	<update id="updatePdf" parameterType="User">
+		update t_emp set pdf =
+		#{pdf} where id = #{id}
+	</update>
+
+	<update id="updateNoticer">
+		update t_emp_noticer set status = #{status} where
+		empId = #{empId}
+	</update>
+
+	<update id="resetAllNoticer">
+		update t_emp_noticer set status = 0
+	</update>
+
+	<!-- 外网访问 -->
+
+	<insert id="addOutAccessCode" parameterType="OutAccessCode">
+		insert into t_out_access_code
+		(empId, empCode, empName, createTime, beginTime, endTime, accessCode, type)
+		values
+		(#{empId}, #{empCode}, #{empName}, #{createTime}, #{beginTime}, #{endTime},
+		#{accessCode}, #{type})
+	</insert>
+
+	<insert id="addOutAccessRole">
+		insert into t_out_user_role
+		(empCode, role)
+		values
+		( #{empCode}, #{role})
+	</insert>
+
+	<update id="reGenerateOutAccessCode" parameterType="OutAccessCode">
+		update
+		t_out_access_code set accessCode = #{accessCode} where id = #{id}
+	</update>
+
+	<select id="findOutAccessCodeByCode" parameterType="string"
+		resultType="OutAccessCode">
+		select * from t_out_access_code where accessCode =
+		#{accessCode}
+	</select>
+
+	<select id="findAllOutAccessCode" resultType="OutAccessCode">
+		select * from
+		t_out_access_code order by type desc
+	</select>
+
+	<delete id="deleteOutAccessCode" parameterType="int">
+		delete from
+		t_out_access_code where id = #{id}
+	</delete>
+
+	<delete id="deletePhoto" parameterType="int">
+		update t_emp set
+		photo=null where id = #{id}
+	</delete>
+
+	<select id="findUserByName" parameterType="String" resultType="User">
+		select * from t_emp where name=#{name}
+	</select>
+
+	<select id="findAdminIdByDeptId" parameterType="Integer"
+		resultType="Integer">
+		select mgrId from t_dept where id = #{deptId}
+	</select>
+
+	<select id="findDeptDirectorId" parameterType="Integer"
+		resultType="Integer">
+		select mgrId from t_dept where id = #{deptId}
+	</select>
+
+
+	<select id="findDeptSupremo" parameterType="Integer" resultType="Integer">
+		select pid from t_dept where id = #{deptId}
+	</select>
+
+	<select id="findUsersByEntryDate" parameterType="String"
+		resultType="User">
+		select * from t_emp
+		where status = 0
+		and entryDate like concat(#{date},'%')
+	</select>
+
+</mapper>

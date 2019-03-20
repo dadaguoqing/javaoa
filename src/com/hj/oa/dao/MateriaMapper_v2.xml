@@ -1,0 +1,1310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.MateriaMapper_v2">
+
+	<select id="findByCurPage" resultType="Materia">
+		SELECT a.id,b.mt_warehouse warehouseId,
+		a.materiaCode,a.spec,a.classfiy,brand,a.package1,c.warehouse,a.unit,
+		warehouse,sum(b.mt_stock) num
+		FROM t_mt a
+		LEFT JOIN t_materia_stock b
+		ON
+		a.id =
+		b.mt_code
+		LEFT JOIN t_materia_warehouse c
+		ON b.mt_warehouse =
+		c.id
+		where
+		c.status = 1 and a.status = 1
+		<if test="materiaCode != null and materiaCode != ''">
+			and a.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="spec != null and spec != ''">
+			and a.spec LIKE CONCAT('%',#{spec},'%')
+		</if>
+		<if test="all != null and all != ''">
+			and (a.spec LIKE CONCAT('%',#{all},'%')
+			or a.brand LIKE
+			CONCAT('%',#{all},'%')
+			or a.package1 LIKE CONCAT('%',#{all},'%')
+			or
+			a.classfiy LIKE CONCAT('%',#{all},'%')
+			)
+		</if>
+		group by a.materiaCode,b.mt_warehouse
+		order by
+		a.id desc
+		limit
+		#{beginIndex},#{pageSize}
+	</select>
+
+	<select id="findStockLength" resultType="Integer" parameterType="Materia">
+		SELECT COUNT(v1.id) FROM (SELECT count(a.id) id
+		FROM t_mt a
+		LEFT JOIN t_materia_stock b
+		ON
+		a.id =
+		b.mt_code
+		LEFT JOIN t_materia_dept c
+		ON b.mt_warehouse =
+		c.id
+		where
+		c.status = 1 and a.status = 1
+		<if test="materiaCode != null and materiaCode != ''">
+			and a.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="spec != null and spec != ''">
+			and a.spec LIKE CONCAT('%',#{spec},'%')
+		</if>
+		<if test="others != null and others != ''">
+			and (a.spec LIKE CONCAT('%',#{others},'%')
+			or a.brand LIKE
+			CONCAT('%',#{others},'%')
+			or a.package1 LIKE CONCAT('%',#{others},'%')
+			or a.classfiy LIKE CONCAT('%',#{others},'%')
+			)
+		</if>
+		group by a.materiaCode,b.mt_warehouse
+		order by
+		a.id desc) v1
+	</select>
+
+
+	<select id="findWarehousesByAdminId" resultType="MateriaDept"
+		parameterType="Integer">
+		SELECT * FROM T_MATERIA_DEPT
+		WHERE adminId =
+		#{adminId}
+		and status = 1
+	</select>
+
+	<select id="findMouldByType" parameterType="String" resultType="String">
+		SELECT url FROM T_MT_MOULD
+		WHERE type = #{type}
+	</select>
+
+	<select id="selectAllMould" resultType="Mould">
+		SELECT * FROM T_MT_MOULD
+	</select>
+
+	<update id="insertMould" parameterType="Mould">
+		update t_mt_mould
+		set url
+		= #{url}
+		where type = #{type}
+	</update>
+
+	<select id="isExistCode" resultType="Integer">
+		select count(a.id)
+		from t_mt
+		a
+		left join t_materia_stock b
+		on a.id = b.mt_code
+		where
+		a.id =
+		#{materiaCode} and b.mt_warehouse = #{warehouse}
+	</select>
+
+	<select id="findIdBymateriaCode" resultType="Integer">
+		select id
+		from t_mt
+		where materiaCode = #{materiaCode}
+		and status = 1
+	</select>
+
+	<select id="findIdBymateriaCode2" resultType="Integer">
+		select id
+		from t_mt
+		where materiaCode = #{materiaCode}
+	</select>
+
+	<insert id="insertMatertia" parameterType="Materia">
+		insert into t_mt
+		(materiaCode,classfiy,brand,createTime,spec,package1,unit,
+		price,supplier,functionChina,functionEnglish,diff)
+		values
+		(#{materiaCode},#{classfiy},#{brand},#{createTime},#{spec},
+		#{package1},#{unit},#{price},#{supplier},#{functionChina},
+		#{functionEnglish},#{diff})
+	</insert>
+
+	<insert id="insertMaStock" parameterType="String">
+		insert into t_mt_stock
+		(materiaCode)
+		values
+		(#{materiaCode})
+	</insert>
+
+	<insert id="materiaRecordDetail" parameterType="MateriaRecord">
+		insert into
+		t_mt_record_detail
+		(materiaCode,num,stock,temp)
+		values
+		(#{materiaCode},#{num},#{stock},#{temp})
+	</insert>
+
+	<insert id="insertStockDetail" parameterType="Materia">
+		insert into
+		t_stock_detail (warehouse,materiaCode)
+		values
+		(#{warehouse},#{materiaCode})
+	</insert>
+
+	<select id="findIdByWarehouse" resultType="Integer"
+		parameterType="String">
+		SELECT ID T_MATERIA_DEPT from t_materia_dept
+		WHERE
+		WAREHOUSE = #{warehouseId}
+	</select>
+
+	<select id="findWarehouse2" parameterType="String" resultType="Warehouse">
+		select warehouse1,warehouse2,warehouse3
+		from t_mt_stock
+		where
+		materiaCode = #{code}
+	</select>
+
+
+	<insert id="insertFirstStock" parameterType="MateriaDetail">
+		insert into
+		t_materia_stock
+		(mt_code,mt_warehouse,mt_stock,mt_price,mt_date)
+		values
+		(#{materiaCode},#{warehouseId},#{num},#{price},#{createdate})
+	</insert>
+
+	<insert id="insertMateriaDetail" parameterType="MateriaDetail">
+		insert into
+		t_materia_record
+		(mt_apply_id,mt_createdate,mt_type,mt_warehouse,code)
+		values (#{applyId},#{createdate},#{type},#{warehouseId},#{code})
+	</insert>
+
+	<insert id="insertMateriaDetailNum" parameterType="MateriaDetail">
+		insert into
+		t_materia_record_detail
+		(mt_code,code,mt_num)
+		values
+		(#{materiaCode},#{code},#{num})
+	</insert>
+
+	<select id="findStock" resultType="Double">
+		select ifNULL(sum(mt_stock),0) from
+		t_materia_stock a
+		left join t_mt b
+		ON a.mt_code = b.id
+		where a.mt_code = #{materiaCode}
+		<if test="warehouse != null and warehouse != 0">
+			and a.mt_warehouse = #{warehouse}
+		</if>
+		and b.status = 1
+	</select>
+
+	<update id="updateStock">
+		update t_materia_stock set mt_stock = #{num}
+		where
+		mt_warehouse = #{warehouseId}
+		and mt_code = #{code}
+	</update>
+
+	<select id="findAllWarehouse" resultType="MateriaDept">
+		select * from
+		t_materia_dept
+		where status = 1
+	</select>
+
+	<insert id="insertApplyDetail" parameterType="MateriaDetail">
+		insert into
+		t_mt_macode
+		(code,materiaCode,num,price)
+		values
+		(#{code},#{materiaCode},#{num},#{price})
+	</insert>
+
+	<!-- 物料申领开始 -->
+	<insert id="insertMaApply" parameterType="MateriaApply">
+		insert into
+		t_mt_mtapply
+		(empId,use1,code,warehouse,dayStr,bz,dId,pId,mId,aId,currentId,status,type,url,url2,fId,faId)
+		values
+		(#{empId},#{use1},#{code},#{warehouseId},#{dayStr},#{bz},#{dId},
+		#{pId},#{mId},#{aId},#{currentId},#{status},#{type},#{url},#{url2},#{fId},#{faId})
+	</insert>
+
+	<select id="findAdminIdByWarehouseId" parameterType="String"
+		resultType="Integer">
+		SELECT adminId FROM T_MATERIA_DEPT
+		WHERE id = #{warehouseId}
+		and status = 1
+	</select>
+
+	<!-- 物料申领审批开始 -->
+	<select id="findApproveById" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and status != -1 and
+		status != 5 and type = 1
+		order by id desc
+	</select>
+
+	<select id="findApplyById" parameterType="Integer" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where id = #{id}
+	</select>
+
+	<select id="findMtByCode" parameterType="String" resultType="Materia">
+		select
+		b.materiaCode,b.classfiy,b.brand,b.spec,b.package1,a.num,a.price from
+		t_mt_macode a
+		left join t_mt b
+		on a.materiaCode =
+		b.id
+		where code =
+		#{code}
+		and b.status = 1
+	</select>
+
+	<select id="findApplyByCode" parameterType="String" resultType="MateriaDetail">
+		select * from t_mt_macode
+		where code = #{code}
+	</select>
+
+	<update id="updateApply" parameterType="MateriaApply">
+		update t_mt_mtapply
+		set status = #{status}
+		<if test="dOpinion != null and dOpinion != ''">
+			,dOpinion = #{dOpinion}
+			,dDayStr = #{dDayStr}
+			,dResult =
+			#{dResult}
+		</if>
+		<if test="pOpinion != null and pOpinion != ''">
+			,pOpinion = #{pOpinion}
+			,pDayStr = #{pDayStr}
+			,pResult =
+			#{pResult}
+		</if>
+		<if test="mOpinion != null and mOpinion != ''">
+			,mOpinion = #{mOpinion}
+			,mDayStr = #{mDayStr}
+			,mResult =
+			#{mResult}
+		</if>
+		<if test="aOpinion != null and aOpinion != ''">
+			,aOpinion = #{aOpinion}
+			,aDayStr = #{aDayStr}
+			,aResult =
+			#{aResult}
+		</if>
+		<if test="faOpinion != null and faOpinion != ''">
+			,faOpinion = #{faOpinion}
+			,faDayStr = #{faDayStr}
+			,faResult
+			= #{faResult}
+		</if>
+		<if test="fOpinion != null and fOpinion != ''">
+			,fOpinion = #{fOpinion}
+			,fDayStr = #{fDayStr}
+			,fResult =
+			#{fResult}
+		</if>
+		<if test="currentId != null">
+			,currentId = #{currentId}
+		</if>
+		where id = #{id}
+	</update>
+
+	<select id="findMySpRecord" parameterType="int" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where ((dId = #{id} and dOpinion is not
+		null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId = #{id} and
+		mOpinion
+		is not null) or (aId = #{id} and aOpinion
+		is not null)) and
+		type = 1
+		order by id desc
+	</select>
+
+	<select id="findMySpIds" parameterType="int" resultType="Integer">
+		select
+		empId from t_mt_mtapply
+		where ((dId = #{id} and dOpinion is not null)
+		or (pId = #{id} and pOpinion
+		is not null)
+		or (mId = #{id} and mOpinion
+		is not null) or (aId = #{id} and aOpinion
+		is not null)) and type = 1
+		group by empId
+		order by id desc
+	</select>
+
+	<select id="findMyApplyRecord" parameterType="int" resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 1
+		order by id
+		desc
+	</select>
+
+	<select id="findAllInware" parameterType="Map" resultType="MateriaRecord">
+		SELECT
+		d.materiaCode materiaCode,
+		a.mt_createdate dayStr,
+		c.warehouse
+		warehouse,
+		b.mt_num num ,
+		a.mt_type type,
+		a.mt_apply_id empId,
+		d.brand,
+		d.package1,
+		d.spec
+		FROM
+		t_materia_record a
+		LEFT JOIN
+		t_materia_record_detail b
+		ON
+		a.code = b.code
+		LEFT JOIN
+		t_mt d
+		ON
+		b.mt_code =
+		d.id
+		LEFT JOIN t_materia_dept c
+		ON a.mt_warehouse = c.id
+		where c.status =
+		1 and d.status = 1
+		<if test="warehouse != null and warehouse != ''">
+			and a.mt_warehouse = #{warehouse}
+		</if>
+		<if test="dayStr1 != null and dayStr1 != ''">
+			and a.mt_createdate between #{dayStr1} and #{dayStr2}
+		</if>
+		<if test="materiaCode != null and materiaCode != ''">
+			and d.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		and a.mt_type = 1
+		order by a.mt_createdate desc
+		limit #{beginIndex},#{pageSize}
+	</select>
+
+
+	<select id="findtotalInware" parameterType="MateriaRecord" resultType="Integer">
+		SELECT count(d.materiaCode)
+		FROM
+		t_materia_record a
+		LEFT JOIN
+		t_materia_record_detail b
+		ON
+		a.code = b.code
+		LEFT JOIN
+		t_mt d
+		ON
+		b.mt_code =
+		d.id
+		LEFT JOIN t_materia_dept c
+		ON a.mt_warehouse = c.id
+		where c.status =
+		1 and d.status = 1
+		<if test="warehouse != null and warehouse != ''">
+			and a.mt_warehouse = #{warehouse}
+		</if>
+		<if test="dayStr1 != null and dayStr1 != ''">
+			and a.mt_createdate between #{dayStr1} and #{dayStr2}
+		</if>
+		<if test="materiaCode != null and materiaCode != ''">
+			and d.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		and a.mt_type = 1
+		order by a.mt_createdate desc
+	</select>
+
+	<select id="findAllCost" parameterType="Map" resultType="MateriaRecord">
+		SELECT d.materiaCode materiaCode,a.mt_createdate dayStr,c.warehouse
+		warehouse,b.mt_num num
+		,a.mt_type type,a.mt_apply_id
+		empId,d.brand,d.package1,d.spec FROM
+		t_materia_record a
+		LEFT JOIN
+		t_materia_record_detail b
+		ON a.code =
+		b.code
+		Left JOIN t_mt d
+		ON b.mt_code
+		= d.id
+		LEFT JOIN t_materia_dept c
+		ON a.mt_warehouse = c.id
+		where c.status
+		= 1 and d.status = 1
+		<if test="warehouse != null and warehouse != ''">
+			and a.mt_warehouse = #{warehouse}
+		</if>
+		<if test="materiaCode != null and materiaCode != ''">
+			and d.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="personId != null and personId != ''">
+			and a.mt_apply_id = #{personId}
+		</if>
+		<if test="dayStr1 != null and dayStr1 != ''">
+			and a.mt_createdate between #{dayStr1} and #{dayStr2}
+		</if>
+		and a.mt_type = 2
+		order by a.id desc
+		limit #{beginIndex},#{pageSize}
+	</select>
+
+	<select id="findtTotalCost" parameterType="MateriaRecord"
+		resultType="Integer">
+		SELECT count(d.materiaCode) FROM
+		t_materia_record a
+		LEFT JOIN
+		t_materia_record_detail b
+		ON a.code =
+		b.code
+		Left JOIN t_mt d
+		ON b.mt_code
+		= d.id
+		LEFT JOIN t_materia_dept c
+		ON a.mt_warehouse = c.id
+		where c.status
+		= 1 and d.status = 1
+		<if test="warehouse != null and warehouse != ''">
+			and a.mt_warehouse = #{warehouse}
+		</if>
+		<if test="materiaCode != null and materiaCode != ''">
+			and d.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="personId != null and personId != ''">
+			and a.mt_apply_id = #{personId}
+		</if>
+		<if test="dayStr1 != null and dayStr1 != ''">
+			and a.mt_createdate between #{dayStr1} and #{dayStr2}
+		</if>
+		and a.mt_type = 2
+		order by a.id desc
+	</select>
+
+	<select id="findAllStock" resultType="Materia" parameterType="Materia">
+		SELECT a.id,b.mt_warehouse warehouseId,
+		a.materiaCode,a.spec,a.classfiy,brand,a.package1,c.warehouse,a.unit,
+		warehouse,sum(b.mt_stock) num
+		FROM t_mt a
+		LEFT JOIN t_materia_stock b
+		ON
+		a.id =
+		b.mt_code
+		LEFT JOIN t_materia_dept c
+		ON b.mt_warehouse =
+		c.id
+		where
+		c.status = 1 and a.status = 1
+		<if test="materiaCode != null and materiaCode != ''">
+			and a.materiaCode LIKE CONCAT('%',#{materiaCode},'%')
+		</if>
+		<if test="spec != null and spec != ''">
+			and a.spec LIKE CONCAT('%',#{spec},'%')
+		</if>
+		<if test="others != null and others != ''">
+			and (a.spec LIKE CONCAT('%',#{others},'%')
+			or a.brand LIKE
+			CONCAT('%',#{others},'%')
+			or a.package1 LIKE CONCAT('%',#{others},'%')
+			or a.classfiy LIKE CONCAT('%',#{others},'%')
+			)
+		</if>
+		group by materiaCode,warehouseId
+		order by
+		a.id desc
+	</select>
+
+	<select id="findWarehouseById" parameterType="Integer"
+		resultType="MateriaDept">
+		SELECT * FROM t_materia_dept
+		WHERE id = #{id}
+		and status = 1
+	</select>
+
+
+	<select id="findMateriaInfoById" resultType="Materia">
+		SELECT
+		*,b.mt_warehouse warehouseId FROM t_mt a
+		LEFT JOIN t_materia_stock b
+		ON
+		a.id = b.mt_code
+		where a.id = #{id} and b.mt_warehouse = #{whId}
+		and
+		a.status = 1
+		limit 1
+	</select>
+
+	<select id="findMateriaInfoById2" resultType="Materia">
+		SELECT * FROM t_mt
+		a
+		where a.id = #{id} and a.status = 1
+	</select>
+
+	<update id="updateMateriaInfo" parameterType="Materia">
+		update t_mt
+		set
+		materiaCode = #{materiaCode},
+		classfiy = #{classfiy},
+		brand = #{brand},
+		spec = #{spec},
+		package1 = #{package1},
+		unit = #{unit},
+		supplier =
+		#{supplier},
+		functionChina = #{functionChina},
+		functionEnglish =
+		#{functionEnglish},
+		diff = #{diff} ,
+		URL = #{url}
+		where id = #{id}
+	</update>
+
+	<insert id="saveAllot" parameterType="MateriaApply">
+		insert into
+		t_mt_mtapply
+		(empId,use1,code,warehouse,dayStr,bz,dId,pid,aId,currentId,status,type,url)
+		values
+		(#{empId},#{use1},#{code},#{warehouse},#{dayStr},#{bz},#{dId},
+		#{pId},#{aId},#{currentId},#{status},#{type},#{url})
+	</insert>
+
+	<select id="findMyInwareList" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where empId = #{id} and type = 2
+		order by id desc
+	</select>
+
+	<select id="findInwareRecordList2" parameterType="Integer"
+		resultType="MateriaApply">
+		select * from t_mt_mtapply
+		where currentId = #{id} and type
+		= 2 and isDeal = 0
+		order by id desc
+	</select>
+
+	<update id="updateIsDeal" parameterType="Integer">
+		update t_mt_mtapply
+		set
+		isDeal = 1
+		where id = #{id}
+	</update>
+
+	<select id="findPioneerStock" resultType="MateriaCost">
+		select * from
+		t_materia_stock
+		where mt_code = #{maId}
+		and mt_warehouse = #{whId}
+		and
+		mt_stock != 0
+		order by mt_date
+	</select>
+
+	<update id="updateMaStock">
+		update t_materia_stock
+		set mt_stock = mt_stock-#{num}
+		where id = #{id}
+	</update>
+
+	<insert id="insertMaCost" parameterType="MateriaCost">
+		insert into
+		t_materia_cost
+		(cost_code,materiaId,warehouseId,cost_num,cost_price)
+		values
+		(#{cost_code},#{materiaId},#{warehouseId},#{cost_num},#{cost_price})
+	</insert>
+
+	<select id="findMateriaSeqById" parameterType="Integer"
+		resultType="MateriaSeq">
+		select * from t_materia_seq
+		where id = #{id}
+	</select>
+
+	<update id="updateMateriaSeq" parameterType="MateriaSeq">
+		update
+		t_materia_seq
+		set date = #{date},
+		currentId = #{currentId}
+		where id =
+		#{id}
+	</update>
+
+	<insert id="insertPurchase" parameterType="MateriaPurchase">
+		insert into t_materia_purchase
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="empId != null">
+				emp_id,
+			</if>
+			<if test="requisitionCode != null">
+				requisition_code,
+			</if>
+			<if test="reason != null">
+				reason,
+			</if>
+			<if test="daystr != null">
+				dayStr,
+			</if>
+			<if test="purchaseCode != null">
+				purchase_code,
+			</if>
+			<if test="countMoney != null">
+				count_money,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="currentId != null">
+				current_id,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+			<if test="url2 != null">
+				url2,
+			</if>
+			<if test="projectCode != null">
+				projectCode,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="empId != null">
+				#{empId,jdbcType=INTEGER},
+			</if>
+			<if test="requisitionCode != null">
+				#{requisitionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				#{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="daystr != null">
+				#{daystr,jdbcType=VARCHAR},
+			</if>
+			<if test="purchaseCode != null">
+				#{purchaseCode,jdbcType=VARCHAR},
+			</if>
+			<if test="countMoney != null">
+				#{countMoney,jdbcType=DOUBLE},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="currentId != null">
+				#{currentId,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="url != null">
+				#{url,jdbcType=VARCHAR},
+			</if>
+			<if test="url2 != null">
+				#{url2,jdbcType=VARCHAR},
+			</if>
+			<if test="projectCode != null">
+				#{projectCode,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<insert id="insertPurchaseDetail" parameterType="MateriaPurchase">
+		insert into t_materia_purchase_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="maCode != null">
+				ma_code,
+			</if>
+			<if test="classify != null">
+				classify,
+			</if>
+			<if test="brand != null">
+				brand,
+			</if>
+			<if test="spec != null">
+				spec,
+			</if>
+			<if test="package1 != null">
+				package1,
+			</if>
+			<if test="unit != null">
+				unit,
+			</if>
+			<if test="needNum != null">
+				need_num,
+			</if>
+			<if test="stockNum != null">
+				stock_num,
+			</if>
+			<if test="needDate != null">
+				need_date,
+			</if>
+			<if test="useDate != null">
+				use_date,
+			</if>
+			<if test="buynum != null">
+				buyNum,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="cost != null">
+				cost,
+			</if>
+			<if test="supplier != null">
+				supplier,
+			</if>
+			<if test="link != null">
+				link,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="code != null">
+				#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="maCode != null">
+				#{maCode,jdbcType=VARCHAR},
+			</if>
+			<if test="classify != null">
+				#{classify,jdbcType=VARCHAR},
+			</if>
+			<if test="brand != null">
+				#{brand,jdbcType=VARCHAR},
+			</if>
+			<if test="spec != null">
+				#{spec,jdbcType=VARCHAR},
+			</if>
+			<if test="package1 != null">
+				#{package1,jdbcType=VARCHAR},
+			</if>
+			<if test="unit != null">
+				#{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="needNum != null">
+				#{needNum,jdbcType=DOUBLE},
+			</if>
+			<if test="stockNum != null">
+				#{stockNum,jdbcType=DOUBLE},
+			</if>
+			<if test="needDate != null">
+				#{needDate,jdbcType=VARCHAR},
+			</if>
+			<if test="useDate != null">
+				#{useDate,jdbcType=VARCHAR},
+			</if>
+			<if test="buynum != null">
+				#{buynum,jdbcType=DOUBLE},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=DOUBLE},
+			</if>
+			<if test="cost != null">
+				#{cost,jdbcType=DOUBLE},
+			</if>
+			<if test="supplier != null">
+				#{supplier,jdbcType=VARCHAR},
+			</if>
+			<if test="link != null">
+				#{link,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<resultMap id="MateriaPurchaseMap" type="MateriaPurchase">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="emp_id" jdbcType="INTEGER" property="empId" />
+		<result column="requisition_code" jdbcType="VARCHAR" property="requisitionCode" />
+		<result column="reason" jdbcType="VARCHAR" property="reason" />
+		<result column="dayStr" jdbcType="VARCHAR" property="daystr" />
+		<result column="purchase_code" jdbcType="VARCHAR" property="purchaseCode" />
+		<result column="count_money" jdbcType="DOUBLE" property="countMoney" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="current_id" jdbcType="INTEGER" property="currentId" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="url2" jdbcType="VARCHAR" property="url2" />
+		<result column="projectCode" jdbcType="VARCHAR" property="projectCode" />
+	</resultMap>
+
+	<sql id="Materia_Purchase_List">
+		id, emp_id, requisition_code, reason, dayStr,
+		purchase_code, count_money, content,
+		current_id, status, type, url,
+		url2,projectCode
+	</sql>
+
+	<select id="selectMateriaPurchaseById" parameterType="java.lang.Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="findPurchaseApprove" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where current_id = #{userId}
+		and type = #{type}
+		and
+		status != -1
+		and status != 5
+		order by dayStr desc
+	</select>
+	
+	<select id="findInboundRecord" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where projectCode = #{userId}
+		and type = #{type}
+		and
+		status != 1
+		order by dayStr desc
+	</select>
+	
+	<select id="findPurchaseApproveRecord" 
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where 
+		(status = -1
+		or status = 5)
+		and type = 3
+		order by dayStr desc
+	</select>
+	
+	<select id="findReventDealRecord" 
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where 
+		(status = -1
+		or status = 5)
+		and type = 4
+		order by dayStr desc
+	</select>
+
+	<select id="findMyPurchaseApprove" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where current_id != #{userId}
+		and type = #{type}
+		and
+		status != 2 and status != 1
+		order by dayStr desc
+	</select>
+
+	<select id="findMyPurchaseRecord" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where emp_id = #{userId}
+		and type = #{type}
+		order by id desc
+	</select>
+	
+	<select id="findAllPurchaseRecordByType" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where type = #{type}
+		order by id desc
+	</select>
+
+	<select id="findRkRecord" parameterType="Integer" resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where status = 5
+	</select>
+
+	<select id="selectMateriaPurchaseByCode" parameterType="String"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where requisition_code = #{code}
+		limit 1
+	</select>
+
+	<select id="selectMateriaPurchaseByStatus" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where type = 2
+		<if test="status != 0">
+			and status = #{status}
+		</if>
+		order by id desc
+	</select>
+
+	<select id="findMyPurchaseRecord2" parameterType="Integer"
+		resultType="MateriaPurchase">
+		select a.*,a.emp_id empId,a.requisition_code
+		requisitionCode,a.purchase_code purchaseCode,
+		a.count_money
+		countMoney,a.current_id currentId
+		from t_materia_purchase a
+		left join
+		t_materia_approve b
+		<if test="type==1">
+			on b.code = a.purchase_code
+			and type = 1
+		</if>
+		<if test="type==2">
+			on b.code = a.requisition_code and a.purchase_code is null
+			and type = 2
+		</if>
+		where b.approve_id =
+		#{userId}
+		order by a.id desc
+	</select>
+
+
+	<resultMap id="MateriaPurchaseDetailMap" type="MateriaPurchaseDetail">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="ma_code" jdbcType="VARCHAR" property="maCode" />
+		<result column="classify" jdbcType="VARCHAR" property="classify" />
+		<result column="brand" jdbcType="VARCHAR" property="brand" />
+		<result column="spec" jdbcType="VARCHAR" property="spec" />
+		<result column="package1" jdbcType="VARCHAR" property="package1" />
+		<result column="unit" jdbcType="VARCHAR" property="unit" />
+		<result column="need_num" jdbcType="DOUBLE" property="needNum" />
+		<result column="stock_num" jdbcType="DOUBLE" property="stockNum" />
+		<result column="need_date" jdbcType="VARCHAR" property="needDate" />
+		<result column="use_date" jdbcType="VARCHAR" property="useDate" />
+		<result column="buyNum" jdbcType="DOUBLE" property="buynum" />
+		<result column="price" jdbcType="DOUBLE" property="price" />
+		<result column="cost" jdbcType="DOUBLE" property="cost" />
+		<result column="supplier" jdbcType="VARCHAR" property="supplier" />
+		<result column="link" jdbcType="VARCHAR" property="link" />
+		<result column="isDeal" jdbcType="VARCHAR" property="isDeal" />
+	</resultMap>
+	<sql id="Ma_Pur_Det_List">
+		id, code, ma_code, classify, brand, spec, package1, unit,
+		need_num,
+		stock_num, need_date,
+		use_date, buyNum, price, cost, supplier,
+		link,isDeal
+	</sql>
+	<select id="selectMateriaPurchaseDetailByCode" parameterType="String"
+		resultMap="MateriaPurchaseDetailMap">
+		select
+		<include refid="Ma_Pur_Det_List" />
+		from t_materia_purchase_detail
+		where code = #{code}
+	</select>
+
+
+	<select id="selectMateriaPurchaseDetailById" parameterType="Integer"
+		resultMap="MateriaPurchaseDetailMap">
+		select
+		<include refid="Ma_Pur_Det_List" />
+		from t_materia_purchase_detail
+		where id = #{Integer}
+	</select>
+
+
+	<update id="updateMateriaPurchaseByPrimaryKeySelective"
+		parameterType="MateriaPurchase">
+		update t_materia_purchase
+		<set>
+			<if test="empId != null">
+				emp_id = #{empId,jdbcType=INTEGER},
+			</if>
+			<if test="requisitionCode != null">
+				requisition_code = #{requisitionCode,jdbcType=VARCHAR},
+			</if>
+			<if test="reason != null">
+				reason = #{reason,jdbcType=VARCHAR},
+			</if>
+			<if test="daystr != null">
+				dayStr = #{daystr,jdbcType=VARCHAR},
+			</if>
+			<if test="purchaseCode != null">
+				purchase_code = #{purchaseCode,jdbcType=VARCHAR},
+			</if>
+			<if test="countMoney != null">
+				count_money = #{countMoney,jdbcType=DOUBLE},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="currentId != null">
+				current_id = #{currentId,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="url2 != null">
+				url2 = #{url2,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+
+	<insert id="insertMateriaApproveSelective" parameterType="MateriaApprove">
+		insert into t_materia_approve
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="approveId != null">
+				approve_id,
+			</if>
+			<if test="approveStatus != null">
+				approve_status,
+			</if>
+			<if test="approveResult != null">
+				approve_result,
+			</if>
+			<if test="approveDate != null">
+				approve_date,
+			</if>
+			<if test="approveOpinion != null">
+				approve_opinion,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="code != null">
+				#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="approveId != null">
+				#{approveId,jdbcType=INTEGER},
+			</if>
+			<if test="approveStatus != null">
+				#{approveStatus,jdbcType=INTEGER},
+			</if>
+			<if test="approveResult != null">
+				#{approveResult,jdbcType=VARCHAR},
+			</if>
+			<if test="approveDate != null">
+				#{approveDate,jdbcType=VARCHAR},
+			</if>
+			<if test="approveOpinion != null">
+				#{approveOpinion,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<resultMap id="MateriaApproveMap" type="MateriaApprove">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="approve_id" jdbcType="INTEGER" property="approveId" />
+		<result column="approve_status" jdbcType="INTEGER" property="approveStatus" />
+		<result column="approve_result" jdbcType="VARCHAR" property="approveResult" />
+		<result column="approve_date" jdbcType="VARCHAR" property="approveDate" />
+		<result column="approve_opinion" jdbcType="VARCHAR" property="approveOpinion" />
+	</resultMap>
+	<sql id="Materia_Approve_List">
+		id, code, approve_id, approve_status, approve_result,
+		approve_date,
+		approve_opinion
+	</sql>
+
+	<select id="selectMateriaApproveByPrimaryKey" parameterType="String"
+		resultMap="MateriaApproveMap">
+		select
+		<include refid="Materia_Approve_List" />
+		from t_materia_approve
+		where code = #{code}
+	</select>
+
+	<select id="findTotalStock" parameterType="Integer" resultType="Double">
+		select sum(mt_stock)
+		from t_materia_stock
+		where mt_code = #{id}
+	</select>
+
+	<update id="updateMateriaPurchaseById" parameterType="Integer">
+		update
+		t_materia_purchase_detail set isDeal = '已处理'
+		where id = #{id}
+	</update>
+
+	<select id="findMtBySpec" parameterType="String" resultType="Materia">
+		select * from (select
+		id,classfiy,materiaCode,package1,upper(replace(spec,' ',''))
+		spec from
+		t_mt where status = 1) a
+		where a.spec = #{spec}
+		limit 1
+	</select>
+
+	<select id="findListMtBySpec" parameterType="String" resultType="String">
+		select spec from (select materiaCode,package1,upper(replace(spec,'
+		',''))
+		spec from t_mt where status = 1) a
+		where a.spec like
+		concat(concat('%',#{spec}),'%')
+		limit 9
+	</select>
+
+	<select id="findListMtByMaCode" parameterType="String"
+		resultType="String">
+		select materiaCode from t_mt
+		where status = 1 and
+		materiaCode like concat(#{maCode},'%')
+		limit 9
+	</select>
+
+
+	<update id="updateMateriaPurchaseDetailBySelective"
+		parameterType="MateriaPurchaseDetail">
+		update t_materia_purchase_detail
+		<set>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="maCode != null">
+				ma_code = #{maCode,jdbcType=VARCHAR},
+			</if>
+			<if test="classify != null">
+				classify = #{classify,jdbcType=VARCHAR},
+			</if>
+			<if test="brand != null">
+				brand = #{brand,jdbcType=VARCHAR},
+			</if>
+			<if test="spec != null">
+				spec = #{spec,jdbcType=VARCHAR},
+			</if>
+			<if test="package1 != null">
+				package1 = #{package1,jdbcType=VARCHAR},
+			</if>
+			<if test="unit != null">
+				unit = #{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="needNum != null">
+				need_num = #{needNum,jdbcType=DOUBLE},
+			</if>
+			<if test="stockNum != null">
+				stock_num = #{stockNum,jdbcType=DOUBLE},
+			</if>
+			<if test="needDate != null">
+				need_date = #{needDate,jdbcType=VARCHAR},
+			</if>
+			<if test="useDate != null">
+				use_date = #{useDate,jdbcType=VARCHAR},
+			</if>
+			<if test="buynum != null">
+				buyNum = #{buynum,jdbcType=DOUBLE},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DOUBLE},
+			</if>
+			<if test="cost != null">
+				cost = #{cost,jdbcType=DOUBLE},
+			</if>
+			<if test="supplier != null">
+				supplier = #{supplier,jdbcType=VARCHAR},
+			</if>
+			<if test="link != null">
+				link = #{link,jdbcType=VARCHAR},
+			</if>
+			<if test="isDeal != null">
+				isDeal = #{isDeal,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+
+	<select id="findMateriaByType" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where type = #{type}
+		and status = #{status}
+	</select>
+	
+	<select id="findTrueStock" parameterType="Integer" resultType="Double">
+		select IFNULL(sum(mt_stock), 0)
+		from t_materia_stock
+		where mt_warehouse = #{param2}
+		and mt_code  = #{param1}
+	</select>
+	
+	<select id="findCacheStock" parameterType="Integer" resultType="Double">
+		select  IFNULL(sum(num),0)
+		from t_materia_cache
+		where materia_id = #{param1}
+		and warehouse_id = #{param2}
+		and status = 1
+	</select>
+	
+	<select id="findRecordTotalSize" parameterType="Integer" resultType="Integer">
+		select count(*)
+		from t_materia_purchase
+		where emp_id = #{param1}
+		and type = #{param2}
+	</select>
+	
+		<select id="findRejectList" parameterType="Integer"
+		resultMap="MateriaPurchaseMap">
+		select
+		<include refid="Materia_Purchase_List" />
+		from t_materia_purchase
+		where emp_id = #{param1}
+		and type = #{param2}
+		order by id desc
+		limit #{param3},#{param4}
+	</select>
+	
+	<select id="findMateriaPrice" resultType="Double" parameterType="Integer">
+		select avg(mt_price) from t_materia_stock
+		where mt_code = #{id}
+		and mt_price != 0.0
+	</select>
+
+
+</mapper>

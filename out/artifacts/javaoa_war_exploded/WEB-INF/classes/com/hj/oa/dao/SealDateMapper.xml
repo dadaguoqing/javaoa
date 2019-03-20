@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.SealDateMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.SealDate">
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="WEEKDAY" jdbcType="VARCHAR" property="weekday" />
+    <result column="WEEKNUM" jdbcType="INTEGER" property="weeknum" />
+    <result column="STATUS" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, WEEKDAY, WEEKNUM, STATUS
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_seal_date
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByStatus"  resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_seal_date
+    where WEEKNUM > -1
+  </select>
+  
+  <select id="findWeekNums"  resultType="Integer">
+    select weeknum
+    from t_seal_date
+    where WEEKNUM > -1
+    and status = 1
+  </select>
+  
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_seal_date
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.SealDate">
+    insert into t_seal_date (ID, WEEKDAY, WEEKNUM, 
+      STATUS)
+    values (#{id,jdbcType=INTEGER}, #{weekday,jdbcType=VARCHAR}, #{weeknum,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.SealDate">
+    insert into t_seal_date
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="weekday != null">
+        WEEKDAY,
+      </if>
+      <if test="weeknum != null">
+        WEEKNUM,
+      </if>
+      <if test="status != null">
+        STATUS,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="weekday != null">
+        #{weekday,jdbcType=VARCHAR},
+      </if>
+      <if test="weeknum != null">
+        #{weeknum,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.SealDate">
+    update t_seal_date
+    <set>
+      <if test="weekday != null">
+        WEEKDAY = #{weekday,jdbcType=VARCHAR},
+      </if>
+      <if test="weeknum != null">
+        WEEKNUM = #{weeknum,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        STATUS = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.SealDate">
+    update t_seal_date
+    set WEEKDAY = #{weekday,jdbcType=VARCHAR},
+      WEEKNUM = #{weeknum,jdbcType=INTEGER},
+      STATUS = #{status,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="updateById" parameterType="Integer">
+		update t_seal_apply_detail
+		set status = -1
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

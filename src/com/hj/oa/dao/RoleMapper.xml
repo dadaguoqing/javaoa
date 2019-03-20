@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.RoleMapper">
+	
+	<select id="findAll" resultType="Role">
+		select * from t_role
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="Role">
+		select * from t_role
+		where id = #{id}
+	</select>
+	
+	<select id="findRolesByEmpId" parameterType="int" resultType="Role">
+		select b.* from t_emp_role as a
+		inner join t_role as b on a.roleId = b.id
+		where a.empId = #{id} order by a.roleId asc
+	</select>
+	
+	<select id="findEmpIdByRoleId" parameterType="int" resultType="int">
+		select empId from t_emp_role
+		where roleId = #{id}
+	</select>
+	
+	<insert id="addRole" parameterType="Role">
+		insert into t_role
+			(name)
+		values
+			(#{name})
+	</insert>
+	
+	<insert id="setRoleByEmp">
+		insert into t_emp_role (empId, roleId) values 
+		<foreach collection="emps" item="item" index="index" separator=",">
+			(#{item}, #{roleId})
+		</foreach>
+	</insert>
+	
+	<insert id="setEmpRoles">
+		insert into t_emp_role (empId, roleId) values 
+		<foreach collection="roles" item="item" index="index" separator=",">
+			(#{empId}, #{item})
+		</foreach>
+	</insert>
+	
+	<insert id="setMenuByRole">
+		insert into t_role_menu (menuId, roleId) values
+		<foreach collection="menus" item="item" index="index" separator=",">
+			(#{item}, #{roleId})
+		</foreach>
+	</insert>
+	
+	<delete id="deleteEmpRoleByRoleId" parameterType="int">
+		delete from t_emp_role where roleId = #{roleId}
+	</delete>
+	
+	<delete id="deleteEmpRoleByEmpId" parameterType="int">
+		delete from t_emp_role where empId = #{empId}
+	</delete>
+	
+	<delete id="deleteRoleMenuByRoleId" parameterType="int">
+		delete from t_role_menu where roleId = #{roleId}
+	</delete>
+	
+	<!-- 权限代理 -->
+	
+	<select id="findDailiByEmpId" parameterType="int" resultType="User">
+		select emp.* from t_daili as dl
+		inner join t_emp as emp on dl.ownerId = emp.id
+		where dl.empId = #{empId}
+	</select>
+	<!-- 我代理别人的 -->
+	<select id="findWoDailiBieren" parameterType="int" resultType="User">
+		select emp.* from t_daili as dl
+		inner join t_emp as emp on dl.ownerId = emp.id
+		where dl.empId = #{empId}
+	</select>
+	
+	<select id="findDailiByOwnerId" parameterType="int" resultType="User">
+		select emp.* from t_daili as dl
+		inner join t_emp as emp on dl.empId = emp.id
+		where dl.ownerId = #{ownerId}
+	</select>
+	
+	<select id="findDailiMenus" parameterType="int" resultType="Menu">
+		select m.* from t_emp_menu_daili as emd
+		inner join t_menu as m on emd.menuId = m.id
+		where emd.ownerId = #{ownerId}
+	</select>
+	
+	<delete id="deleteDailiByOwner" parameterType="int">
+		delete from t_daili where ownerId = #{ownerId}
+	</delete>
+	
+	<delete id="deleteEmpDailiMenuByOwner" parameterType="int">
+		delete from t_emp_menu_daili where ownerId = #{ownerId}
+	</delete>
+	
+	<insert id="addDaili">
+		insert into t_daili
+			(empId, ownerId)
+		values
+			(#{empId}, #{ownerId})
+	</insert>
+	
+	<insert id="addEmpDaili">
+		insert into t_emp_menu_daili (empId, menuId, ownerId) values
+		<foreach collection="menus" item="item" index="index" separator=",">
+			(#{empId}, #{item}, #{ownerId})
+		</foreach>
+	</insert>
+	
+	<select id="findRoleIdByName" parameterType="String" resultType="int">
+		select id from t_role where name = #{roleName}
+	</select>
+</mapper>

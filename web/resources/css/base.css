@@ -1,0 +1,18 @@
+*{margin:0;padding:0;}
+body {font-family: "寰蒋闆呴粦", "瀹嬩綋", Arial, sans-serif;font-size: 13px;background-color:#fff;}
+ul li {list-style: none;}
+table{border-collapse: collapse;border-spacing: 0;}
+input.btn {
+	background-image: url(../images/button-bg.gif);
+	border: 1px solid #6daee2; 
+	padding: 2px;
+	height: 22px;
+	cursor: hand;
+}
+
+.limitText{
+	overflow: hidden; /*自动隐藏文字*/
+	text-overflow: ellipsis; /*文字隐藏后添加省略号*/
+	white-space: nowrap; /*强制不换行*/
+	max-width: 100px;
+}

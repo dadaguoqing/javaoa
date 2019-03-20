@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.ExternalApplyMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.ExternalApply">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="proposer" jdbcType="INTEGER" property="proposer" />
+    <result column="apply_date" jdbcType="CHAR" property="applyDate" />
+    <result column="apply_code" jdbcType="CHAR" property="applyCode" />
+    <result column="external_type" jdbcType="VARCHAR" property="externalType" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="current_id" jdbcType="INTEGER" property="currentId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, proposer, apply_date, apply_code, external_type, content, project_name, status, 
+    current_id
+  </sql>
+  <select id="selectByExample" parameterType="com.hj.oa.bean.ExternalApplyExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_external_apply
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="pageSize != 0 and beginIndex != null and pageSize != null">
+      limit ${beginIndex}, ${pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_external_apply
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_external_apply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.ExternalApply">
+    insert into t_external_apply (id, proposer, apply_date, 
+      apply_code, external_type, content, 
+      project_name, status, current_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{proposer,jdbcType=INTEGER}, #{applyDate,jdbcType=CHAR}, 
+      #{applyCode,jdbcType=CHAR}, #{externalType,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{projectName,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{currentId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.ExternalApply">
+    insert into t_external_apply
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="proposer != null">
+        proposer,
+      </if>
+      <if test="applyDate != null">
+        apply_date,
+      </if>
+      <if test="applyCode != null">
+        apply_code,
+      </if>
+      <if test="externalType != null">
+        external_type,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="projectName != null">
+        project_name,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="currentId != null">
+        current_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="proposer != null">
+        #{proposer,jdbcType=INTEGER},
+      </if>
+      <if test="applyDate != null">
+        #{applyDate,jdbcType=CHAR},
+      </if>
+      <if test="applyCode != null">
+        #{applyCode,jdbcType=CHAR},
+      </if>
+      <if test="externalType != null">
+        #{externalType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null">
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="currentId != null">
+        #{currentId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hj.oa.bean.ExternalApplyExample" resultType="java.lang.Long">
+    select count(*) from t_external_apply
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_external_apply
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.proposer != null">
+        proposer = #{record.proposer,jdbcType=INTEGER},
+      </if>
+      <if test="record.applyDate != null">
+        apply_date = #{record.applyDate,jdbcType=CHAR},
+      </if>
+      <if test="record.applyCode != null">
+        apply_code = #{record.applyCode,jdbcType=CHAR},
+      </if>
+      <if test="record.externalType != null">
+        external_type = #{record.externalType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectName != null">
+        project_name = #{record.projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.currentId != null">
+        current_id = #{record.currentId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_external_apply
+    set id = #{record.id,jdbcType=INTEGER},
+      proposer = #{record.proposer,jdbcType=INTEGER},
+      apply_date = #{record.applyDate,jdbcType=CHAR},
+      apply_code = #{record.applyCode,jdbcType=CHAR},
+      external_type = #{record.externalType,jdbcType=VARCHAR},
+      content = #{record.content,jdbcType=VARCHAR},
+      project_name = #{record.projectName,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      current_id = #{record.currentId,jdbcType=INTEGER}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.ExternalApply">
+    update t_external_apply
+    <set>
+      <if test="proposer != null">
+        proposer = #{proposer,jdbcType=INTEGER},
+      </if>
+      <if test="applyDate != null">
+        apply_date = #{applyDate,jdbcType=CHAR},
+      </if>
+      <if test="applyCode != null">
+        apply_code = #{applyCode,jdbcType=CHAR},
+      </if>
+      <if test="externalType != null">
+        external_type = #{externalType,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null">
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="currentId != null">
+        current_id = #{currentId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.ExternalApply">
+    update t_external_apply
+    set proposer = #{proposer,jdbcType=INTEGER},
+      apply_date = #{applyDate,jdbcType=CHAR},
+      apply_code = #{applyCode,jdbcType=CHAR},
+      external_type = #{externalType,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      project_name = #{projectName,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      current_id = #{currentId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findApproveRecord" resultType="String">
+  	select distinct code from t_materia_approve 
+  	where code LIKE CONCAT(#{param2},'%')
+  	and approve_id = #{param1}
+  </select>
+</mapper>

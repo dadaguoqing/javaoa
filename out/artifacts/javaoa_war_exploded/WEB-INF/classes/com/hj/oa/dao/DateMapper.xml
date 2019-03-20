@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.DateMapper">
+
+	<select id="findByDayStr" parameterType="string" resultType="Day">
+		select * from t_day 
+		where dayStr = #{dayStr}
+	</select>
+	
+	<select id="findByChinaDayStr" parameterType="string" resultType="Day">
+		select * from t_day 
+		where dayStrChina = #{dayStrChina}
+	</select>
+	
+	<select id="findByMonth" parameterType="Day" resultType="Day">
+		select * from t_day 
+		where year = #{year} and month = #{month} 
+		order by year,month,day
+	</select>
+	
+	<select id="isHoliday" parameterType="String" resultType="Day">
+		select * from t_day 
+		where dayStrChina = #{date}
+	</select>
+	
+	<select id="findDays" resultType="Day">
+		select * from t_day
+		where dayStr between #{beginTime} and #{endTime}
+		order by dayStr
+	</select>
+	
+	<insert id="addDate" parameterType="Day">
+		insert into t_day
+			(year,month,day,dayOfWeek,type,dayStr,dayStrChina)
+		values
+			(#{year}, #{month}, #{day} , #{dayOfWeek}, #{type} ,#{dayStr},#{dayStrChina} )
+	</insert>
+	
+	<update id="updateDate" parameterType="Day">
+		update 
+			t_day
+		set 
+			type = #{type}
+		where
+			year = #{year} and month = #{month} and day = #{day} 
+	</update>
+	
+</mapper>

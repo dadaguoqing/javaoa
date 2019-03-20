@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.MenuMapper">
+
+	<select id="findByEmp" parameterType="int" resultType="Menu">
+		select * from t_menu where id in (
+			select rm.menuId from ( select * from t_emp_role where empId=#{id} ) as er inner join t_role_menu as rm on er.roleId=rm.roleId
+		) order by seq
+	</select>
+	
+	<select id="findDlMenu" resultType="Menu">
+		select m.* from t_menu as m
+		inner join t_emp_menu_daili as md on md.menuId = m.id and empId = #{empId} and ownerId = #{ownerId}
+		order by m.seq
+	</select>
+	
+	<select id="findMenuIdByRole" parameterType="int" resultType="int">
+		select menuId from t_role_menu where roleId = #{roleId}
+	</select>
+
+	<select id="findAll" resultType="Menu">
+		select * from t_menu order by seq
+	</select>
+	
+	<select id="findMenu" parameterType="int" resultType="Menu">
+		select * from t_menu
+		<if test="id != null">
+		where pid = #{id}
+		</if>
+		<if test="id == null">
+		where pid is null
+		</if>
+		order by seq
+	</select>
+	
+	<select id="findMenuById" parameterType="int" resultType="Menu">
+		select * from t_menu
+		where id = #{id}
+	</select>
+	
+	<insert id="addMenu" parameterType="Menu">
+		insert into t_menu
+			(id,seq,name,url,pid,icon)
+		values
+			(#{id},#{seq},#{name},#{url},#{pid},#{icon})
+	</insert>
+	
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.EmpCompMapper">
+	<!-- 根据员工id查询任职资格pdf-->
+	<select id="selectCompById" resultType="EmpCompetence">
+		select * from t_emp_competence where empId = #{empId}
+	</select>
+	
+	<delete id="deleteAllCompById" parameterType="int">
+		delete from t_emp_competence where empId = #{empId}
+	</delete>
+	
+	<insert id="addEmpComp">
+		insert into t_emp_competence 
+		(empId, pdf) 
+		values
+		(#{empId}, #{pdf})
+	</insert>
+	
+</mapper>

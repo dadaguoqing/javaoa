@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.CheckInMapper">
+
+	<select id="findRemoteCheckInByName" resultType="CheckInRemote">
+		select * from t_check_remote where dayStr = #{dayStr} and name = #{name}
+	</select>
+	
+	<select id="findRemoteCheckInByDay" resultType="CheckInRemote">
+		select * from t_check_remote where dayStr = #{dayStr}
+	</select>
+
+	<select id="findByDay" resultType="CheckIn">
+		select * from t_checkin where dayStr = #{dayStr}
+	</select>
+	
+	<select id="findByDayAndEmp" resultType="CheckIn">
+		select * from t_checkin where dayStr = #{dayStr} and empId = #{empId}
+	</select>
+	
+	<select id="findByEmp" parameterType="int" resultType="CheckIn">
+		select * from t_checkin where empId = #{empId}
+	</select>
+	
+	<select id="findByEmpAndTime" resultType="CheckIn">
+		select * from t_checkin where dayStr between #{beginTime} and #{endTime} and empId = #{empId}
+	</select>
+	
+	<select id="findByTimeSum" resultType="CheckIn">
+		select a.empId, b.name as checkin, count(a.empId) as checkinInt from t_checkin as a 
+		left join t_emp as b on a.empId = b.id
+		where dayStr between #{begin} and #{end} and a.empId != 1
+		and checkin &lt;= #{beginTime} and checkout >= #{endTime} and b.status=0
+		group by a.empId,b.name
+	</select>
+	
+	<select id="findByTimeSumForD" resultType="CheckIn">
+		select a.empId, b.name as checkin, count(a.empId) as checkinInt from t_checkin as a 
+		left join t_emp as b on a.empId = b.id
+		left join t_dept as c on b.deptId = c.id
+		where c.pid = #{dDeptId} and dayStr between #{begin} and #{end}
+		and checkin &lt;= #{beginTime} and checkout >= #{endTime} and b.status=0
+		group by a.empId,b.name
+	</select>
+	
+	<select id="findByTimeSumForDeptMgr" resultType="CheckIn">
+		select a.empId, b.name as checkin, count(a.empId) as checkinInt from t_checkin as a 
+		left join t_emp as b on a.empId = b.id
+		left join t_dept as c on b.deptId = c.id
+		where c.id = #{dDeptId} and dayStr between #{begin} and #{end} 
+		and checkin &lt;= #{beginTime} and checkout >= #{endTime} and b.status=0
+		group by a.empId,b.name
+	</select>
+	
+	<insert id="addCheckIn">
+		insert into t_checkin (empId, checkin, checkout, dayStr, checkinInt, checkoutInt) values
+		<foreach collection="cs" item="item" index="index" separator=",">
+			(#{item.empId}, #{item.checkin}, #{item.checkout}, #{item.dayStr}, #{item.checkinInt}, #{item.checkoutInt})
+		</foreach>
+	</insert>
+	<!-- saveORupdate -->
+	<insert id="addRemoteCheckIn">
+			<selectKey keyProperty="count" resultType="int" order="BEFORE">
+				select count(*) from t_check_remote where dayStr=#{remote.dayStr} and name=#{remote.name}
+			</selectKey>
+			<if test="count>0">
+				update t_check_remote set checkout=#{remote.checkout} where dayStr=#{remote.dayStr} and name=#{remote.name}
+			</if>
+			<if test="count==0">
+				insert into t_check_remote (name, checkin, checkout, dayStr, id) values
+					(#{remote.name}, #{remote.checkin}, #{remote.checkout}, #{remote.dayStr}, #{remote.id})
+			</if>
+	</insert>
+	
+	<insert id="addACheckIn">
+		insert into t_checkin (empId, checkin, checkout, dayStr, checkinInt, checkoutInt) values
+		(#{item.empId}, #{item.checkin}, #{item.checkout}, #{item.dayStr}, #{item.checkinInt}, #{item.checkoutInt})
+	</insert>
+	
+	<delete id="deleteCheckinByDay">
+		delete from t_checkin where dayStr = #{dayStr}
+	</delete>
+	
+	<delete id="deleteRemoteCheckInByDay">
+		delete from t_check_remote where dayStr = #{dayStr} and name in(
+		<foreach collection="cs" item="item" index="index" separator=",">
+		 	#{item.name}
+		 </foreach>)
+	</delete>
+	
+	<delete id="deleteCheckinByDayAndEmpId">
+		delete from t_checkin where dayStr = #{dayStr} and empId = #{empId}
+	</delete>
+	
+	<update id="updateCheckin" parameterType="CheckIn">
+		update t_checkin
+		set 
+			checkin = #{checkin},
+			checkout = #{checkout},
+			checkinInt = #{checkinInt},
+			checkoutInt = #{checkoutInt}
+		where empId = #{empId} and dayStr = #{dayStr}
+	</update>
+	
+	
+</mapper>

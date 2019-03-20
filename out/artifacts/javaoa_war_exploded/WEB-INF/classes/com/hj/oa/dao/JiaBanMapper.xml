@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.JiaBanMapper">
+	
+	<select id="findByEmpId" parameterType="int" resultType="JiaBan">
+		select * from t_jiaban where proposer = #{id} order by dayte desc
+	</select>
+	
+	<select id="findByEmpAndDayStr" resultType="JiaBan">
+		select * from t_jiaban where status != -1 and proposer = #{empId} and dayte = #{dayStr} 
+	</select>
+	
+	<select id="findMySp" parameterType="int" resultType="JiaBan">
+		select * from t_jiaban where currentId = #{id} and status != -1 and status != 4 order by dayte desc
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="JiaBan">
+		select * from t_jiaban
+		where id = #{id}
+	</select>
+	
+	<insert id="addJiaBan" parameterType="JiaBan" useGeneratedKeys="true" keyProperty="id">
+		insert into t_jiaban
+			(proposer, proposerName,type,deptId,createTime,content,mgrId, mgrCmt,
+			directId, directCmt, bossId, bossCmt, currentId, status, dayte, hours)
+		values
+			(#{proposer}, #{proposerName}, #{type}, #{deptId}, #{createTime}, #{content}, #{mgrId}, #{mgrCmt},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status}, #{dayte}, #{hours})
+	</insert>
+	
+	<insert id="addJianBanRecord">
+		insert into t_jiaban_record
+			(empId, jiabanId, dayStr, timeLen)
+		values
+			(#{empId}, #{jiabanId}, #{dayStr}, #{timeLen})
+	</insert>
+	
+	
+	<update id="updateJiaBan" parameterType="JiaBan">
+		update 
+			t_jiaban
+		set 
+			status = #{status},
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+</mapper>

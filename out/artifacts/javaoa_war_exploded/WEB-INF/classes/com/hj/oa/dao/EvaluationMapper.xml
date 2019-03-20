@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.EvaluationMapper">
+
+	<select id="getEmpEvaluation" resultType="Evaluation">
+		select e.id, e.title, e.point,e.type, ev.empId, ev.empName, ev.point as empPoint, ev.ans from t_evaluation as e 
+		left join ( select * from t_emp_evaluation where empId = #{empId} <if test="zgId!=null"> and zgId=#{zgId} </if> <if test="zgId==null"> and zgId is null </if> ) as ev on e.id = ev.evaId
+		order by e.id limit 37,54
+	</select>
+	
+	<select id="getAllEvaluation" resultType="Evaluation">
+		select *  from t_evaluation 
+		order by id
+	</select>
+	
+	<select id="findAllEmpSumEavluation" resultType="Evaluation">
+		select emp.id as empId, emp.name as empName, ev.point, ev.score, dpt.name as bz,ev.zgId,ev.zgName as zgName
+		from t_emp as emp 
+		left join t_dept as dpt on emp.deptId = dpt.id
+		left join t_emp_evaluation_sum as ev on emp.id = ev.empId
+		<if test="zgId!=null"> and zgId is not null </if> <if test="zgId==null">  and zgId is null </if>
+		where emp.status = 0 and emp.id !=1
+		order by dpt.seq, emp.pinyin
+	</select>
+	
+	<select id="findEmpSumEavluationByDept" resultType="Evaluation">
+		select emp.id as empId, emp.name as empName, ev.point, ev.score, dpt.name as bz,ev.zgId,ev.zgName as zgName
+		from t_emp as emp 
+		left join t_dept as dpt on emp.deptId = dpt.id
+		left join t_emp_evaluation_sum as ev on emp.id = ev.empId 
+		<if test="zgId!=null"> and zgId=#{zgId} </if> <if test="zgId==null">  and zgId is null </if>
+		and ev.tabId = #{tabId}
+		where emp.status = 0 and emp.deptId = #{deptId}
+		order by emp.pinyin
+	</select>
+	
+	<select id="getEmpEvaluationSum" resultType="Evaluation">
+		select emp.id as empId, emp.name as empName, ev.point as point,ev.score as score ,ev.content as content ,ev.zgName as zgName
+		from t_emp as emp 
+		left join t_emp_evaluation_sum as ev on emp.id = ev.empId <if test="zgId!=null"> and zgId=#{zgId} </if> <if test="zgId==null">  and zgId is null </if> and ev.tabId = #{tabId}
+		where emp.id = #{empId}
+	</select>
+	
+	<insert id="saveEmpEvaluationSum" parameterType="Evaluation">
+			insert into t_emp_evaluation_sum (tabId, zgId, empId, empName,zgName, content, point,score) values
+			(#{tabId}, #{zgId},#{empId}, #{empName},#{zgName}, #{content}, #{point}, #{score})
+	</insert>
+	
+	<insert id="saveEmpEvaluation">
+<!--         <selectKey keyProperty="count" resultType="int" order="BEFORE"> -->
+<!-- 	 		<foreach collection="empEvals" item="item" index="index" separator="" > -->
+<!-- 	 			<if test="index==1"> -->
+<!--             	select count(*) from t_emp_evaluation where empId = #{item.empId} and evaId =  #{item.evaId} -->
+<!--             	</if> -->
+<!--            </foreach> -->
+<!--         </selectKey> -->
+<!--         <if test="count > 0"> -->
+<!-- 		    update t_emp_evaluation   -->
+<!-- 		    <trim prefix="set" suffixOverrides=",">   -->
+<!-- 		        <trim prefix="point =case" suffix="end,">   -->
+<!-- 		            <foreach collection="empEvals" item="item">   -->
+<!-- 		                <if test="item.point!=null">   -->
+<!-- 		                    when empId=#{item.empId} and evaId = #{item.evaId} then #{item.point}   -->
+<!-- 		                </if>   -->
+<!-- 		            </foreach>   -->
+<!-- 		        </trim>   -->
+<!-- 		        <trim prefix="zgId =case" suffix="end,">   -->
+<!-- 		            <foreach collection="empEvals" item="item">   -->
+<!-- 		                <if test="item.zgId!=null">   -->
+<!-- 		                    when empId=#{item.empId} and evaId = #{item.evaId} then #{item.zgId}   -->
+<!-- 		                </if>   -->
+<!-- 		            </foreach>   -->
+<!-- 		        </trim>   -->
+<!-- 		        <trim prefix="zgName =case" suffix="end,">   -->
+<!-- 		            <foreach collection="empEvals" item="item">   -->
+<!-- 		                <if test="item.zgName!=null">   -->
+<!-- 		                    when empId=#{item.empId} and evaId = #{item.evaId} then #{item.zgName}   -->
+<!-- 		                </if>   -->
+<!-- 		            </foreach>   -->
+<!-- 		        </trim>   -->
+<!-- 		        <trim prefix="zgAns =case" suffix="end,">   -->
+<!-- 		            <foreach collection="empEvals" item="item">   -->
+<!-- 		                <if test="item.zgAns!=null">   -->
+<!-- 		                    when empId=#{item.empId} and evaId = #{item.evaId} then #{item.zgAns}   -->
+<!-- 		                </if>   -->
+<!-- 		            </foreach>   -->
+<!-- 		        </trim> -->
+<!-- 		         <trim prefix="ans =case" suffix="end,">   -->
+<!-- 		            <foreach collection="empEvals" item="item">   -->
+<!-- 		                <if test="item.ans!=null">   -->
+<!-- 		                    when empId=#{item.empId} and evaId = #{item.evaId} then #{item.ans}   -->
+<!-- 		                </if>   -->
+<!-- 		            </foreach>   -->
+<!-- 		        </trim>   -->
+<!-- 		    </trim>   -->
+<!-- 		    <where>   -->
+<!-- 		        <foreach collection="empEvals" separator="or" item="item">   -->
+<!-- 		            empId=#{item.empId} and evaId = #{item.evaId} -->
+<!-- 		        </foreach>   -->
+<!-- 		    </where>   -->
+<!--         </if> -->
+<!--         <if test="count==0"> -->
+            	replace into t_emp_evaluation (empId,empName,evaId,zgId,ans,point) values
+				<foreach collection="empEvals" item="item" index="index" separator=",">
+					(#{item.empId}, #{item.empName}, #{item.evaId}, #{item.zgId},#{item.ans},#{item.point})
+				</foreach>
+<!--         </if> -->
+</insert>
+	
+</mapper>

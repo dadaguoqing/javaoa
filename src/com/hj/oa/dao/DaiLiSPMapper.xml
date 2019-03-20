@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.DaiLiSPMapper">
+	
+	<select id="findMySP" resultType="DaiLiSP">
+		select dl.*, emp.name as uname from t_daili_sp as dl
+		left join t_emp as emp on dl.uid = emp.id
+		where dl.status = 0
+		order by dl.id desc
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="DaiLiSP">
+		select * from t_daili_sp 
+		where id = #{id}
+	</select>
+	
+	<select id="findMine" parameterType="int" resultType="DaiLiSP">
+		select * from t_daili_sp 
+		where senderId = #{id}
+		order by id desc
+	</select>
+	
+	<select id="findByEmpIdForAddDaili" parameterType="int" resultType="DaiLiSP">
+		select * from t_daili_sp 
+		where ( senderId = #{empId} or uid = #{empId} ) and status = 1 and lifeStatus = 0
+	</select>
+	
+	<select id="findByEmpIdForDeleteDaili" parameterType="int" resultType="DaiLiSP">
+		select * from t_daili_sp 
+		where ( senderId = #{empId} or uid = #{empId} ) and status = 1 and lifeStatus = 1
+	</select>
+	
+	<select id="findMineAtSP" parameterType="int" resultType="DaiLiSP">
+		select * from t_daili_sp 
+		where senderId = #{id} and status=0
+		order by id desc
+	</select>
+	
+	<insert id="add" parameterType="DaiLiSP">
+		insert into t_daili_sp
+			(senderId, sender, uid, mids, reason, status, cmt, content, createTime, beginTime, endTime, lifeStatus)
+		values
+			(#{senderId}, #{sender}, #{uid}, #{mids}, #{reason}, #{status}, #{cmt}, #{content}, #{createTime}, #{beginTime}, #{endTime}, #{lifeStatus} )
+	</insert>
+	
+	<update id="update" parameterType="DaiLiSP">
+		update 
+			t_daili_sp
+		set 
+			cmt = #{cmt},
+			status = #{status},
+			lifeStatus = #{lifeStatus}
+		where
+			id = #{id} 
+	</update>
+	
+	<delete id=""></delete>
+	 
+	<select id="findMyApply" parameterType="Integer" resultType="DaiLiSP"> 
+		select * from t_daili_sp 
+		where senderId = #{senderId}
+		order by createTime desc
+	</select>
+	
+</mapper>

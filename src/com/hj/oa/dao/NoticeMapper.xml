@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.NoticeMapper">
+
+	<select id="findAllRules" resultType="Rule">
+		select * from t_rule where status = 0 order by id desc
+	</select>
+	
+	<select id="findRuleById" parameterType="int" resultType="Rule">
+		select * from t_rule where id = #{id}
+	</select>
+	
+	<select id="findByUser" resultType="Notice">
+		select b.*, a.status as status from t_emp_notice as a
+		inner join t_notice as b on a.noticeId = b.id
+		where a.empId = #{empId}
+		<if test="status != 0">
+			and a.status = #{status}
+		</if>
+		order by a.status, b.id desc
+	</select>
+	
+	<select id="findAll" resultType="Notice">
+		select * from t_notice order by id desc
+	</select>
+	
+	<select id="findAllCon" resultType="Notice">
+		select * from t_notice where 1=1
+		<if test="begin != null">
+			and createTime &gt; #{begin}
+		</if>
+		<if test="end != null">
+			and createTime &lt; #{end}
+		</if>
+		order by id desc
+	</select>
+	
+	<select id="findByCon" resultType="Notice">
+		select b.*, a.status as status from t_emp_notice as a
+		inner join t_notice as b on a.noticeId = b.id
+		where 1 = 1
+		<if test="type != '全部'">
+			and b.type = #{type}
+		</if>
+		
+		<if test="status != 0">
+			and a.status = #{status}
+		</if>
+		<if test="empId != null">
+			and a.empId = #{empId}
+		</if>
+		<if test="begin != null">
+			and createTime &gt; #{begin}
+		</if>
+		<if test="end != null">
+			and createTime &lt; #{end}
+		</if>
+		order by a.status, b.createTime desc, b.id desc
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="Notice">
+		select * from t_notice
+		where id = #{id}
+	</select>
+	
+	<update id="deleteRule" parameterType="int">
+		update 
+			t_rule
+		set
+			status = -1
+		where id = #{id}
+	</update>
+	
+	<insert id="addRule" parameterType="Rule" useGeneratedKeys="true" keyProperty="id">
+		insert into t_rule
+			(name, creatorId, creatorName, createTime, loc, status)
+		values
+			(#{name}, #{creatorId}, #{creatorName}, #{createTime}, #{loc}, #{status})
+	</insert>
+	
+	<update id="updateStatus">
+		update 
+			t_emp_notice
+		set
+			status = 1
+		where empId = #{empId} and noticeId = #{noticeId}
+	</update>
+	
+	<insert id="addNotice" parameterType="Notice" useGeneratedKeys="true" keyProperty="id">
+		insert into t_notice
+			(title, content, createTime, publisher, pubName, type, showType)
+		values
+			(#{title}, #{content}, #{createTime}, #{publisher}, #{pubName}, #{type}, #{showType})
+	</insert>
+	
+	
+	<insert id="addEmpNotice">
+		insert into t_emp_notice
+			(empId, noticeId)
+		values
+		<foreach collection="empIds" item="item" separator=",">
+			(#{item}, #{noticeId})
+		</foreach>
+	</insert>
+	
+	
+	<insert id="addEmpNotice2">
+		insert into t_emp_notice
+			(empId, noticeId, status)
+		values
+			(#{empId}, #{noticeId},1)
+	</insert>
+	
+	<delete id="delNotice" parameterType="int">
+		delete from t_notice where id = #{id}
+	</delete>
+	
+	<delete id="delEmpNotice" parameterType="int">
+		delete from t_emp_notice where noticeId = #{id}
+	</delete>
+	
+</mapper>

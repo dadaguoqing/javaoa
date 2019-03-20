@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.LeaveMapper">
+	
+	<select id="findMyDaili" parameterType="int" resultType="Leave">
+		<![CDATA[
+		select * from t_qj where dailiId = #{id} and waichu = 0 order by createTime desc 
+		]]>
+	</select>
+	
+	<select id="findMyDailiChuChai" parameterType="int" resultType="Leave">
+		<![CDATA[
+		select * from t_qj where dailiId = #{id} and waichu = 1 order by createTime desc 
+		]]>
+	</select>
+	
+	<select id="findMineAtSp" parameterType="int" resultType="Leave">
+		<![CDATA[
+		select * from t_qj where proposer = #{empid} and status !=4 and status != -1 order by createTime desc 
+		]]>
+	</select>
+	
+	<select id="findIsBeenLeave" resultType="Leave">
+	<![CDATA[
+		select * from t_qj where proposer = #{empId} and status != -1 and 
+		( 
+			( beginTime > #{beginTime} and beginTime < #{endTime} ) or
+			( endTime > #{beginTime} and endTime < #{endTime} ) or
+			( beginTime <= #{beginTime} and endTime >= #{endTime} ) 
+		) 
+	]]>
+	</select>
+	
+	<select id="findLeaveByType" resultType="Leave">
+	<![CDATA[
+		select * from t_qj where proposer = #{empId} and status != -1 and waichu = #{waichu} and
+		( 
+			( beginTime > #{beginTime} and beginTime < #{endTime} ) or
+			( endTime > #{beginTime} and endTime < #{endTime} ) or
+			( beginTime <= #{beginTime} and endTime >= #{endTime} ) 
+		) 
+	]]>
+	</select>
+	
+	<select id="findLeaveByDate" resultType="Leave">
+	<![CDATA[
+		select * from t_qj where status != -1 and waichu = #{waichu} and
+		( 
+			( beginTime > #{beginTime} and beginTime < #{endTime} ) or
+			( endTime > #{beginTime} and endTime < #{endTime} ) or
+			( beginTime <= #{beginTime} and endTime >= #{endTime} ) 
+		) 
+	]]>
+	</select>
+	
+	<select id="findByEmpAndTime" resultType="Leave">
+	<![CDATA[
+		select * from t_qj where proposer = #{empId} and status != -1 and 
+		( 
+			( beginTime <= #{beginTime} and endTime >= #{beginTime} ) or
+			( beginTime <= #{endTime} and endTime >= #{endTime} )
+		) 
+	]]>
+	</select>
+	
+	<select id="findBeenLeaveByTimeAndEmp" resultType="Leave">
+	<![CDATA[
+		select * from t_qj where proposer = #{empId} and status = 4 and 
+		( 
+			( beginTime > #{beginTime} and beginTime < #{endTime} ) or
+			( endTime > #{beginTime} and endTime < #{endTime} ) or
+			( beginTime <= #{beginTime} and endTime >= #{endTime} ) 
+		) 
+	]]>
+	</select>
+	
+	<!-- or ( beginTime >= #{beginTime} and endTime <= #{endTime} )
+	 -->
+	 
+	<select id="findLeaveByDay" resultType="Leave">
+	<![CDATA[
+		select * from t_qj where status = 4 and 
+		( 
+			( beginTime > #{beginTime} and beginTime < #{endTime} ) or
+			( endTime > #{beginTime} and endTime < #{endTime} ) or
+			( beginTime <= #{beginTime} and endTime >= #{endTime} ) 
+		) 
+	]]>
+	</select>
+
+	<select id="findLeaveByUserAndTime" resultType="Leave">
+		select * from t_qj where proposer = #{uid} and status = 4 and beginTime &lt; #{time} and endTime &gt; #{time}
+	</select>
+	
+	<select id="findByEmpId" resultType="Leave">
+		select * from t_qj where proposer = #{id} and waichu = #{waichu} order by createTime desc
+	</select>
+	
+	<select id="findMySp" resultType="Leave">
+		select * from t_qj where currentId = #{id} and waichu = #{waichu} and status != -1 and status != 4 order by createTime desc
+	</select>
+	
+	<select id="findAllLeaves" resultType="Leave">
+		select * from t_qj 
+		where waichu = 0 and status = 4 
+		order by createTime desc
+	</select>
+	
+	<select id="findMySpTypeAll" resultType="Leave">
+		select * from t_qj where currentId = #{id} and status != -1 and status != 4
+	</select>
+	
+	<select id="findMyLeaveCancelSpTypeAll" resultType="LeaveCancel">
+		select * from t_xj where currentId = #{id} and status != -1 and status != 4
+	</select>
+	<select id="findMyLeaveCancelSpByType" resultType="LeaveCancel">
+		select * from t_xj where currentId = #{id} and status != -1 and status != 4 and waichu = #{type}
+	</select>
+	<select id="findAllLeaveCancel"  parameterType="int" resultType="LeaveCancel">
+		select * from t_xj where status = 4 order by createTime desc limit #{begin},20
+	</select>
+	<select id="findLeaveCancelByType" resultType="LeaveCancel">
+		select * from t_xj where  waichu =#{waichu} order by createTime desc limit #{begin},20
+	</select>
+	<select id="countLeaveCancel" resultType="int">
+		select count(*) from t_xj where status = 4
+	</select>
+	<select id="countLeaveCancelByType" resultType="int">
+		select count(*) from t_xj where waichu = #{type}
+	</select>
+	
+	<select id="findById" parameterType="int" resultType="Leave">
+		select * from t_qj
+		where id = #{id}
+	</select>
+	
+	<select id="findLeaveCancelById" parameterType="int" resultType="LeaveCancel">
+		select * from t_xj
+		where id = #{id}
+	</select>
+	
+	<select id="getEmpNianjia" parameterType="int" resultType="int">
+		select nianjia from t_emp_nianjia
+		where empId = #{empId}
+	</select>
+	
+	<update id="setEmpNianjia" >
+		update 
+			t_emp_nianjia
+		set 
+			nianjia = #{nianjia}
+		where empId = #{empId}
+	</update>
+	
+	<insert id="addNianjian">
+		insert t_emp_nianjia
+			(empId, nianjia)
+		values
+			(#{empId}, #{nianjia})
+	</insert>
+	
+	<insert id="addLeave" parameterType="Leave" useGeneratedKeys="true" keyProperty="id">
+		insert into t_qj
+			(proposer, proposerName,type,dailiId,dailiName,deptId,createTime,content,mgrId, mgrCmt, waichu,
+			directId, directCmt, bossId, bossCmt, currentId, status, beginTime, endTime, days, hours, minutes)
+		values
+			(#{proposer}, #{proposerName}, #{type}, #{dailiId}, #{dailiName}, #{deptId}, #{createTime}, #{content}, #{mgrId}, #{mgrCmt}, #{waichu},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status}, #{beginTime}, #{endTime}, #{days}, #{hours}, #{minutes})
+	</insert>
+	
+	<insert id="addLeaveCancel" parameterType="LeaveCancel" useGeneratedKeys="true" keyProperty="id">
+		insert into t_xj
+			(leaveId, proposer, proposerName,type,deptId,createTime,content,mgrId, mgrCmt, waichu,
+			directId, directCmt, bossId, bossCmt, currentId, status, beginTime, endTime, days, hours, minutes, cancelType,updateId,updateName)
+		values
+			(#{leaveId}, #{proposer}, #{proposerName}, #{type}, #{deptId}, #{createTime}, #{content}, #{mgrId}, #{mgrCmt}, #{waichu},
+			#{directId}, #{directCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status}, #{beginTime}, #{endTime}, #{days}, #{hours}, #{minutes}, #{cancelType},#{updateId},#{updateName})
+	</insert>
+	
+	<insert id="addSpRecord" >
+		insert into t_sp_record
+			(empId, dailiId,type,tid,createTime)
+		values
+			(#{empId}, #{dailiId}, 1, #{tid}, #{createTime})
+	</insert>
+	
+	<update id="updateLeaveForCancel" parameterType="Leave">
+		update 
+			t_qj
+		set 
+			beginTime = #{beginTime},
+			endTime = #{endTime},
+			days = #{days}, 
+			hours = #{hours}, 
+			minutes = #{minutes}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateLeaveCancel" parameterType="LeaveCancel">
+		update 
+			t_xj
+		set 
+			status = #{status},
+			updateId = #{updateId},
+			updateName = #{updateName},
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updateLeave" parameterType="Leave">
+		update 
+			t_qj
+		set 
+			status = #{status},
+			<if test="dlMgr!=null">
+			dlMgr = #{dlMgr},
+			</if>
+			<if test="dlDirect!=null">
+			dlDirect = #{dlDirect},
+			</if>
+			<if test="dlBoss!=null">
+			dlBoss = #{dlBoss},
+			</if>
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="directCmt!=null">
+			directCmt = #{directCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="cancelLeaveById" parameterType="Integer">
+		update t_qj set status = -1 
+		where id = #{param1}
+	</update>
+	
+</mapper>

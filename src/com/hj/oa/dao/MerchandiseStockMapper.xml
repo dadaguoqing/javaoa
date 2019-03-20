@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.MerchandiseStockMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.MerchandiseStock">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="product_type" jdbcType="INTEGER" property="productType" />
+    <result column="product_model" jdbcType="VARCHAR" property="productModel" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="unit" jdbcType="VARCHAR" property="unit" />
+    <result column="product_code" jdbcType="VARCHAR" property="productCode" />
+    <result column="week_code" jdbcType="VARCHAR" property="weekCode" />
+    <result column="package_code" jdbcType="VARCHAR" property="packageCode" />
+    <result column="inbound_reason" jdbcType="VARCHAR" property="inboundReason" />
+    <result column="supplier" jdbcType="VARCHAR" property="supplier" />
+    <result column="inbound_source" jdbcType="VARCHAR" property="inboundSource" />
+    <result column="inbound_date" jdbcType="VARCHAR" property="inboundDate" />
+    <result column="location" jdbcType="VARCHAR" property="location" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, product_type, product_model, quantity, unit, product_code, week_code, package_code, 
+    inbound_reason, supplier, inbound_source, inbound_date, location
+  </sql>
+  <select id="selectByExample" parameterType="com.hj.oa.bean.MerchandiseStockExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_merchandise_stock
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_merchandise_stock
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_merchandise_stock
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.MerchandiseStock">
+    insert into t_merchandise_stock (id, product_type, product_model, 
+      quantity, unit, product_code, 
+      week_code, package_code, inbound_reason, 
+      supplier, inbound_source, inbound_date, 
+      location)
+    values (#{id,jdbcType=INTEGER}, #{productType,jdbcType=INTEGER}, #{productModel,jdbcType=VARCHAR}, 
+      #{quantity,jdbcType=INTEGER}, #{unit,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, 
+      #{weekCode,jdbcType=VARCHAR}, #{packageCode,jdbcType=VARCHAR}, #{inboundReason,jdbcType=VARCHAR}, 
+      #{supplier,jdbcType=VARCHAR}, #{inboundSource,jdbcType=VARCHAR}, #{inboundDate,jdbcType=VARCHAR}, 
+      #{location,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.MerchandiseStock">
+    insert into t_merchandise_stock
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="productType != null">
+        product_type,
+      </if>
+      <if test="productModel != null">
+        product_model,
+      </if>
+      <if test="quantity != null">
+        quantity,
+      </if>
+      <if test="unit != null">
+        unit,
+      </if>
+      <if test="productCode != null">
+        product_code,
+      </if>
+      <if test="weekCode != null">
+        week_code,
+      </if>
+      <if test="packageCode != null">
+        package_code,
+      </if>
+      <if test="inboundReason != null">
+        inbound_reason,
+      </if>
+      <if test="supplier != null">
+        supplier,
+      </if>
+      <if test="inboundSource != null">
+        inbound_source,
+      </if>
+      <if test="inboundDate != null">
+        inbound_date,
+      </if>
+      <if test="location != null">
+        location,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="productType != null">
+        #{productType,jdbcType=INTEGER},
+      </if>
+      <if test="productModel != null">
+        #{productModel,jdbcType=VARCHAR},
+      </if>
+      <if test="quantity != null">
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="unit != null">
+        #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="weekCode != null">
+        #{weekCode,jdbcType=VARCHAR},
+      </if>
+      <if test="packageCode != null">
+        #{packageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="inboundReason != null">
+        #{inboundReason,jdbcType=VARCHAR},
+      </if>
+      <if test="supplier != null">
+        #{supplier,jdbcType=VARCHAR},
+      </if>
+      <if test="inboundSource != null">
+        #{inboundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="inboundDate != null">
+        #{inboundDate,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        #{location,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hj.oa.bean.MerchandiseStockExample" resultType="java.lang.Long">
+    select count(*) from t_merchandise_stock
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_merchandise_stock
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.productType != null">
+        product_type = #{record.productType,jdbcType=INTEGER},
+      </if>
+      <if test="record.productModel != null">
+        product_model = #{record.productModel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.quantity != null">
+        quantity = #{record.quantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.unit != null">
+        unit = #{record.unit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.productCode != null">
+        product_code = #{record.productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.weekCode != null">
+        week_code = #{record.weekCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.packageCode != null">
+        package_code = #{record.packageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.inboundReason != null">
+        inbound_reason = #{record.inboundReason,jdbcType=VARCHAR},
+      </if>
+      <if test="record.supplier != null">
+        supplier = #{record.supplier,jdbcType=VARCHAR},
+      </if>
+      <if test="record.inboundSource != null">
+        inbound_source = #{record.inboundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="record.inboundDate != null">
+        inbound_date = #{record.inboundDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.location != null">
+        location = #{record.location,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_merchandise_stock
+    set id = #{record.id,jdbcType=INTEGER},
+      product_type = #{record.productType,jdbcType=INTEGER},
+      product_model = #{record.productModel,jdbcType=VARCHAR},
+      quantity = #{record.quantity,jdbcType=INTEGER},
+      unit = #{record.unit,jdbcType=VARCHAR},
+      product_code = #{record.productCode,jdbcType=VARCHAR},
+      week_code = #{record.weekCode,jdbcType=VARCHAR},
+      package_code = #{record.packageCode,jdbcType=VARCHAR},
+      inbound_reason = #{record.inboundReason,jdbcType=VARCHAR},
+      supplier = #{record.supplier,jdbcType=VARCHAR},
+      inbound_source = #{record.inboundSource,jdbcType=VARCHAR},
+      inbound_date = #{record.inboundDate,jdbcType=VARCHAR},
+      location = #{record.location,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.MerchandiseStock">
+    update t_merchandise_stock
+    <set>
+      <if test="productType != null">
+        product_type = #{productType,jdbcType=INTEGER},
+      </if>
+      <if test="productModel != null">
+        product_model = #{productModel,jdbcType=VARCHAR},
+      </if>
+      <if test="quantity != null">
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="unit != null">
+        unit = #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="productCode != null">
+        product_code = #{productCode,jdbcType=VARCHAR},
+      </if>
+      <if test="weekCode != null">
+        week_code = #{weekCode,jdbcType=VARCHAR},
+      </if>
+      <if test="packageCode != null">
+        package_code = #{packageCode,jdbcType=VARCHAR},
+      </if>
+      <if test="inboundReason != null">
+        inbound_reason = #{inboundReason,jdbcType=VARCHAR},
+      </if>
+      <if test="supplier != null">
+        supplier = #{supplier,jdbcType=VARCHAR},
+      </if>
+      <if test="inboundSource != null">
+        inbound_source = #{inboundSource,jdbcType=VARCHAR},
+      </if>
+      <if test="inboundDate != null">
+        inbound_date = #{inboundDate,jdbcType=VARCHAR},
+      </if>
+      <if test="location != null">
+        location = #{location,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.MerchandiseStock">
+    update t_merchandise_stock
+    set product_type = #{productType,jdbcType=INTEGER},
+      product_model = #{productModel,jdbcType=VARCHAR},
+      quantity = #{quantity,jdbcType=INTEGER},
+      unit = #{unit,jdbcType=VARCHAR},
+      product_code = #{productCode,jdbcType=VARCHAR},
+      week_code = #{weekCode,jdbcType=VARCHAR},
+      package_code = #{packageCode,jdbcType=VARCHAR},
+      inbound_reason = #{inboundReason,jdbcType=VARCHAR},
+      supplier = #{supplier,jdbcType=VARCHAR},
+      inbound_source = #{inboundSource,jdbcType=VARCHAR},
+      inbound_date = #{inboundDate,jdbcType=VARCHAR},
+      location = #{location,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

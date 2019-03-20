@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.MerchandiseRecordMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.MerchandiseRecord">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="record_type" jdbcType="VARCHAR" property="recordType" />
+    <result column="change_date" jdbcType="VARCHAR" property="changeDate" />
+    <result column="apply_detail_id" jdbcType="INTEGER" property="applyDetailId" />
+    <result column="quantity" jdbcType="INTEGER" property="quantity" />
+    <result column="send_status" jdbcType="INTEGER" property="sendStatus" />
+    <result column="apply_code" jdbcType="VARCHAR" property="applyCode" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, record_type, change_date, apply_detail_id, quantity, send_status, apply_code
+  </sql>
+  <select id="selectByExample" parameterType="com.hj.oa.bean.MerchandiseRecordExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_merchandise_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_merchandise_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_merchandise_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.MerchandiseRecord">
+    insert into t_merchandise_record (id, record_type, change_date, 
+      apply_detail_id, quantity, send_status, 
+      apply_code)
+    values (#{id,jdbcType=INTEGER}, #{recordType,jdbcType=VARCHAR}, #{changeDate,jdbcType=VARCHAR}, 
+      #{applyDetailId,jdbcType=INTEGER}, #{quantity,jdbcType=INTEGER}, #{sendStatus,jdbcType=INTEGER}, 
+      #{applyCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.MerchandiseRecord">
+    insert into t_merchandise_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="recordType != null">
+        record_type,
+      </if>
+      <if test="changeDate != null">
+        change_date,
+      </if>
+      <if test="applyDetailId != null">
+        apply_detail_id,
+      </if>
+      <if test="quantity != null">
+        quantity,
+      </if>
+      <if test="sendStatus != null">
+        send_status,
+      </if>
+      <if test="applyCode != null">
+        apply_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="recordType != null">
+        #{recordType,jdbcType=VARCHAR},
+      </if>
+      <if test="changeDate != null">
+        #{changeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDetailId != null">
+        #{applyDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null">
+        #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="sendStatus != null">
+        #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="applyCode != null">
+        #{applyCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hj.oa.bean.MerchandiseRecordExample" resultType="java.lang.Long">
+    select count(*) from t_merchandise_record
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_merchandise_record
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.recordType != null">
+        record_type = #{record.recordType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.changeDate != null">
+        change_date = #{record.changeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyDetailId != null">
+        apply_detail_id = #{record.applyDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="record.quantity != null">
+        quantity = #{record.quantity,jdbcType=INTEGER},
+      </if>
+      <if test="record.sendStatus != null">
+        send_status = #{record.sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.applyCode != null">
+        apply_code = #{record.applyCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_merchandise_record
+    set id = #{record.id,jdbcType=INTEGER},
+      record_type = #{record.recordType,jdbcType=VARCHAR},
+      change_date = #{record.changeDate,jdbcType=VARCHAR},
+      apply_detail_id = #{record.applyDetailId,jdbcType=INTEGER},
+      quantity = #{record.quantity,jdbcType=INTEGER},
+      send_status = #{record.sendStatus,jdbcType=INTEGER},
+      apply_code = #{record.applyCode,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.MerchandiseRecord">
+    update t_merchandise_record
+    <set>
+      <if test="recordType != null">
+        record_type = #{recordType,jdbcType=VARCHAR},
+      </if>
+      <if test="changeDate != null">
+        change_date = #{changeDate,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDetailId != null">
+        apply_detail_id = #{applyDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="quantity != null">
+        quantity = #{quantity,jdbcType=INTEGER},
+      </if>
+      <if test="sendStatus != null">
+        send_status = #{sendStatus,jdbcType=INTEGER},
+      </if>
+      <if test="applyCode != null">
+        apply_code = #{applyCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.MerchandiseRecord">
+    update t_merchandise_record
+    set record_type = #{recordType,jdbcType=VARCHAR},
+      change_date = #{changeDate,jdbcType=VARCHAR},
+      apply_detail_id = #{applyDetailId,jdbcType=INTEGER},
+      quantity = #{quantity,jdbcType=INTEGER},
+      send_status = #{sendStatus,jdbcType=INTEGER},
+      apply_code = #{applyCode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="findDetailRecordByApplyCode" parameterType="String" resultType="MerchandiseDetailRecord">
+  	select a.send_status sendStatus,a.quantity,
+  	b.product_model productModel,b.product_code productCode,b.package_code packageCode,b.content,
+  	b.unit,b.week_code weekCode,b.inbound_source inboundSource,b.supplier,b.location
+  	from  t_merchandise_record a
+	left join t_merchandise_apply_detail b
+	on a.apply_detail_id = b.id
+	where a.apply_code = #{param1}
+	order by a.send_status
+  	
+  </select>
+</mapper>

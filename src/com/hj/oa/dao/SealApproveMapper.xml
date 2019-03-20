@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.SealApproveMapper">
+	<resultMap id="BaseResultMap" type="com.hj.oa.bean.SealApprove">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="code" jdbcType="VARCHAR" property="code" />
+		<result column="approve_id" jdbcType="INTEGER" property="approveId" />
+		<result column="approve_status" jdbcType="INTEGER" property="approveStatus" />
+		<result column="approve_result" jdbcType="VARCHAR" property="approveResult" />
+		<result column="approve_date" jdbcType="VARCHAR" property="approveDate" />
+		<result column="approve_opinion" jdbcType="VARCHAR" property="approveOpinion" />
+		<result column="start_date" jdbcType="VARCHAR" property="startDate" />
+		<result column="end_date" jdbcType="VARCHAR" property="endDate" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, code, approve_id, approve_status, approve_result, approve_date,
+		approve_opinion,
+		start_date, end_date
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_approve
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="findApproveByNumber" parameterType="String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_approve
+		where code = #{number}
+		order by approve_status
+	</select>
+
+	<select id="findApproveByNumberAndStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_approve
+		where code = #{number}
+		and approve_status = #{status}
+	</select>
+
+
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_seal_approve
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.hj.oa.bean.SealApprove">
+		insert into t_seal_approve (id, code, approve_id,
+		approve_status, approve_result, approve_date,
+		approve_opinion, start_date, end_date
+		)
+		values (#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR},
+		#{approveId,jdbcType=INTEGER},
+		#{approveStatus,jdbcType=INTEGER}, #{approveResult,jdbcType=VARCHAR}, #{approveDate,jdbcType=VARCHAR},
+		#{approveOpinion,jdbcType=VARCHAR}, #{startDate,jdbcType=VARCHAR},
+		#{endDate,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.hj.oa.bean.SealApprove">
+		insert into t_seal_approve
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="code != null">
+				code,
+			</if>
+			<if test="approveId != null">
+				approve_id,
+			</if>
+			<if test="approveStatus != null">
+				approve_status,
+			</if>
+			<if test="approveResult != null">
+				approve_result,
+			</if>
+			<if test="approveDate != null">
+				approve_date,
+			</if>
+			<if test="approveOpinion != null">
+				approve_opinion,
+			</if>
+			<if test="startDate != null">
+				start_date,
+			</if>
+			<if test="endDate != null">
+				end_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="code != null">
+				#{code,jdbcType=VARCHAR},
+			</if>
+			<if test="approveId != null">
+				#{approveId,jdbcType=INTEGER},
+			</if>
+			<if test="approveStatus != null">
+				#{approveStatus,jdbcType=INTEGER},
+			</if>
+			<if test="approveResult != null">
+				#{approveResult,jdbcType=VARCHAR},
+			</if>
+			<if test="approveDate != null">
+				#{approveDate,jdbcType=VARCHAR},
+			</if>
+			<if test="approveOpinion != null">
+				#{approveOpinion,jdbcType=VARCHAR},
+			</if>
+			<if test="startDate != null">
+				#{startDate,jdbcType=VARCHAR},
+			</if>
+			<if test="endDate != null">
+				#{endDate,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.SealApprove">
+		update t_seal_approve
+		<set>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="approveId != null">
+				approve_id = #{approveId,jdbcType=INTEGER},
+			</if>
+			<if test="approveStatus != null">
+				approve_status = #{approveStatus,jdbcType=INTEGER},
+			</if>
+			<if test="approveResult != null">
+				approve_result = #{approveResult,jdbcType=VARCHAR},
+			</if>
+			<if test="approveDate != null">
+				approve_date = #{approveDate,jdbcType=VARCHAR},
+			</if>
+			<if test="approveOpinion != null">
+				approve_opinion = #{approveOpinion,jdbcType=VARCHAR},
+			</if>
+			<if test="startDate != null">
+				start_date = #{startDate,jdbcType=VARCHAR},
+			</if>
+			<if test="endDate != null">
+				end_date = #{endDate,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.SealApprove">
+		update t_seal_approve
+		set code = #{code,jdbcType=VARCHAR},
+		approve_id = #{approveId,jdbcType=INTEGER},
+		approve_status = #{approveStatus,jdbcType=INTEGER},
+		approve_result = #{approveResult,jdbcType=VARCHAR},
+		approve_date = #{approveDate,jdbcType=VARCHAR},
+		approve_opinion = #{approveOpinion,jdbcType=VARCHAR},
+		start_date = #{startDate,jdbcType=VARCHAR},
+		end_date = #{endDate,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="findMyDepts" parameterType="Integer" resultType="Integer">
+		select id from t_dept 
+		where mgrId = #{id}
+	</select>
+</mapper>

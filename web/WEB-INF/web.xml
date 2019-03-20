@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	
+	<context-param>
+   		<param-name>contextConfigLocation</param-name>
+   		<param-value>classpath:applicationContext*.xml</param-value>
+	</context-param>
+	
+	<listener>
+      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> 
+	</listener>
+	
+	<listener>
+      <listener-class>com.hj.oa.listener.AppListener</listener-class> 
+	</listener>
+	
+	<filter>
+		<filter-name>charsetFilter</filter-name>
+		<filter-class>com.hj.filter.CharsetFilter</filter-class>
+		<init-param>
+			<param-name>charset</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>charsetFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>submitFilter</filter-name>
+		<filter-class>com.hj.filter.SubmitFilter</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>submitFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<filter>
+		<filter-name>loginFilter</filter-name>
+		<filter-class>com.hj.filter.LoginFilter</filter-class>
+		<init-param>
+			<param-name>whiteList</param-name>
+			<param-value>/web/login,/web/aLogin,/web/logout,/web/loginOutside,/web/oa/kq/uploadKq,/web/oa/os/showMedPdf</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>loginFilter</filter-name>
+		<url-pattern>/web/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- springmvc config -->
+	<servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- <init-param>
+			<param-name>contextConfigLocation</param-name>
+   			<param-value>
+   				classpath:applicationContext.xml,
+   				classpath:dispatcher-servlet.xml
+   			</param-value>
+		</init-param> -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>upload</servlet-name>
+		<servlet-class>com.hj.oa.servlet.UploadServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>uploadZp</servlet-name>
+		<servlet-class>com.hj.oa.servlet.UploadZpServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>uploadPhoto</servlet-name>
+		<servlet-class>com.hj.oa.servlet.UploadPhotoServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>uploadPdf</servlet-name>
+		<servlet-class>com.hj.oa.servlet.UploadPersonInfoServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
+	<servlet>
+		<servlet-name>uploadEmpCompPdf</servlet-name>
+		<servlet-class>com.hj.oa.servlet.UploadEmpCompPdfServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>uploadEmpCompPdf</servlet-name>
+		<url-pattern>/web/upload/empCompPdf</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>uploadPdf</servlet-name>
+		<url-pattern>/web/upload/empInfo</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>uploadPhoto</servlet-name>
+		<url-pattern>/web/upload/photo</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>upload</servlet-name>
+		<url-pattern>/web/upload</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>uploadZp</servlet-name>
+		<url-pattern>/web/oa/ev/save</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/web/*</url-pattern>
+	</servlet-mapping>
+	
+	<security-constraint>
+    <web-resource-collection>
+      <web-resource-name>公司WE网</web-resource-name>
+      <url-pattern>/loginOutside.jsp</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+       <role-name>outlogin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+	<security-role>
+    <description>
+      	外网访问
+    </description>
+    <role-name>outside</role-name>
+  </security-role>
+	
+	<login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>This request requires HTTP authentication</realm-name>
+  </login-config>
+  
+  	<welcome-file-list>
+    	<welcome-file>web/login</welcome-file>
+  	</welcome-file-list>
+	
+</web-app>

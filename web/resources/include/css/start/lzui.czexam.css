@@ -1,0 +1,66 @@
+/*
+* lzui cz header
+*/
+/*background: #0078AE url(images/ui-bg_glass_45_0078ae_1x400.png) 50% 50% repeat-x;*/
+.ui-tabs-current{background: #79C9EC url(images/ui-bg_glass_75_79c9ec_1x400.png) 50% 50% repeat-x;text-decoration:none;font-weight:normal;}
+.ui-tabs-anchor:hover{background: #79C9EC url(images/ui-bg_glass_75_79c9ec_1x400.png) 50% 50% repeat-x;text-decoration:underline;}
+.ui-tabs-anchor{text-decoration:none;}
+
+.lzui-cz-menu a{font-size:15px;}
+.lzui-cz-menu a img{float:left;border:0px;margin-top:18px;width:20px;height:20px;margin-right:2px;}
+
+.lzui-cz-toolbar{
+border: 1px solid #74B2E2;
+background: #E4F1FB url(img/ui-bg_glass_100_e4f1fb_1x400.png) 50% 50% repeat-x;
+font-weight: bold;
+color: #0070A3;
+}
+
+.lzui-cz-toolbar2{
+border: 1px solid #74B2E2;
+background: #E4F1FB url(img/ui-bg_glass_100_e4f1fb_1x400.png) 50% 50% repeat-x;
+font-weight: bold;
+color: #0070A3;
+}
+
+.lzui-cz-toolbar-btn{
+	text-decoration:none;
+	display:block; 
+	margin-top:2px; 
+	margin-left:5px; 
+	padding: 0 7px; 
+	float:left;
+	height:24px;
+	line-height:24px;
+	border: 1px solid #448dae; 
+	background: #79c9ec url(images/ui-bg_glass_75_79c9ec_1x400.png) 50% 50% repeat-x; 
+	font-weight: normal; 
+	color: #026890;
+}
+.lzui-cz-toolbar-btn img{width:16px; height:16px; border:none; float:left;margin:4px 5px 4px 0; }
+.lzui-cz-toolbar-btn:hover{ border: 1px solid #acdd4a; background: #6eac2c url(images/ui-bg_gloss-wave_50_6eac2c_500x100.png) 50% 50% repeat-x; font-weight: normal; color: #ffffff; }
+.lzui-cz-toolbar-btn:active{ border: 1px solid #acdd4a; background: #6eac2c url(images/ui-bg_gloss-wave_50_6eac2c_500x100.png) 50% 50% repeat-x; font-weight: normal; color: #ffffff; }
+
+
+/**
+* lzui login
+**/
+.lzui-cz-login-title{
+border-bottom: 1px solid #999;
+background: #999 url(img/ui-bg_inset-hard_75_999999_1x100.png) 50% 50% repeat-x;
+font-weight: bold;
+color: white;
+}
+
+.login-btn{
+border: 1px solid #CCC;
+background: #EEE url(img/ui-bg_glass_60_eeeeee_1x400.png) 50% 50% repeat-x;
+font-weight: bold;
+color: #3383BB;
+}
+.login-btn:hover{
+border: 1px solid #BBB;
+background: #F8F8F8 url(img/ui-bg_glass_100_f8f8f8_1x400.png) 50% 50% repeat-x;
+font-weight: bold;
+color: #599FCF;
+}

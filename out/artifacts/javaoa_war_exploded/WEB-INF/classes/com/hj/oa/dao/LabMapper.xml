@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.LabMapper">
+
+	<select id="findPcbSqById" parameterType="int" resultType="LabPcbSq">
+		select * from t_lab_pcb_sq where id = #{id}
+	</select>
+	
+	<select id="findMyPcbSp" parameterType="int" resultType="LabPcbSq">
+		select * from t_lab_pcb_sq where status!=-1 and status!=5 and currentId = #{empId} and type = #{type} order by id desc
+	</select>
+	
+	<select id="findMyPcbSp2" parameterType="int" resultType="LabPcbSq">
+		select * from t_lab_pcb_sq where status!=-1 and status!=5 and currentId = #{empId} order by id desc
+	</select>
+	
+	<select id="findMyPcbSq" parameterType="int" resultType="LabPcbSq">
+		select * from t_lab_pcb_sq where proposer = #{empId} and type = #{type} order by id desc
+	</select>
+	
+	<select id="findMyPcbSq2" parameterType="int" resultType="LabPcbSq">
+		select * from t_lab_pcb_sq where proposer = #{empId}  order by id desc
+	</select>
+	
+	<select id="findAllPcbSq" resultType="LabPcbSq">
+		select s.*, p.ddbh, p.fileName, p.filePath from t_lab_pcb_sq as s
+		left join t_lab_pcb as p on s.id = p.sqId
+		where type = #{type} 
+		<if test="jgStatus != -2">
+		and s.jgStatus = #{jgStatus}
+		</if>
+		order by id desc
+	</select>
+	<select id="findAllPcbSq2" resultType="LabPcbSq">
+		select s.*, p.ddbh, p.fileName, p.filePath from t_lab_pcb_sq as s
+		left join t_lab_All as p on s.id = p.sqId
+		<if test="jgStatus != -2">
+		and s.jgStatus = #{jgStatus}
+		</if>
+		order by id desc
+	</select>
+	
+	<select id="findPcbSqBySpEmpId" resultType="LabPcbSq">
+		select s.*, p.ddbh, p.fileName, p.filePath from t_lab_pcb_sq as s
+		left join t_lab_pcb as p on s.id = p.sqId
+		where type = #{type} and (mgrId = #{empId} or zbId = #{empId} or caiwuId = #{empId} or bossId=#{empId})
+		
+		order by id desc
+	</select>
+	
+	<select id="findPcbBySqId" parameterType="int" resultType="LabPcb">
+		select * from t_lab_pcb where sqId = #{sqId}
+	</select>
+	<select id="findPcbBySqId2" parameterType="int" resultType="LabAll">
+		select * from t_lab_all where sqId = #{sqId}
+	</select>
+	
+	<select id="findLabAllBySqId" parameterType="int" resultType="LabAll">
+		select * from t_lab_all where sqId = #{sqId}
+	</select>
+	
+	<select id="findPcbByFileName" parameterType="String" resultType="LabPcb">
+		select p.* from t_lab_pcb as p
+		inner join t_lab_pcb_sq as s on s.id = p.sqId
+		where s.status != -1 and  p.fileName = #{fileName}
+	</select>
+	
+	<insert id="addPcbSq" parameterType="LabPcbSq" useGeneratedKeys="true" keyProperty="id">
+		insert into t_lab_pcb_sq
+			(proposer, proposerName,type,createTime, zbId, mgrId,
+			caiwuId, bossId, currentId, status)
+		values
+			(#{proposer}, #{proposerName}, #{type}, #{createTime}, #{zbId}, #{mgrId},
+			#{caiwuId}, #{bossId}, #{currentId}, #{status})
+	</insert>
+	
+	<insert id="addPcb" parameterType="LabPcb">
+		insert into t_lab_pcb
+			(sqId, fileName, filePath, createTime, gyyq, ddbh, numSet, numUnit, cs, ccChang,
+			ccKuang, cpbh, cl, tbNei, tbWai, zh, zhColor, zf, zfColor, cstd, cstdType,
+			wxjgfs, jszyq, dcbg, zkcsbg, cpjcbg, fgzh, bmtc, bmtchd, kzms )
+		values
+			(#{sqId}, #{fileName}, #{filePath}, #{createTime}, #{gyyq}, #{ddbh}, #{numSet}, #{numUnit}, #{cs}, #{ccChang},
+			#{ccKuang}, #{cpbh}, #{cl}, #{tbNei}, #{tbWai}, #{zh}, #{zhColor}, #{zf}, #{zfColor}, #{cstd}, #{cstdType},
+			#{wxjgfs}, #{jszyq}, #{dcbg}, #{zkcsbg}, #{cpjcbg}, #{fgzh}, #{bmtc}, #{bmtchd}, #{kzms})
+	</insert>
+	<insert id="addAll" parameterType="LabAll">
+		insert into t_lab_all
+			(sqId, fileName, filePath, createTime, gyyq, ddbh, numSet, numUnit, cs, ccChang,
+			ccKuang, cpbh, cl, tbNei, tbWai, zh, zhColor, zf, zfColor, cstd, cstdType,
+			wxjgfs, jszyq, dcbg, zkcsbg, cpjcbg, fgzh, bmtc, bmtchd, kzms 
+			,weldType,num,piles,paster,paster2,gyType,BGAType
+			,hjgy,maxSize,ju,xzzj
+			,numSet2,ccChang2,size,cpbh2
+			,cl2
+			,bmtc2,bmtchd2,type
+			)
+		values
+			(#{sqId}, #{fileName}, #{filePath}, #{createTime}, #{gyyq}, #{ddbh}, #{numSet}, #{numUnit}, #{cs}, #{ccChang},
+			#{ccKuang}, #{cpbh}, #{cl}, #{tbNei}, #{tbWai}, #{zh}, #{zhColor}, #{zf}, #{zfColor}, #{cstd}, #{cstdType},
+			#{wxjgfs}, #{jszyq}, #{dcbg}, #{zkcsbg}, #{cpjcbg}, #{fgzh}, #{bmtc}, #{bmtchd}, #{kzms}
+			,#{weldType},#{num},#{piles},#{paster},#{paster2},#{gyType},#{BGAType}
+			,#{hjgy},#{maxSize},#{ju},#{xzzj}
+			,#{numSet2},#{ccChang2},#{cpbh2},#{size}
+			,#{cl2}
+			,#{bmtc2},#{bmtchd2} ,#{type}
+			)
+	</insert>
+	
+	<update id="updatePcbSq" parameterType="LabPcbSq">
+		update 
+			t_lab_pcb_sq
+		set 
+			status = #{status},
+			
+			<if test="content != null">
+			content = #{content},
+			</if>
+			<if test="jgcs != null">
+			jgcs = #{jgcs},
+			</if>
+			<if test="bj != null">
+			bj = #{bj},
+			</if>
+			<if test="jhsj!=null">
+			jhsj = #{jhsj},
+			</if>
+			
+			<if test="jgcs2 != null">
+			jgcs2 = #{jgcs2},
+			</if>
+			<if test="bj2 != null">
+			bj2 = #{bj2},
+			</if>
+			<if test="jhsj2!=null">
+			jhsj2 = #{jhsj2},
+			</if>
+			<if test="jhsj12!=null">
+			jhsj12 = #{jhsj12},
+			</if>
+			<if test="jhsj22!=null">
+			jhsj22 = #{jhsj22},
+			</if>
+			<if test="jhsj32!=null">
+			jhsj32 = #{jhsj32},
+			</if>
+			<if test="jhsj42!=null">
+			jhsj42 = #{jhsj42},
+			</if>
+			<if test="jhsj52!=null">
+			jhsj52 = #{jhsj52},
+			</if>
+			<if test="jgcs3 != null">
+			jgcs3 = #{jgcs3},
+			</if>
+			<if test="bj3 != null">
+			bj3 = #{bj3},
+			</if>
+			<if test="jhsj3!=null">
+			jhsj3 = #{jhsj3},
+			</if>
+			<if test="jgcs4 != null">
+			jgcs4 = #{jgcs4},
+			</if>
+			<if test="bj4 != null">
+			bj4 = #{bj4},
+			</if>
+			<if test="jhsj4!=null">
+			jhsj4 = #{jhsj4},
+			</if>
+			<if test="jgcs5 != null">
+			jgcs5 = #{jgcs5},
+			</if>
+			<if test="bj5 != null">
+			bj5 = #{bj5},
+			</if>
+			<if test="jhsj5!=null">
+			jhsj5 = #{jhsj5},
+			</if>
+			<if test="zbj!=null">
+			zbj = #{zbj},
+			</if>
+			
+			<if test="jgBz != null">
+			jgBz = #{jgBz},
+			</if>
+			<if test="jgStatus != 0">
+			jgStatus = #{jgStatus},
+			</if>
+			<if test="zbCmt!=null">
+			zbCmt = #{zbCmt},
+			</if>
+			<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+			</if>
+			<if test="caiwuCmt">
+			caiwuCmt = #{caiwuCmt},	
+			</if>
+			<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},	
+			</if>
+			currentId = #{currentId}
+		where
+			id = #{id}
+	</update>
+	
+	<update id="updatePcb" parameterType="LabPcb">
+		update 
+			t_lab_pcb
+		set 
+			ddbh = #{ddbh}
+		where
+			sqId = #{sqId}
+	</update>
+	<update id="updatePcb2" parameterType="LabAll">
+		update 
+			t_lab_all
+		set 
+			ddbh = #{ddbh}
+		where
+			sqId = #{sqId}
+	</update>
+</mapper>

@@ -1,0 +1,929 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.OfficeSupplyMapper">
+
+	<select id="findMyCgRecord" resultType="OsCg">
+		select * from t_os_cg
+		where proposer = #{empId} and type=#{type} order by id desc
+	</select>
+
+	<select id="findMySyRecord" resultType="OsSy">
+		select * from t_os_sy
+		where proposer = #{empId} and type=#{type} order by id desc
+	</select>
+
+	<select id="findMyCgSp" resultType="OsCg">
+		select * from t_os_cg where
+		status !=4 and status != -1 and currentId = #{empId} and type=#{type}
+		order by id
+	</select>
+
+	<select id="findSpeApprove" resultType="ApplyApprove">
+		select * from t_os_apply
+		where status != 4 and status != -1 and currentId = #{empId} order by
+		id
+	</select>
+
+	<select id="findSpeApplyList" resultType="ApplyApprove"
+		parameterType="int">
+		select * from t_os_apply where
+		applyStatus=#{Applystatus} order by id
+	</select>
+
+	<select id="findCgRkList" resultType="OsCg">
+		select * from t_os_cg where
+		status =4 and cgStatus=0 and type=#{type} order by id
+	</select>
+
+	<select id="findCgRecords" resultType="OsCg">
+		select * from t_os_cg
+		where status =4 and cgStatus=1 and type=#{type} order by id
+	</select>
+
+	<select id="findMySySp" resultType="OsSy">
+		select * from t_os_sy where
+		status !=4 and status != -1 and currentId = #{empId} and type=#{type}
+		order by id
+	</select>
+
+	<select id="findCgById" resultType="OsCg">
+		select * from t_os_cg where
+		id = #{id}
+	</select>
+
+	<select id="findSyById" resultType="OsSy">
+		select * from t_os_sy where
+		id = #{id}
+	</select>
+
+	<select id="findWupinByCgId" resultType="OsCgWupinVo">
+		select wp.id as wpId,
+		wp.stock, wp.name, wp.type, wp.unit, wp.classify, cg.cgStatus, cg.id,
+		cg.totalPrice ,cg.num, cg.money,cg.subTotal, cg.bz from t_os_cg_wp as
+		cg
+		left join t_os_wupin as wp on cg.wpId = wp.id
+		where cg.cgId = #{cgId}
+	</select>
+
+	<select id="findWupinBySyId" resultType="OsCgWupinVo">
+		select wp.id as wpId,
+		wp.stock, wp.name, wp.type, wp.unit, wp.classify, sy.bz, sy.id,
+		sy.num, sy.syType from t_os_sy_wp as sy
+		left join t_os_wupin as wp on
+		sy.wpId = wp.id
+		where sy.syId = #{cgId}
+	</select>
+
+	<select id="findYaopinByCgId" resultType="OsCgWupinVo">
+		select wp.id as wpId,
+		wp.stock, wp.name, wp.type, wp.unit, wp.classify, cg.cgStatus, cg.id,
+		cg.num, cg.money, cg.bz from t_os_cg_wp as cg
+		left join t_os_yaopin as
+		wp on cg.wpId = wp.id
+		where cg.cgId = #{cgId}
+	</select>
+
+	<select id="findYaopinBySyId" resultType="OsCgWupinVo">
+		select wp.id as wpId,
+		wp.stock, wp.name, wp.type, wp.unit, wp.classify, sy.bz, sy.id,
+		sy.num, sy.syType from t_os_sy_wp as sy
+		left join t_os_yaopin as wp on
+		sy.wpId = wp.id
+		where sy.syId = #{cgId}
+	</select>
+
+	<select id="findWupinClassify" resultType="String">
+		select distinct
+		classify from t_os_wupin
+	</select>
+
+	<select id="findPurchaseAll" resultType="PurchaseRecord"
+		parameterType="ParamBean">
+		SELECT
+		a.proposerName,a.createTime,c.name,c.classify,c.type,c.unit,b.num,b.money,b.bz
+		FROM t_os_cg a
+		INNER JOIN t_os_cg_wp b
+		ON a.id=b.cgId AND a.status=4 AND
+		b.cgStatus=1
+		INNER JOIN t_os_wupin c
+		ON b.wpId=c.id
+		where a.createTime between #{begin} and #{end}
+		ORDER BY a.id desc
+	</select>
+
+	<select id="findWupinByType" resultType="OsWupin">
+		select * from t_os_wupin
+		<if test="companyOnly==0">
+			where companyOnly = #{companyOnly}
+		</if>
+		<if test="companyOnly==2">
+			where companyOnly != 1
+		</if>
+		order by classify, name
+	</select>
+
+	<select id="findWupinByTypeName" resultType="OsWupin">
+		select * from t_os_wupin
+		<if test="type != '0'.toString()">
+			where classify = #{type}
+		</if>
+		order by stock desc
+	</select>
+
+	<select id="findAllYaopin" resultType="OsYaopin">
+		select * from t_os_yaopin
+		order by seq
+	</select>
+
+	<select id="findStockAll" resultType="OsWupin">
+		select * from t_os_wupin
+		order by id
+	</select>
+
+	<select id="findWupinById" parameterType="int" resultType="OsWupin">
+		select * from t_os_wupin
+		where id = #{id}
+	</select>
+
+	<select id="findYaopinById" parameterType="int" resultType="OsYaopin">
+		select * from t_os_yaopin
+		where id = #{id}
+	</select>
+
+	<select id="findSqByStatus" parameterType="int" resultType="OsSq">
+		select * from t_os_sq
+		where status = #{status}
+	</select>
+
+	<select id="findMedSqByStatus" parameterType="int" resultType="OsYaopinSq">
+		select * from t_os_yp_sq
+		where status = #{status}
+	</select>
+
+	<select id="findSqByEmpId" parameterType="int" resultType="OsSq">
+		select * from t_os_sq
+		where empId = #{empId}
+		order by id desc
+	</select>
+	<select id="findSpeApplyByEmpId" parameterType="int" resultType="ApplyApprove">
+		select * from t_os_apply
+		where empId = #{empId}
+		order by id desc
+	</select>
+
+	<select id="findMedSqByEmpId" parameterType="int" resultType="OsYaopinSq">
+		select * from t_os_yp_sq
+		where empId = #{empId} and type = 0
+		order by id desc
+	</select>
+
+	<select id="findCompSq" resultType="OsSq">
+		select * from t_os_sq
+		where type = 1 order by id desc
+	</select>
+
+	<select id="findCompMedSq" resultType="OsYaopinSq">
+		select * from t_os_yp_sq
+		where type = 1 order by id desc
+	</select>
+
+	<select id="findSqById" parameterType="int" resultType="OsSq">
+		select *
+		from t_os_sq
+		where id = #{id}
+	</select>
+
+	<select id="findSpeApplyById" parameterType="int" resultType="ApplyApprove">
+		select * from t_os_apply
+		where id = #{id}
+	</select>
+
+	<select id="findSpeApproveById" parameterType="int" resultType="ApplyApprove">
+		select * from t_os_apply
+		where id = #{id}
+	</select>
+
+	<select id="findYaopinSqById" parameterType="int" resultType="OsYaopinSq">
+		select * from t_os_yp_sq
+		where id = #{id}
+	</select>
+
+	<select id="findSqWpBySqId" parameterType="int" resultType="OsWupinVo">
+		select wp.*, sw.empId, sw.sqId, sw.dayStr, sw.num from t_os_sq_wp as
+		sw
+		inner join t_os_wupin as wp on sw.wpId = wp.id
+		where sqId = #{sqId}
+	</select>
+
+
+	<select id="findSpeApplyBySqId" parameterType="int" resultType="SpecialApply">
+		select * from t_os_special_apply
+		where applyId=#{applyId}
+	</select>
+
+	<select id="findSqYpBySqId" parameterType="int" resultType="OsYaopinVo">
+		select yp.*, sy.empId, sy.sqId, sy.dayStr, sy.num from t_os_sq_yp as
+		sy
+		inner join t_os_yaopin as yp on sy.ypId = yp.id
+		where sqId = #{sqId}
+	</select>
+
+	<select id="getDeptDirectorIdByName" parameterType="String"
+		resultType="Integer">
+		select mgrId from t_dept where name=#{name}
+	</select>
+
+	<select id="getDeptDirectorIdById" parameterType="Integer"
+		resultType="Integer">
+		select mgrId from t_dept where id=#{id}
+	</select>
+
+	<select id="getDeptPIdByName" parameterType="String" resultType="Integer">
+		select pid from t_dept where name=#{name}
+	</select>
+
+	<select id="findModifyApproveList" resultType="Management">
+		select * from
+		t_os_management where status = 1 order by id
+	</select>
+
+	<select id="findSqWpByWpId" resultType="OsWupinVo">
+		select wp.*, emp.name as
+		empName, sw.empId, sw.sqId, sw.type as sqType, sw.dayStr, sw.num from
+		t_os_sq_wp as sw
+		inner join t_os_wupin as wp on sw.wpId = wp.id
+		inner
+		join t_emp as emp on emp.id = sw.empId
+		where sw.status=1 and sw.wpId =
+		#{wpId} and dayStr between #{begin} and #{end}
+		order by sw.type,
+		sw.dayStr desc, emp.pinyin
+	</select>
+
+	<select id="findSqYpByYpId" resultType="OsYaopinVo">
+		select wp.*, emp.name as
+		empName, sw.empId, sw.sqId, sw.type as sqType, sw.dayStr, sw.num from
+		t_os_sq_yp as sw
+		inner join t_os_yaopin as wp on sw.ypId = wp.id
+		inner
+		join t_emp as emp on emp.id = sw.empId
+		where sw.status=1 and sw.ypId =
+		#{ypId} and dayStr between #{begin} and #{end}
+		order by sw.type,
+		sw.dayStr desc, emp.pinyin
+	</select>
+
+	<select id="findSqWpSum" resultType="OsWupinVo">
+		select wp.id, wp.name, wp.unit, wp.type, wp.companyOnly, sum(sw.num)
+		as num
+		from t_os_wupin as wp
+		left join
+		(select * from t_os_sq_wp
+		where status = 1 and dayStr between #{begin} and #{end}
+		<if test="empId!=null">
+			and empId = #{empId} and type = 0
+		</if>
+		<if test="type!=null">
+			and type = #{type}
+		</if>
+		) as sw on sw.wpId = wp.id
+		group by wp.id, wp.name, wp.unit, wp.type,
+		wp.companyOnly
+		<if test="showType==1">
+			having num > 0
+		</if>
+		order by num desc, wp.id
+	</select>
+
+	<select id="findSqWpAll" resultType="OsWupinVo" parameterType="ParamBean">
+		select wp.id, wp.name, wp.unit, wp.type, sum(sw.num) as num ,sw.dayStr
+		from t_os_wupin as wp
+		inner join
+		(select * from t_os_sq_wp
+		where status = 1
+		and type = 0
+		) as sw on sw.wpId = wp.id
+		where sw.dayStr between #{begin}
+		and #{end}
+		group by wp.id, wp.name, wp.unit, wp.type
+		order by wp.id desc
+	</select>
+
+	<select id="findSqYpSum" resultType="OsYaopinVo">
+		select wp.id, wp.name, wp.unit, wp.type, sum(sw.num) as num
+		from t_os_yaopin as wp
+		left join
+		(select * from t_os_sq_yp
+		where status = 1 and dayStr between #{begin} and #{end}
+		<if test="empId!=null">
+			and empId = #{empId} and type = 0
+		</if>
+		<if test="type!=null">
+			and type = #{type}
+		</if>
+		) as sw on sw.ypId = wp.id
+		group by wp.id, wp.name, wp.unit, wp.type
+		<if test="showType==1">
+			having num > 0
+		</if>
+		order by num desc, wp.id
+	</select>
+
+	<insert id="addCg" parameterType="OsCg" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_os_cg
+		(proposer, proposerName,type,createTime,content, mgrId, mgrCmt,
+		caiwuId, caiwuCmt, bossId, bossCmt, currentId, status, cgStatus)
+		values
+		(#{proposer}, #{proposerName}, #{type}, #{createTime}, #{content},
+		#{mgrId}, #{mgrCmt},
+		#{caiwuId}, #{caiwuCmt}, #{bossId}, #{bossCmt}, #{currentId}, #{status},
+		#{cgStatus})
+	</insert>
+
+
+	<insert id="addSy" parameterType="OsSy" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_os_sy
+		(proposer, proposerName,type,createTime,content, mgrId, mgrCmt,
+		bossId, bossCmt, currentId, status, syType)
+		values
+		(#{proposer}, #{proposerName}, #{type}, #{createTime}, #{content}, #{mgrId},
+		#{mgrCmt},
+		#{bossId}, #{bossCmt}, #{currentId}, #{status}, #{syType})
+	</insert>
+
+	<insert id="addCgWupin">
+		insert into t_os_cg_wp
+		(cgId, wpId, num, money,bz, totalPrice ,subTotal)
+		values
+		(#{cgId}, #{wpId}, #{num}, #{money},#{bz},#{totalPrice},#{subTotal})
+	</insert>
+
+	<insert id="addManagement" parameterType="Management">
+		insert into
+		t_os_management
+		(articleId,empName,classify,createTime,name,type,unit,companyOnly,remark,operate,status,adminDirectorId)
+		values
+		(#{articleId},#{empName},#{classify}, #{createTime}, #{name},
+		#{type},#{unit},#{companyOnly},#{remark},#{operate},#{status},#{adminDirectorId})
+	</insert>
+
+	<select id="findManagementById" resultType="Management"
+		parameterType="int">
+		select * from t_os_management where id=#{id}
+	</select>
+
+
+	<insert id="addSyWupin">
+		insert into t_os_sy_wp
+		(syId, wpId, num, syType, bz)
+		values
+		(#{syId}, #{wpId}, #{num}, #{syType}, #{bz})
+	</insert>
+
+	<insert id="addYp" parameterType="OsYaopin">
+		insert into t_os_yaopin
+		(name, shuoming, type, unit, loc)
+		values
+		(#{name}, #{shuoming}, #{type}, #{unit}, #{loc})
+	</insert>
+
+	<insert id="addWp" parameterType="OsWupin">
+		insert into t_os_wupin
+		(code, classify, name, type, unit, companyOnly)
+		values
+		(#{code}, #{classify}, #{name}, #{type}, #{unit}, #{companyOnly})
+	</insert>
+
+	<insert id="addSqWp" parameterType="OsWupinVo">
+		insert into t_os_sq_wp
+		(dayStr, sqId, deptId, empId, wpId, num, type)
+		values
+		(#{dayStr}, #{sqId}, #{deptId}, #{empId}, #{id}, #{num}, #{sqType})
+	</insert>
+	<insert id="addArticle" parameterType="SpecialApply">
+		insert into
+		t_os_special_apply
+		(dayStr, applyId, deptId, empId, num,
+		name,brand,artSize,unit,remark,useTime,content)
+		values
+		(#{dayStr}, #{applyId}, #{deptId}, #{empId}, #{num},
+		#{name},#{brand},#{artSize},#{unit},#{remark},#{useTime},#{content})
+	</insert>
+
+	<insert id="addApply" parameterType="ApplyApprove"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_os_apply
+		(dayStr,
+		createTime, deptId, empId, empName, status,
+		content,deptDirectorId,adminDirectorId,currentId)
+		values
+		(#{dayStr}, #{createTime}, #{deptId}, #{empId}, #{empName}, #{status},
+		#{content},#{deptDirectorId},#{adminDirectorId},#{currentId})
+	</insert>
+
+	<insert id="addSqYp" parameterType="OsYaopinVo">
+		insert into t_os_sq_yp
+		(dayStr, sqId, deptId, empId, ypId, num, type)
+		values
+		(#{dayStr}, #{sqId}, #{deptId}, #{empId}, #{id}, #{num}, #{sqType})
+	</insert>
+
+	<insert id="addSq" parameterType="OsSq" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_os_sq
+		(dayStr, createTime, deptId, empId, empName, status, bz, type)
+		values
+		(#{dayStr}, #{createTime}, #{deptId}, #{empId}, #{empName}, #{status},
+		#{bz}, #{type})
+	</insert>
+
+	<insert id="addYaopinSq" parameterType="OsYaopinSq"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_os_yp_sq
+		(dayStr, createTime, deptId, empId, empName, status, bz, type)
+		values
+		(#{dayStr}, #{createTime}, #{deptId}, #{empId}, #{empName}, #{status},
+		#{bz}, #{type})
+	</insert>
+
+	<update id="updateYp" parameterType="OsYaopin">
+		update
+		t_os_yaopin
+		set
+		shuoming = #{shuoming},
+		type = #{type},
+		unit = #{unit},
+		loc = #{loc}
+		where
+		id = #{id}
+	</update>
+
+	<update id="updateCg" parameterType="OsCg">
+		update
+		t_os_cg
+		set
+		status = #{status},
+		cgStatus = #{cgStatus},
+		<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+		</if>
+		<if test="caiwuCmt!=null">
+			caiwuCmt = #{caiwuCmt},
+		</if>
+		<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},
+		</if>
+		currentId = #{currentId}
+		where
+		id = #{id}
+	</update>
+
+	<update id="updateApply" parameterType="ApplyApprove">
+		update
+		t_os_apply
+		set
+		status = #{status},
+		applyStatus = #{applyStatus},
+		<if test="deptOpinion!=null">
+			deptOpinion = #{deptOpinion},
+		</if>
+		<if test="adminOpinion!=null">
+			adminOpinion = #{adminOpinion},
+		</if>
+		currentId = #{currentId}
+		where
+		id = #{id}
+	</update>
+
+	<update id="updateSpeApply" parameterType="SpecialApply">
+		update
+		t_os_special_apply
+		set
+		status = #{status}
+		where
+		id = #{id}
+	</update>
+
+	<update id="updateSy" parameterType="OsSy">
+		update
+		t_os_sy
+		set
+		status = #{status},
+		<if test="mgrCmt!=null">
+			mgrCmt = #{mgrCmt},
+		</if>
+		<if test="bossCmt!=null">
+			bossCmt = #{bossCmt},
+		</if>
+		currentId = #{currentId}
+		where
+		id = #{id}
+	</update>
+
+	<update id="updateCgWupin">
+		update
+		t_os_cg_wp
+		set
+		cgStatus = #{cgStatus},
+		bz = #{bz}
+		where
+		id = #{id}
+	</update>
+
+	<update id="updateSq" parameterType="OsSq">
+		update t_os_sq
+		set status = #{status}
+		where id = #{id}
+	</update>
+
+	<update id="updateManagement" parameterType="Management">
+		update
+		t_os_management
+		set status = #{status},approveOpinion=#{approveOpinion}
+		where id=#{id}
+	</update>
+
+	<update id="updateArticleById" parameterType="Management">
+		update t_os_wupin
+		set name = #{name},type=#{type},unit=#{type},classify=#{classify}
+		where id=#{articleId}
+	</update>
+
+	<update id="updateWpStock">
+		update t_os_wupin
+		set stock = #{stock}
+		where id = #{id}
+	</update>
+
+	<update id="updateYpStock">
+		update t_os_yaopin
+		set stock = #{stock}
+		where id =
+		#{id}
+	</update>
+
+	<update id="updateSqWp">
+		update t_os_sq_wp
+		set status = #{status}
+		where sqId = #{sqId}
+	</update>
+
+	<update id="updateYaopinSq" parameterType="OsYaopinSq">
+		update t_os_yp_sq
+		set status = #{status}
+		where id = #{id}
+	</update>
+
+	<update id="updateSqYp">
+		update t_os_sq_yp
+		set status = #{status}
+		where sqId = #{sqId}
+	</update>
+
+	<delete id="deleteManagementById" parameterType="int">
+		delete from
+		t_os_wupin
+		where id=#{id}
+	</delete>
+	<select id="findManagementByArtId" parameterType="int"
+		resultType="Management">
+		select * from t_os_management where articleId=#{id}
+	</select>
+
+	<select id="findManagementListByMan" parameterType="Management"
+		resultType="Management">
+		select * from t_os_management
+		where 1=1
+		<if test="empName != null and empName!='' ">
+			and empName = #{empName}
+		</if>
+		<if test="articleId != null and articleId!='' ">
+			and articleId = #{articleId}
+		</if>
+		<if test="operate != null and operate!='' ">
+			and operate = #{operate}
+		</if>
+		<if test="status != null and status!='' ">
+			and status = #{status}
+		</if>
+		order by id
+	</select>
+
+	<select id="findManagementByMan" parameterType="Management"
+		resultType="Management">
+		select * from t_os_management
+		where 1=1
+		<if test="id != null and id !='' ">
+			and id = #{id}
+		</if>
+		<if test="empName != null and empName!='' ">
+			and empName = #{empName}
+		</if>
+		<if test="articleId != null and articleId!='' ">
+			and articleId = #{articleId}
+		</if>
+		<if test="operate != null and operate!='' ">
+			and operate = #{operate}
+		</if>
+		<if test="status != null and status!='' ">
+			and status = #{status}
+		</if>
+	</select>
+
+	<insert id="updateSpeApplyStatus" parameterType="int">
+		update
+		t_os_apply set applyStatus = 3
+		where id = #{id}
+	</insert>
+
+	<!-- 芯片申请 -->
+	<insert id="insertSilicon" parameterType="ApplySilicon">
+		insert into
+		t_os_silicon
+		(applyId,brand, num, reason)
+		values
+		(#{applyId}, #{brand}, #{num}, #{reason})
+	</insert>
+
+	<insert id="insertSiliconApprove" parameterType="ApplySiliconApprove">
+		insert into
+		t_os_silicon_approve
+		(applyId,status, approveId01, approveId02,
+		approveId03,approveId04, approveId05,currentId,empId,
+		useDayStr,dayStr)
+		values
+		(#{applyId},#{status}, #{approveId01}, #{approveId02},
+		#{approveId03},#{approveId04},#{approveId05},
+		#{currentId},#{empId},#{useDayStr},#{dayStr} )
+	</insert>
+
+	<update id="saveSiliconApprove" parameterType="ApplySiliconApprove">
+		update t_os_silicon_approve
+		set status=#{status},
+		currentId =
+		#{currentId}
+		<if test="approveReason01!=null">
+			,approveReason01 = #{approveReason01}
+		</if>
+		<if test="approveReason02!=null">
+			,approveReason02 = #{approveReason02}
+		</if>
+		<if test="approveReason03!=null">
+			,approveReason03 = #{approveReason03}
+		</if>
+		<if test="approveReason04!=null">
+			,approveReason04 = #{approveReason04}
+		</if>
+		<if test="approveReason05!=null">
+			,approveReason05 = #{approveReason05}
+		</if>
+		where applyId = #{applyId}
+	</update>
+
+	<select id="findSiliconApprove" parameterType="int"
+		resultType="ApplySiliconApprove">
+		SELECT a.id,a.empId,a.dayStr,a.useDayStr,a.status from
+		t_os_silicon_approve a
+		LEFT JOIN t_os_silicon b
+		ON a.applyId=b.applyId
+		WHERE (status=0 or status=1 or status=2 or status=3 or status=4)
+		AND a.currentId = #{useId}
+		GROUP BY a.applyId
+		ORDER BY dayStr DESC
+	</select>
+
+	<select id="findSiliconApply" parameterType="int"
+		resultType="ApplySiliconApprove">
+		select * from t_os_silicon_approve
+		where empId = #{useId}
+		order by dayStr desc
+	</select>
+
+	<select id="findSiliconById" parameterType="int" resultType="ApplySilicon">
+		SELECT b.* from t_os_silicon_approve a
+		LEFT JOIN t_os_silicon b
+		ON
+		a.applyId = b.applyId
+		WHERE a.id=#{id}
+	</select>
+
+	<select id="findSiliconUser" parameterType="int" resultType="ApplySiliconApprove">
+		SELECT *
+		FROM t_os_silicon_approve
+		WHERE id=#{id}
+	</select>
+
+	<select id="findSiliconApproveRecord" parameterType="int"
+		resultType="ApplySiliconApprove">
+		SELECT *
+		FROM t_os_silicon_approve
+		WHERE (approveId01 = #{useId} and approveReason01 is not null)
+		OR (approveId02 = #{useId} and approveReason02 is not null)
+		OR (approveId03 = #{useId} and approveReason03 is not null)
+		OR (approveId04 = #{useId} and approveReason04 is not null)
+		OR (approveId05 = #{useId} and approveReason05 is not null)
+		order by id desc
+	</select>
+
+	<select id="findSiliconApproveById" parameterType="int"
+		resultType="ApplySiliconApprove">
+		SELECT *
+		FROM t_os_silicon_approve
+		WHERE id=#{id}
+	</select>
+
+	<select id="findSiliconByApplyId" parameterType="int"
+		resultType="ApplySilicon">
+		SELECT *
+		FROM t_os_silicon
+		WHERE applyId=#{applyId}
+	</select>
+
+	<select id="findSiliconApplyById" parameterType="int"
+		resultType="ApplySilicon">
+		SELECT *
+		FROM t_os_silicon
+		WHERE applyId=#{applyId}
+	</select>
+	<!-- 技术支持申请 -->
+	<insert id="insertSupportApply" parameterType="ApplySupport">
+		insert into
+		t_os_support
+		(applyId,dayStr,supportId,customer,project,supportContent,
+		accessory,priority,expectdTime,deadline)
+		values(#{applyId},#{dayStr},#{supportId},#{customer},#{project},#{supportContent},
+		#{accessory},#{priority},#{expectdTime},#{deadline})
+	</insert>
+	<insert id="insertSupportApprove" parameterType="ApplySupportApprove">
+		insert into
+		t_os_support_approve
+		(supportId,busManagerId,approveDate01,approveOpinion01,tecManagerId,
+		status,currentId,currentId2)
+		values(#{supportId},#{busManagerId},#{approveDate01},#{approveOpinion01},#{tecManagerId},
+		#{status},#{currentId},#{currentId2})
+	</insert>
+	<insert id="saveApproveResult2" parameterType="ApplySupportApprove">
+		insert into
+		t_os_support_record
+		(supportId,approveResult02,approveOpinion02,approveDate02,file2,
+		FAEId,FAEId02,currentStatus)
+		values(#{supportId},#{approveResult02},#{approveOpinion02},#{approveDate02},#{file2},
+		#{FAEId},#{FAEId02},#{currentStatus})
+	</insert>
+
+	<insert id="insertSupportResult" parameterType="ApplySupportApprove">
+		update t_os_support_approve
+		set finalResult = #{finalResult}
+		<if test="endTime != null">
+			,endTime=#{endTime}
+		</if>
+		<if test="content != null">
+			,content=#{content}
+		</if>
+		where supportId = #{supportId}
+	</insert>
+
+	<update id="saveApproveResult" parameterType="ApplySupportApprove">
+		update t_os_support_approve
+		set status = #{status}
+		<if test="approveDate01 != null">
+			,approveDate01 = #{approveDate01}
+		</if>
+		<if test="approveOpinion01 != null">
+			,approveOpinion01 = #{approveOpinion01}
+		</if>
+		<if test="approveResult01 != null">
+			,approveResult01 = #{approveResult01}
+		</if>
+		<if test="currentId != null">
+			,currentId = #{currentId}
+		</if>
+		<if test="currentId2 != 0">
+			,currentId2 = #{currentId2}
+		</if>
+		where supportId=#{supportId}
+	</update>
+	<update id="setSupportStatus" parameterType="ApplySupportApprove">
+		update
+		t_os_support_record
+		set currentStatus = #{status}
+		where supportId = #{supportId}
+	</update>
+	<update id="updateSupportRecord" parameterType="ApplySupportApprove">
+		update t_os_support_record
+		set supportId = #{supportId}
+		<if test="FAEResult != null">
+			,FAEResult = #{FAEResult}
+		</if>
+		<if test="approveDate02 != null">
+			,approveDate02 = #{approveDate02}
+		</if>
+		<if test="approveResult02 != null">
+			,approveResult02 = #{approveResult02}
+		</if>
+		<if test="file2 != null">
+			,file2 = #{file2}
+		</if>
+		<if test="FAETime != null">
+			,FAETime = #{FAETime}
+		</if>
+		<if test="customerResult != null">
+			,customerResult = #{customerResult}
+		</if>
+		<if test="customerOpinion != null">
+			,customerOpinion = #{customerOpinion}
+		</if>
+		<if test="customerDate != null">
+			,customerDate = #{customerDate}
+		</if>
+		<if test="approveOpinion02 != null">
+			,approveOpinion02 = #{approveOpinion02}
+		</if>
+		where supportId = #{supportId}
+	</update>
+
+	<select id="findSupportApprove" parameterType="int" resultType="ApplySupport">
+		select a.id,a.applyId,a.dayStr,a.priority,b.status from
+		t_os_support a
+		left join t_os_support_approve b
+		on a.supportId = b.supportId
+		WHERE
+		(b.status=1 or b.status=2 or b.status=3 or b.status = 4 or b.status =
+		5)
+		and (b.currentId = #{useId} or (b.currentId2=#{useId} and b.status=3))
+		ORDER BY dayStr DESC
+	</select>
+
+	<select id="findSupportApplyById" parameterType="int"
+		resultType="ApplySupportApprove">
+		select a.*,b.* from
+		t_os_support a
+		left join
+		t_os_support_approve b
+		on a.supportId = b.supportId
+		where a.id=#{id}
+	</select>
+	<select id="findSupportById" parameterType="int" resultType="SupportRecord">
+		select * from t_os_support_record
+		where supportId = #{id}
+	</select>
+
+	<select id="findSupportApplyRecord" parameterType="int"
+		resultType="ApplySupport">
+		select a.*,b.* from t_os_support a
+		left join
+		t_os_support_approve b
+		on a.supportId = b.supportId
+		where applyId =
+		#{id}
+		order by a.id desc
+	</select>
+
+	<select id="findSupportRecordById" parameterType="int"
+		resultType="SupportRecord">
+		select * from t_os_support_record
+		where currentStatus=1 and
+		supportId = #{id}
+	</select>
+
+	<select id="findFAEId" parameterType="int" resultType="Integer">
+		select
+		FAEId from t_os_support_record
+		where currentStatus=1 and supportId =
+		#{id}
+	</select>
+
+	<select id="findSupportApproveList" parameterType="int"
+		resultType="ApplySupportApprove">
+		SELECT
+		c.id,c.supportId,a.status,c.applyId,c.dayStr,c.priority
+		FROM
+		t_os_support_approve a
+		left join t_os_support_record b
+		on a.supportId =
+		b.supportId
+		left join t_os_support c
+		on a.supportId = c.supportId
+		WHERE (a.busManagerId = #{id} and a.approveResult01 is not null)
+		OR (a.tecManagerId = #{id} and b.approveResult02 is not null)
+		OR (b.FAEId = #{id} and b.FAEResult is not null)
+		OR (b.FAEId02 = #{id} and b.FAEResult is not null)
+		OR (c.applyId=#{id} and b.customerResult is not null)
+		group by c.supportId
+		order by c.id desc
+	</select>
+
+	<select id="findSiliconInfo" resultType="SiliconMail" parameterType="Integer">
+		select b.brand,b.num,b.reason from
+		t_os_silicon_approve a
+		left join t_os_silicon b
+		on a.applyId = b.applyId
+		where a.id = #{id}
+	</select>
+
+
+</mapper>

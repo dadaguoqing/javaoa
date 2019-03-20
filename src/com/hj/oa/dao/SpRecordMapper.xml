@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.SpRecordMapper">
+
+	<select id="findSpRecordByEmpAndType" resultType="SpRecord">
+		<![CDATA[
+		select a.*, b.name as empName, c.name as dailiName, d.status as status, d.proposerName as sqName, d.createTime as sqTime from t_sp_record as a
+		left join t_emp as b on a.empId = b.id
+		left join t_emp as c on a.dailiId = c.id
+		left join t_qj as d on a.tid = d.id
+		where a.type = #{type} and empId = #{empId} 
+		order by createTime desc
+		]]>
+	</select>
+	
+	<select id="findSpRecordByEmpAndSpId" resultType="SpRecord">
+		<![CDATA[
+		select * from t_sp_record
+		where tid = #{tid} and empId = #{empId} 
+		limit 1
+		]]>
+	</select>
+	
+	<insert id="addSpRecord" >
+		insert into t_sp_record
+			(empId, dailiId,type,tid,createTime)
+		values
+			(#{empId}, #{dailiId}, #{type}, #{tid}, #{createTime})
+	</insert>
+	
+</mapper>

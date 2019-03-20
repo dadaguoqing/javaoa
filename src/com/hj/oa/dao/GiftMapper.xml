@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.GiftMapper">
+
+	<select id="getByEmp" resultType="Gift">
+		select g.* from t_gift as g 
+		inner join t_gift_emp as e on g.id = e.giftId
+		where e.empId = #{empId} and g.eventId = #{eventId}
+	</select>
+	
+	<select id="getEmpTodo" resultType="int">
+		select count(*) from t_gift_event as e 
+		left join t_gift_emp as g on ( e.id = g.eventId and g.empId = #{empId} )
+		where e.status &gt;= 1
+		and e.beginTime &lt;= #{time} and e.endTime &gt; #{time}
+		and g.giftId is null
+	</select>
+	
+	<select id="getById" parameterType="int" resultType="Gift">
+		select * from t_gift 
+		where id = #{id}
+	</select>
+	
+	<select id="getEventById" parameterType="int" resultType="GiftEvent">
+		select * from t_gift_event 
+		where id = #{id}
+	</select>
+	
+	<select id="findEmpEvents" resultType="GiftEvent">
+		select * from t_gift_event e where status &gt;= 1
+		and e.beginTime &lt;= #{time} 
+		order by id desc		
+	</select>
+	
+	<select id="findEvents" parameterType="int" resultType="GiftEvent">
+		select * from t_gift_event where status != -1
+		<if test="_parameter != null and _parameter != -2">
+		and status = #{status}
+		</if>
+		order by id desc		
+	</select>
+	
+	<select id="findByGift" resultType="Gift">
+		select g.*, emp.name as empName  from t_gift as g 
+		inner join t_gift_emp as e on g.id = e.giftId
+		left join t_emp as emp on e.empId = emp.id
+		where e.giftId = #{giftId}
+	</select>
+	
+	<select id="getAllGift" parameterType="int" resultType="Gift">
+		select * from t_gift where eventId = #{eventId}
+	</select>
+	
+	<select id="getUnEmps" resultType="User">
+		select * from t_emp as emp
+		where emp.status = 0 and emp.id not in (select empId from t_gift_emp where eventId = #{eventId} )
+		order by emp.pinyin
+	</select>
+	
+	<insert id="addEvent" parameterType="GiftEvent">
+		insert into t_gift_event (managerId, createUser, name, beginTime, endTime, memo) values
+		(#{managerId}, #{createUser}, #{name}, #{beginTime}, #{endTime}, #{memo})
+	</insert>
+	
+	<insert id="addGift" parameterType="Gift">
+		insert into t_gift (name, url, eventId, num) values
+		(#{name}, #{url}, #{eventId}, #{num})
+	</insert>
+	
+	<insert id="saveEmpGift" >
+		insert into t_gift_emp (empId, giftId, eventId) values
+		(#{empId}, #{giftId}, #{eventId})
+	</insert>
+	
+	<update id="updateGift" parameterType="Gift">
+		update t_gift
+		set num = #{num}, url = #{url}, name = #{name}
+		where id = #{id}
+	</update>
+	
+	<update id="updateEvent" parameterType="GiftEvent">
+		update t_gift_event
+		set managerId = #{managerId}, memo = #{memo},  
+		endTime = #{endTime}, name = #{name}, status = #{status}
+		where id = #{id}
+	</update>
+	
+	<delete id="delEmpGift" >
+		delete from t_gift_emp where empId = #{empId} and eventId = #{eventId}
+	</delete>
+	
+	<delete id="delGift">
+		delete from t_gift where id = #{id}
+	</delete>
+</mapper>

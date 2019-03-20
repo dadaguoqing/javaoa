@@ -1,0 +1,104 @@
+/*
+*/
+.l-win{
+	z-index:999;
+	position:absolute;
+	left:10px;
+	top:10px;
+}
+.t-win-close{
+	position:absolute;
+	top:4px;
+	right:4px;
+	width:17px;
+	height:16px;
+	background-image: url('../images/dialog.gif');
+	background-position: -24px 0px;
+}
+.t-win-title{
+	position:absolute;
+	top:4px;
+	left:8px;
+	width:200px;
+	line-height:18px;
+}
+.t-win-close:hover{
+	background-image: url('../images/dialog.gif');
+	background-position: -24px -16px;
+}
+.l-win-table{
+	position:relative;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+.l-win-tl{
+	height: 26px;
+	width:6px;
+	background: url('../images/dialog.gif') no-repeat;
+	background-position: -12px 0px;
+}
+.l-win-tc{
+	height: 26px;
+	background: url('../images/dialog-tc.gif') repeat-x;
+}
+.l-win-tc .l-win-tc-inner{
+	position:relative;
+	height:26px;
+}
+.l-win-title-icon{
+	position: absolute;
+	left: 3px;
+	top: 8px;
+	width: 11px;
+	height: 11px;
+	overflow: hidden;
+	background: url('../images/dialog.gif');
+	background-position: -12px -32px;
+}
+.l-win-title{
+	color: #fff;
+	font-weight: bold;
+	padding-left: 20px;
+	padding-right: 20px;
+	text-align: left;
+	line-height:26px;
+	cursor:move;
+}
+.l-win-tr{
+	height: 26px;
+	width:6px;
+	background: url('../images/dialog.gif') no-repeat;
+	background-position: -18px 0px;
+}
+.l-win-cl{
+	width:6px;
+	background: url('../images/dialog.gif') repeat-y;
+}
+.l-win-cc{
+	background: #fff;
+}
+.l-win-cc .l-win-content{
+	padding:10px;
+	width:300px;
+}
+.l-win-cr{
+	width:6px;
+	background: url('../images/dialog.gif') repeat-y;
+	background-position: -6px 0px;
+}
+.l-win-bl{
+	height: 6px;
+	width:6px;
+	background: url('../images/dialog.gif') no-repeat;
+	background-position: -12px -26px;
+}
+.l-win-bc{
+	height: 6px;
+	background: url('../images/dialog-bc.gif') repeat-x;
+}
+.l-win-br{
+	height: 6px;
+	width:6px;
+	background: url('../images/dialog.gif') no-repeat;
+	background-position: -18px -26px;
+}

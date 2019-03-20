@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.DcMapper">
+
+	<!-- zeroth cat -->
+
+	<select id="findEmpDcIdByDcEmpDay" parameterType="DcEmpDay"
+		resultType="int">
+		select id from t_dc_emp_day where empId=#{empId} and
+		dcId=#{dcId}
+	</select>
+
+	<!-- zeroth cat ends -->
+
+
+	<!-- zeroth cat -->
+
+	<update id="endAuto" parameterType="int">
+
+		update t_dc_emp_balance
+		set
+		isAuto = 0
+		where
+		empId = #{id}
+
+	</update>
+
+	<!-- zeroth cat ends -->
+
+	<!-- zeroth cat -->
+	<update id="updateAuto" parameterType="DcEmpBalance">
+		update t_dc_emp_balance
+		set
+		isAuto = 1,
+		menuItem = #{menuItem},
+		provider = #{provider},
+		price =
+		#{price}
+		where
+		empId = #{userId}
+	</update>
+	<!-- zeroth cat ends -->
+	<update id="insertAuto" parameterType="DcEmpBalance">
+		update t_dc_emp_balance
+		set
+		isAuto = 1,
+		menuItem = #{menuItem},
+		provider = #{provider},
+		price
+		=#{price}
+		where
+		empId = #{userId}
+	</update>
+
+	<select id="findAllProvider" resultType="DcProvider">
+		select * from
+		t_dc_provider where status = 0
+	</select>
+
+	<select id="findProviderById" parameterType="int" resultType="DcProvider">
+		select * from t_dc_provider where id = #{id}
+	</select>
+
+	<select id="findDcByDay" resultType="DingCan">
+		select * from t_dc_day where
+		dayStr = #{dayStr}
+	</select>
+
+	<select id="findDcById" resultType="DingCan">
+		select * from t_dc_day where
+		id = #{id}
+	</select>
+
+	<select id="findMenuByProvider" parameterType="int" resultType="DcCaidan">
+		select * from t_dc_provider_caidan where providerId = #{providerId}
+		order by price
+	</select>
+
+	<select id="findAllMenu" resultType="DcCaidan">
+		select * from
+		t_dc_provider_caidan order by providerId, price
+	</select>
+
+	<select id="findCaidanByDcId" resultType="DcCaidan">
+		select * from
+		t_dc_caidan where dcId = #{dcId}
+	</select>
+
+	<select id="findCaidanByDate" resultType="DcCaidan">
+		select * from
+		t_dc_caidan where dcId =
+		(select id from t_dc_day where dayStr =
+		#{today})
+	</select>
+
+	<select id="findCaidanById" resultType="DcCaidan">
+		select * from t_dc_caidan
+		where id = #{id}
+	</select>
+
+	<select id="findEmpDcCaidanByDcId" resultType="DcEmpCaidan">
+		select sum(a.num)
+		as num, sum(a.price) as price, b.id as cdId,
+		b.providerId,
+		b.providerName, b.description from t_dc_emp_day_caidan as a
+		inner join
+		t_dc_caidan as b on a.cdId = b.id
+		where a.dcId = #{dcId} and
+		a.empDcId =
+		${empDcId}
+		group by b.id, b.providerId, b.providerName,
+		b.description
+	</select>
+
+	<select id="findEmpDcByDay" resultType="DcEmpDay">
+		select * from
+		t_dc_emp_day where empId = #{empId} and dayStr = #{dayStr}
+	</select>
+
+	<select id="findEmpDcById" resultType="DcEmpDay">
+		select * from t_dc_emp_day
+		where id = #{id}
+	</select>
+
+	<select id="findEmpDcByDcId" resultType="DcEmpDay">
+		select * from
+		t_dc_emp_day where dcId = #{dcId}
+	</select>
+
+	<select id="findEmpDCByDcEmpDay" resultType="EmpDay"
+		parameterType="EmpDay">
+		SELECT * FROM
+		t_dc_emp_day
+		WHERE
+		1=1
+		<if test="empId!=null and empId!=''">
+			AND empId=#{empId}
+		</if>
+		<if test="dcId!=null and dcId!=''">
+			AND dcId=#{dcId}
+		</if>
+		<if test="dayStr!=null and dayStr!=''">
+			AND dayStr=#{dayStr}
+		</if>
+		<if test="status!=null and status!=''">
+			AND status=#{status}
+		</if>
+		<if test="empName!=null and empName!=''">
+			AND empName=#{empName}
+		</if>
+		<if test="price!=null and price!=''">
+			AND price=#{price}
+		</if>
+		<if test="id!=null and id!=''">
+			AND id=#{id}
+		</if>
+		ORDER BY id
+	</select>
+
+	<select id="findEmpDCListByDcEmpDay" resultType="EmpDay"
+		parameterType="EmpDay">
+		SELECT * FROM
+		t_dc_emp_day
+		WHERE
+		1=1
+		<if test="empId!=null and empId!=''">
+			AND empId=#{empId}
+		</if>
+		<if test="dcId!=null and dcId!=''">
+			AND dcId=#{dcId}
+		</if>
+		<if test="dayStr!=null and dayStr!=''">
+			AND dayStr=#{dayStr}
+		</if>
+		<if test="status!=null and status!=''">
+			AND status=#{status}
+		</if>
+		<if test="empName!=null and empName!=''">
+			AND empName=#{empName}
+		</if>
+		<if test="price!=null and price!=''">
+			AND price=#{price}
+		</if>
+		<if test="id!=null and id!=''">
+			AND id=#{id}
+		</if>
+		ORDER BY id
+	</select>
+
+	<select id="findEmpDcByDcIdUnDc" parameterType="int" resultType="DcEmpDay">
+		select * from t_dc_emp_day
+		where dcId = #{dcId} and price = 0
+		order by
+		status
+	</select>
+
+	<select id="findHuizongByDcId" resultType="DcCaidanVo">
+		select sum(empcd.num)
+		as num, sum(empcd.price) as priceAll, cd.description, cd.price,
+		cd.providerName,pc.id as id
+		from t_dc_day as dc
+		inner join
+		t_dc_emp_day_caidan as empcd on empcd.dcId = dc.id
+		inner join
+		t_dc_caidan as cd on cd.id = empcd.cdId
+		left join t_dc_provider_caidan
+		pc
+		on cd.description = pc.description
+		where dc.id = #{id}
+		group by
+		pc.id,
+		cd.description, cd.price, cd.providerName, cd.id
+		order by cd.id
+	</select>
+
+	<select id="findTotalByDcId" resultType="DcCaidanVo">
+		SELECT
+		a.dcId,a.empDcId,a.cdId,a.num,a.price,
+		b.providerName,b.
+		description,b.price*a.num priceAll,c.empName
+		FROM
+		t_dc_emp_day_caidan a
+		LEFT JOIN
+		t_dc_caidan b
+		ON
+		a.dcId = b.dcId AND b.id = a.cdId
+		LEFT JOIN
+		t_dc_emp_day c
+		ON
+		c.id=a.empDcId
+		WHERE
+		a.dcId = #{dcId} and description = (select description from t_dc_provider_caidan where id = #{id}) 
+		and providerName = (select providerName from t_dc_provider_caidan where id = #{id}) 
+		ORDER BY
+		a.price desc 
+	</select>
+
+	<!-- changed by zeroth cat on 6/8/2017 -->
+
+	<select id="findDcDetail" resultType="DcCaidanVo">
+		select empDay.dayStr,emp.id
+		as empId, emp.name as empName, cd.description, cd.price,
+		cd.providerName,cd.id, sum(empcd.num) as num, sum(empcd.price) as
+		priceAll
+		from t_dc_day as dc
+		inner join t_dc_emp_day_caidan as empcd on
+		empcd.dcId = dc.id
+		inner join
+		t_dc_caidan as cd on cd.id = empcd.cdId
+		inner join t_dc_emp_day as
+		empDay on empDay.id = empcd.empDcId
+		inner
+		join t_emp as emp on
+		empDay.empId = emp.id
+		where dc.id = #{dcId}
+		group by
+		empId,empName,cd.description,cd.price,cd.providerName,cd.id
+		order by
+		cd.price
+	</select>
+
+	<!-- changes ended -->
+
+	<select id="findDcDetailByEmp" resultType="DcCaidanVo">
+		select dc.dayStr,
+		emp.name as empName, empcd.num, empcd.price as priceAll,
+		cd.description, cd.price, cd.providerName,cd.id from t_dc_day as dc
+		left join t_dc_emp_day_caidan as empcd on empcd.dcId = dc.id
+		left join
+		t_dc_caidan as cd on cd.id = empcd.cdId
+		left join t_dc_emp_day as
+		empDay on empDay.id = empcd.empDcId
+		left join t_emp as emp on
+		empDay.empId = emp.id
+		where emp.id = #{empId} and dc.dayStr between
+		#{begin} and #{end}
+		order by dc.dayStr desc
+	</select>
+
+	<select id="findBalanceByEmpId" resultType="DcEmpBalance">
+		select * from
+		t_dc_emp_balance where empId = #{empId}
+	</select>
+
+	<select id="findAllBalance" resultType="DcEmpBalance">
+		select a.id, a.empId,
+		b.name as empName, a.balance
+		from t_dc_emp_balance as a
+		left join t_emp
+		as b on a.empId = b.id
+		where b.status =0 or b.status = 1
+	</select>
+
+	<select id="findTempBalance" resultType="DcEmpBalance">
+		select name as empName,
+		yue as balance from t_dc_emp_balance_tmp
+	</select>
+
+	<select id="findBalanceRecordByEmpId" resultType="DcEmpBalanceRecord">
+		select a.*,
+		b.name as empName
+		from t_dc_emp_balance_record as a
+		left join t_emp as b
+		on a.empId = b.id
+		where a.empId = #{empId} and a.dayTime between
+		#{begin} and #{end}
+		order by a.dayTime desc
+	</select>
+
+	<select id="findBalanceRecord" resultType="DcEmpBalanceRecord">
+		select a.*, b.name as
+		empName
+		from t_dc_emp_balance_record as a
+		left join t_emp as b on
+		a.empId = b.id
+		where (a.type = '充值' or a.type= '扣款') and a.dayTime
+		between #{begin} and #{end}
+		order by a.id desc
+	</select>
+
+	<insert id="addProvider" parameterType="DcProvider">
+		insert into t_dc_provider
+		(name, phone, bz)
+		values
+		(#{name}, #{phone}, #{bz})
+	</insert>
+
+	<insert id="addMenu" parameterType="DcCaidan">
+		insert into
+		t_dc_provider_caidan
+		(providerId, providerName, description, price)
+		values
+		(#{providerId}, #{providerName}, #{description}, #{price})
+	</insert>
+
+	<insert id="addDc" parameterType="DingCan" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into t_dc_day
+		(dayStr, createTime, endTime, empId,
+		empName, status)
+		values
+		(#{dayStr}, #{createTime}, #{endTime}, #{empId},
+		#{empName},
+		#{status})
+	</insert>
+
+	<insert id="addDcCaidan" parameterType="DcCaidan">
+		insert into
+		t_dc_caidan
+		(providerId, providerName, dcId, description, price)
+		values
+		(#{providerId}, #{providerName}, #{dcId}, #{description}, #{price})
+	</insert>
+
+	<insert id="addEmpDcDay" parameterType="DcEmpDay">
+		insert into t_dc_emp_day
+		(dayStr, empId, dcId, empName, status, price)
+		values
+		(#{dayStr},
+		#{empId}, #{dcId}, #{empName}, #{status}, #{price})
+	</insert>
+
+	<insert id="addEmpDcCaidan" parameterType="DcEmpCaidan">
+		insert into
+		t_dc_emp_day_caidan
+		(empDcId, dcId, num, cdId, price)
+		values
+		(#{empDcId}, #{dcId}, #{num}, #{cdId}, #{price})
+	</insert>
+
+	<insert id="addEmpBalance" parameterType="DcEmpBalance">
+		insert into
+		t_dc_emp_balance
+		(empId, balance)
+		values
+		(#{empId}, #{balance})
+	</insert>
+
+	<insert id="addBalanceRecord" parameterType="DcEmpBalanceRecord">
+		insert into
+		t_dc_emp_balance_record
+		(empId, type, money, balance, dayTime, dayStr,
+		bz)
+		values
+		(#{empId}, #{type}, #{money}, #{balance}, #{dayTime},
+		#{dayStr},
+		#{bz})
+	</insert>
+
+	<delete id="removeEmpDcCaidan">
+		delete from t_dc_emp_day_caidan where cdId = #{cdId}
+		and empDcId = #{empDcId}
+	</delete>
+
+
+	<delete id="deleteDc" parameterType="int">
+		delete from t_dc_day where
+		id = #{id}
+	</delete>
+
+	<delete id="deleteMenu" parameterType="int">
+		delete from
+		t_dc_provider_caidan where id = #{id}
+	</delete>
+
+	<delete id="deleteDcCd" parameterType="int">
+		delete from t_dc_caidan
+		where dcId = #{dcId}
+	</delete>
+
+	<delete id="deleteDcEmpDay" parameterType="int">
+		delete from
+		t_dc_emp_day where dcId = #{dcId}
+	</delete>
+
+	<delete id="deleteDcEmpCd" parameterType="int">
+		delete from
+		t_dc_emp_day_caidan where dcId = #{dcId}
+	</delete>
+
+	<update id="deleteProvider" parameterType="int">
+		update t_dc_provider
+		set
+		status = -1
+		where id=#{id}
+	</update>
+
+	<update id="updateProvider" parameterType="DcProvider">
+		update t_dc_provider
+		set
+		name = #{name},
+		phone = #{phone},
+		bz = #{bz}
+
+		where id=#{id}
+	</update>
+
+	<update id="updateEmpDcDay" parameterType="DcEmpDay">
+		update t_dc_emp_day
+		set
+		status = #{status},
+		price = #{price}
+		where id=#{id}
+	</update>
+
+	<update id="updateDingcan" parameterType="DingCan">
+		update t_dc_day
+		set
+		status = #{status}
+		where id=#{id}
+	</update>
+
+	<update id="updateStatus" parameterType="DingCan">
+		update t_dc_day
+		set
+		status = #{status}
+		where id=#{id}
+	</update>
+
+	<update id="updateEmpBalance" parameterType="DcEmpBalance">
+		update
+		t_dc_emp_balance
+		set
+		balance = #{balance}
+		where empId=#{empId}
+	</update>
+
+	<insert id="insertAutoInfo" parameterType="TodayOrder">
+		insert into
+		t_dc_today_order (empId,classifyId,num,autoStatus)
+		values(#{empId},#{classifyId},#{num},#{autoStatus})
+	</insert>
+
+	<select id="findDesOIdByDes" parameterType="String" resultType="int">
+		select id from t_dc_provider_caidan where description = #{des}
+	</select>
+
+	<select id="findAutoOrderByEmpId" parameterType="int"
+		resultType="TodayOrder">
+		select * from t_dc_today_order where empId = #{id}
+	</select>
+
+	<select id="findAutoOrderAll" resultType="TodayOrder">
+		select * from
+		t_dc_today_order
+	</select>
+
+	<select id="findDescriptById" parameterType="int" resultType="DcEmpCaidan">
+		SELECT a.num,b.description,b.price,b.providerName
+		FROM
+		t_dc_today_order
+		a
+		inner JOIN
+		t_dc_provider_caidan b
+		ON
+		a.classifyId = b.id
+		AND a.classifyId
+		= #{id}
+	</select>
+
+	<delete id="deleteAutoOrder" parameterType="int">
+		delete from
+		t_dc_today_order where empId = #{id}
+	</delete>
+
+	<select id="findOrderStatus" parameterType="DingCan" resultType="DingCan">
+		select * from t_dc_emp_day where status = #{status} and
+		dayStr=#{dayStr}
+	</select>
+
+	<select id="findAutoOrder" parameterType="int" resultType="DingCan">
+		select * from t_dc_emp_balance where isAuto = #{status}
+	</select>
+
+	<select id="findEmpNameById" parameterType="int" resultType="String">
+		select name from t_emp where id = #{empId}
+	</select>
+
+	<select id="findEmpIdByName" parameterType="String" resultType="int">
+		select id from t_emp where name = #{empName}
+	</select>
+
+	<select id="isAutoDc" parameterType="int" resultType="Integer">
+		select
+		isAuto from t_dc_emp_balance
+		where id= #{id}
+	</select>
+
+</mapper>

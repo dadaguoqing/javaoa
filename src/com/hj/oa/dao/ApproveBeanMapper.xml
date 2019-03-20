@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.ApproveBeanMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.ApproveBean">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="approve_id" jdbcType="INTEGER" property="approveId" />
+    <result column="approve_status" jdbcType="INTEGER" property="approveStatus" />
+    <result column="approve_result" jdbcType="VARCHAR" property="approveResult" />
+    <result column="approve_date" jdbcType="VARCHAR" property="approveDate" />
+    <result column="approve_opinion" jdbcType="VARCHAR" property="approveOpinion" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, code, approve_id, approve_status, approve_result, approve_date, approve_opinion
+  </sql>
+  <select id="selectByExample" parameterType="com.hj.oa.bean.ApproveBeanExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_materia_approve
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_materia_approve
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_materia_approve
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.ApproveBean">
+    insert into t_materia_approve (id, code, approve_id, 
+      approve_status, approve_result, approve_date, 
+      approve_opinion)
+    values (#{id,jdbcType=INTEGER}, #{code,jdbcType=VARCHAR}, #{approveId,jdbcType=INTEGER}, 
+      #{approveStatus,jdbcType=INTEGER}, #{approveResult,jdbcType=VARCHAR}, #{approveDate,jdbcType=VARCHAR}, 
+      #{approveOpinion,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.ApproveBean">
+    insert into t_materia_approve
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="approveId != null">
+        approve_id,
+      </if>
+      <if test="approveStatus != null">
+        approve_status,
+      </if>
+      <if test="approveResult != null">
+        approve_result,
+      </if>
+      <if test="approveDate != null">
+        approve_date,
+      </if>
+      <if test="approveOpinion != null">
+        approve_opinion,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="approveId != null">
+        #{approveId,jdbcType=INTEGER},
+      </if>
+      <if test="approveStatus != null">
+        #{approveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="approveResult != null">
+        #{approveResult,jdbcType=VARCHAR},
+      </if>
+      <if test="approveDate != null">
+        #{approveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="approveOpinion != null">
+        #{approveOpinion,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hj.oa.bean.ApproveBeanExample" resultType="java.lang.Long">
+    select count(*) from t_materia_approve
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_materia_approve
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveId != null">
+        approve_id = #{record.approveId,jdbcType=INTEGER},
+      </if>
+      <if test="record.approveStatus != null">
+        approve_status = #{record.approveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.approveResult != null">
+        approve_result = #{record.approveResult,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveDate != null">
+        approve_date = #{record.approveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.approveOpinion != null">
+        approve_opinion = #{record.approveOpinion,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_materia_approve
+    set id = #{record.id,jdbcType=INTEGER},
+      code = #{record.code,jdbcType=VARCHAR},
+      approve_id = #{record.approveId,jdbcType=INTEGER},
+      approve_status = #{record.approveStatus,jdbcType=INTEGER},
+      approve_result = #{record.approveResult,jdbcType=VARCHAR},
+      approve_date = #{record.approveDate,jdbcType=VARCHAR},
+      approve_opinion = #{record.approveOpinion,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.ApproveBean">
+    update t_materia_approve
+    <set>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="approveId != null">
+        approve_id = #{approveId,jdbcType=INTEGER},
+      </if>
+      <if test="approveStatus != null">
+        approve_status = #{approveStatus,jdbcType=INTEGER},
+      </if>
+      <if test="approveResult != null">
+        approve_result = #{approveResult,jdbcType=VARCHAR},
+      </if>
+      <if test="approveDate != null">
+        approve_date = #{approveDate,jdbcType=VARCHAR},
+      </if>
+      <if test="approveOpinion != null">
+        approve_opinion = #{approveOpinion,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.ApproveBean">
+    update t_materia_approve
+    set code = #{code,jdbcType=VARCHAR},
+      approve_id = #{approveId,jdbcType=INTEGER},
+      approve_status = #{approveStatus,jdbcType=INTEGER},
+      approve_result = #{approveResult,jdbcType=VARCHAR},
+      approve_date = #{approveDate,jdbcType=VARCHAR},
+      approve_opinion = #{approveOpinion,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

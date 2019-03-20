@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.MateriaPurchaseMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.MateriaPurchase">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="emp_id" jdbcType="INTEGER" property="empId" />
+    <result column="requisition_code" jdbcType="VARCHAR" property="requisitionCode" />
+    <result column="reason" jdbcType="VARCHAR" property="reason" />
+    <result column="dayStr" jdbcType="VARCHAR" property="daystr" />
+    <result column="purchase_code" jdbcType="VARCHAR" property="purchaseCode" />
+    <result column="count_money" jdbcType="DOUBLE" property="countMoney" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="current_id" jdbcType="INTEGER" property="currentId" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="url2" jdbcType="VARCHAR" property="url2" />
+    <result column="projectCode" jdbcType="VARCHAR" property="projectCode" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, emp_id, requisition_code, reason, dayStr, purchase_code, count_money, content, 
+    current_id, status, type, url, url2, projectCode
+  </sql>
+  <select id="selectByExample" parameterType="com.hj.oa.bean.MateriaPurchaseExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_materia_purchase
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="beginIndex != null and pageSize != null and pageSize != 0">
+      limit #{beginIndex},#{pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_materia_purchase
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_materia_purchase
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.MateriaPurchase">
+    insert into t_materia_purchase (id, emp_id, requisition_code, 
+      reason, dayStr, purchase_code, 
+      count_money, content, current_id, 
+      status, type, url, 
+      url2, projectCode)
+    values (#{id,jdbcType=INTEGER}, #{empId,jdbcType=INTEGER}, #{requisitionCode,jdbcType=VARCHAR}, 
+      #{reason,jdbcType=VARCHAR}, #{daystr,jdbcType=VARCHAR}, #{purchaseCode,jdbcType=VARCHAR}, 
+      #{countMoney,jdbcType=DOUBLE}, #{content,jdbcType=VARCHAR}, #{currentId,jdbcType=INTEGER}, 
+      #{status,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, #{url,jdbcType=VARCHAR}, 
+      #{url2,jdbcType=VARCHAR}, #{projectCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.MateriaPurchase">
+    insert into t_materia_purchase
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="empId != null">
+        emp_id,
+      </if>
+      <if test="requisitionCode != null">
+        requisition_code,
+      </if>
+      <if test="reason != null">
+        reason,
+      </if>
+      <if test="daystr != null">
+        dayStr,
+      </if>
+      <if test="purchaseCode != null">
+        purchase_code,
+      </if>
+      <if test="countMoney != null">
+        count_money,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="currentId != null">
+        current_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="url != null">
+        url,
+      </if>
+      <if test="url2 != null">
+        url2,
+      </if>
+      <if test="projectCode != null">
+        projectCode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="empId != null">
+        #{empId,jdbcType=INTEGER},
+      </if>
+      <if test="requisitionCode != null">
+        #{requisitionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null">
+        #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="daystr != null">
+        #{daystr,jdbcType=VARCHAR},
+      </if>
+      <if test="purchaseCode != null">
+        #{purchaseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="countMoney != null">
+        #{countMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="currentId != null">
+        #{currentId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=INTEGER},
+      </if>
+      <if test="url != null">
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="url2 != null">
+        #{url2,jdbcType=VARCHAR},
+      </if>
+      <if test="projectCode != null">
+        #{projectCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hj.oa.bean.MateriaPurchaseExample" resultType="java.lang.Long">
+    select count(*) from t_materia_purchase
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_materia_purchase
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.empId != null">
+        emp_id = #{record.empId,jdbcType=INTEGER},
+      </if>
+      <if test="record.requisitionCode != null">
+        requisition_code = #{record.requisitionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.reason != null">
+        reason = #{record.reason,jdbcType=VARCHAR},
+      </if>
+      <if test="record.daystr != null">
+        dayStr = #{record.daystr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.purchaseCode != null">
+        purchase_code = #{record.purchaseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.countMoney != null">
+        count_money = #{record.countMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="record.content != null">
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.currentId != null">
+        current_id = #{record.currentId,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.type != null">
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+      <if test="record.url != null">
+        url = #{record.url,jdbcType=VARCHAR},
+      </if>
+      <if test="record.url2 != null">
+        url2 = #{record.url2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectCode != null">
+        projectCode = #{record.projectCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_materia_purchase
+    set id = #{record.id,jdbcType=INTEGER},
+      emp_id = #{record.empId,jdbcType=INTEGER},
+      requisition_code = #{record.requisitionCode,jdbcType=VARCHAR},
+      reason = #{record.reason,jdbcType=VARCHAR},
+      dayStr = #{record.daystr,jdbcType=VARCHAR},
+      purchase_code = #{record.purchaseCode,jdbcType=VARCHAR},
+      count_money = #{record.countMoney,jdbcType=DOUBLE},
+      content = #{record.content,jdbcType=VARCHAR},
+      current_id = #{record.currentId,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=INTEGER},
+      type = #{record.type,jdbcType=INTEGER},
+      url = #{record.url,jdbcType=VARCHAR},
+      url2 = #{record.url2,jdbcType=VARCHAR},
+      projectCode = #{record.projectCode,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.MateriaPurchase">
+    update t_materia_purchase
+    <set>
+      <if test="empId != null">
+        emp_id = #{empId,jdbcType=INTEGER},
+      </if>
+      <if test="requisitionCode != null">
+        requisition_code = #{requisitionCode,jdbcType=VARCHAR},
+      </if>
+      <if test="reason != null">
+        reason = #{reason,jdbcType=VARCHAR},
+      </if>
+      <if test="daystr != null">
+        dayStr = #{daystr,jdbcType=VARCHAR},
+      </if>
+      <if test="purchaseCode != null">
+        purchase_code = #{purchaseCode,jdbcType=VARCHAR},
+      </if>
+      <if test="countMoney != null">
+        count_money = #{countMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="currentId != null">
+        current_id = #{currentId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="url != null">
+        url = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="url2 != null">
+        url2 = #{url2,jdbcType=VARCHAR},
+      </if>
+      <if test="projectCode != null">
+        projectCode = #{projectCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.MateriaPurchase">
+    update t_materia_purchase
+    set emp_id = #{empId,jdbcType=INTEGER},
+      requisition_code = #{requisitionCode,jdbcType=VARCHAR},
+      reason = #{reason,jdbcType=VARCHAR},
+      dayStr = #{daystr,jdbcType=VARCHAR},
+      purchase_code = #{purchaseCode,jdbcType=VARCHAR},
+      count_money = #{countMoney,jdbcType=DOUBLE},
+      content = #{content,jdbcType=VARCHAR},
+      current_id = #{currentId,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      type = #{type,jdbcType=INTEGER},
+      url = #{url,jdbcType=VARCHAR},
+      url2 = #{url2,jdbcType=VARCHAR},
+      projectCode = #{projectCode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

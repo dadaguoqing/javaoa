@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.ExternalDealMapper">
+  <resultMap id="BaseResultMap" type="com.hj.oa.bean.ExternalDeal">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="apply_code" jdbcType="VARCHAR" property="applyCode" />
+    <result column="pcb_cost" jdbcType="DECIMAL" property="pcbCost" />
+    <result column="pcb_date" jdbcType="CHAR" property="pcbDate" />
+    <result column="pcb_pdf" jdbcType="VARCHAR" property="pcbPdf" />
+    <result column="bom_cost" jdbcType="DECIMAL" property="bomCost" />
+    <result column="bom_date" jdbcType="CHAR" property="bomDate" />
+    <result column="bom_pdf" jdbcType="VARCHAR" property="bomPdf" />
+    <result column="weld_cost" jdbcType="DECIMAL" property="weldCost" />
+    <result column="weld_date" jdbcType="CHAR" property="weldDate" />
+    <result column="weld_pdf" jdbcType="VARCHAR" property="weldPdf" />
+    <result column="steel_cost" jdbcType="DECIMAL" property="steelCost" />
+    <result column="steel_date" jdbcType="CHAR" property="steelDate" />
+    <result column="steel_pdf" jdbcType="VARCHAR" property="steelPdf" />
+    <result column="glue_cost" jdbcType="DECIMAL" property="glueCost" />
+    <result column="glue_date" jdbcType="CHAR" property="glueDate" />
+    <result column="glue_pdf" jdbcType="VARCHAR" property="gluePdf" />
+    <result column="paint_cost" jdbcType="DECIMAL" property="paintCost" />
+    <result column="paint_date" jdbcType="CHAR" property="paintDate" />
+    <result column="paint_pdf" jdbcType="VARCHAR" property="paintPdf" />
+    <result column="acrylic_cost" jdbcType="DECIMAL" property="acrylicCost" />
+    <result column="acrylic_date" jdbcType="CHAR" property="acrylicDate" />
+    <result column="acrylic_pdf" jdbcType="VARCHAR" property="acrylicPdf" />
+    <result column="chassis_cost" jdbcType="DECIMAL" property="chassisCost" />
+    <result column="chassis_date" jdbcType="CHAR" property="chassisDate" />
+    <result column="chassis_pdf" jdbcType="VARCHAR" property="chassisPdf" />
+    <result column="pencil_cost" jdbcType="DECIMAL" property="pencilCost" />
+    <result column="pencil_date" jdbcType="CHAR" property="pencilDate" />
+    <result column="pencil_pdf" jdbcType="VARCHAR" property="pencilPdf" />
+    <result column="total_cost" jdbcType="DECIMAL" property="totalCost" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, apply_code, pcb_cost, pcb_date, pcb_pdf, bom_cost, bom_date, bom_pdf, weld_cost, 
+    weld_date, weld_pdf, steel_cost, steel_date, steel_pdf, glue_cost, glue_date, glue_pdf, 
+    paint_cost, paint_date, paint_pdf, acrylic_cost, acrylic_date, acrylic_pdf, chassis_cost, 
+    chassis_date, chassis_pdf, pencil_cost, pencil_date, pencil_pdf, total_cost
+  </sql>
+  <select id="selectByExample" parameterType="com.hj.oa.bean.ExternalDealExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from t_external_deal
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_external_deal
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_external_deal
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.hj.oa.bean.ExternalDeal">
+    insert into t_external_deal (id, apply_code, pcb_cost, 
+      pcb_date, pcb_pdf, bom_cost, 
+      bom_date, bom_pdf, weld_cost, 
+      weld_date, weld_pdf, steel_cost, 
+      steel_date, steel_pdf, glue_cost, 
+      glue_date, glue_pdf, paint_cost, 
+      paint_date, paint_pdf, acrylic_cost, 
+      acrylic_date, acrylic_pdf, chassis_cost, 
+      chassis_date, chassis_pdf, pencil_cost, 
+      pencil_date, pencil_pdf, total_cost
+      )
+    values (#{id,jdbcType=INTEGER}, #{applyCode,jdbcType=VARCHAR}, #{pcbCost,jdbcType=DECIMAL}, 
+      #{pcbDate,jdbcType=CHAR}, #{pcbPdf,jdbcType=VARCHAR}, #{bomCost,jdbcType=DECIMAL}, 
+      #{bomDate,jdbcType=CHAR}, #{bomPdf,jdbcType=VARCHAR}, #{weldCost,jdbcType=DECIMAL}, 
+      #{weldDate,jdbcType=CHAR}, #{weldPdf,jdbcType=VARCHAR}, #{steelCost,jdbcType=DECIMAL}, 
+      #{steelDate,jdbcType=CHAR}, #{steelPdf,jdbcType=VARCHAR}, #{glueCost,jdbcType=DECIMAL}, 
+      #{glueDate,jdbcType=CHAR}, #{gluePdf,jdbcType=VARCHAR}, #{paintCost,jdbcType=DECIMAL}, 
+      #{paintDate,jdbcType=CHAR}, #{paintPdf,jdbcType=VARCHAR}, #{acrylicCost,jdbcType=DECIMAL}, 
+      #{acrylicDate,jdbcType=CHAR}, #{acrylicPdf,jdbcType=VARCHAR}, #{chassisCost,jdbcType=DECIMAL}, 
+      #{chassisDate,jdbcType=CHAR}, #{chassisPdf,jdbcType=VARCHAR}, #{pencilCost,jdbcType=DECIMAL}, 
+      #{pencilDate,jdbcType=CHAR}, #{pencilPdf,jdbcType=VARCHAR}, #{totalCost,jdbcType=DECIMAL}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.hj.oa.bean.ExternalDeal">
+    insert into t_external_deal
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="applyCode != null">
+        apply_code,
+      </if>
+      <if test="pcbCost != null">
+        pcb_cost,
+      </if>
+      <if test="pcbDate != null">
+        pcb_date,
+      </if>
+      <if test="pcbPdf != null">
+        pcb_pdf,
+      </if>
+      <if test="bomCost != null">
+        bom_cost,
+      </if>
+      <if test="bomDate != null">
+        bom_date,
+      </if>
+      <if test="bomPdf != null">
+        bom_pdf,
+      </if>
+      <if test="weldCost != null">
+        weld_cost,
+      </if>
+      <if test="weldDate != null">
+        weld_date,
+      </if>
+      <if test="weldPdf != null">
+        weld_pdf,
+      </if>
+      <if test="steelCost != null">
+        steel_cost,
+      </if>
+      <if test="steelDate != null">
+        steel_date,
+      </if>
+      <if test="steelPdf != null">
+        steel_pdf,
+      </if>
+      <if test="glueCost != null">
+        glue_cost,
+      </if>
+      <if test="glueDate != null">
+        glue_date,
+      </if>
+      <if test="gluePdf != null">
+        glue_pdf,
+      </if>
+      <if test="paintCost != null">
+        paint_cost,
+      </if>
+      <if test="paintDate != null">
+        paint_date,
+      </if>
+      <if test="paintPdf != null">
+        paint_pdf,
+      </if>
+      <if test="acrylicCost != null">
+        acrylic_cost,
+      </if>
+      <if test="acrylicDate != null">
+        acrylic_date,
+      </if>
+      <if test="acrylicPdf != null">
+        acrylic_pdf,
+      </if>
+      <if test="chassisCost != null">
+        chassis_cost,
+      </if>
+      <if test="chassisDate != null">
+        chassis_date,
+      </if>
+      <if test="chassisPdf != null">
+        chassis_pdf,
+      </if>
+      <if test="pencilCost != null">
+        pencil_cost,
+      </if>
+      <if test="pencilDate != null">
+        pencil_date,
+      </if>
+      <if test="pencilPdf != null">
+        pencil_pdf,
+      </if>
+      <if test="totalCost != null">
+        total_cost,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="applyCode != null">
+        #{applyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pcbCost != null">
+        #{pcbCost,jdbcType=DECIMAL},
+      </if>
+      <if test="pcbDate != null">
+        #{pcbDate,jdbcType=CHAR},
+      </if>
+      <if test="pcbPdf != null">
+        #{pcbPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="bomCost != null">
+        #{bomCost,jdbcType=DECIMAL},
+      </if>
+      <if test="bomDate != null">
+        #{bomDate,jdbcType=CHAR},
+      </if>
+      <if test="bomPdf != null">
+        #{bomPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="weldCost != null">
+        #{weldCost,jdbcType=DECIMAL},
+      </if>
+      <if test="weldDate != null">
+        #{weldDate,jdbcType=CHAR},
+      </if>
+      <if test="weldPdf != null">
+        #{weldPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="steelCost != null">
+        #{steelCost,jdbcType=DECIMAL},
+      </if>
+      <if test="steelDate != null">
+        #{steelDate,jdbcType=CHAR},
+      </if>
+      <if test="steelPdf != null">
+        #{steelPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="glueCost != null">
+        #{glueCost,jdbcType=DECIMAL},
+      </if>
+      <if test="glueDate != null">
+        #{glueDate,jdbcType=CHAR},
+      </if>
+      <if test="gluePdf != null">
+        #{gluePdf,jdbcType=VARCHAR},
+      </if>
+      <if test="paintCost != null">
+        #{paintCost,jdbcType=DECIMAL},
+      </if>
+      <if test="paintDate != null">
+        #{paintDate,jdbcType=CHAR},
+      </if>
+      <if test="paintPdf != null">
+        #{paintPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="acrylicCost != null">
+        #{acrylicCost,jdbcType=DECIMAL},
+      </if>
+      <if test="acrylicDate != null">
+        #{acrylicDate,jdbcType=CHAR},
+      </if>
+      <if test="acrylicPdf != null">
+        #{acrylicPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="chassisCost != null">
+        #{chassisCost,jdbcType=DECIMAL},
+      </if>
+      <if test="chassisDate != null">
+        #{chassisDate,jdbcType=CHAR},
+      </if>
+      <if test="chassisPdf != null">
+        #{chassisPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="pencilCost != null">
+        #{pencilCost,jdbcType=DECIMAL},
+      </if>
+      <if test="pencilDate != null">
+        #{pencilDate,jdbcType=CHAR},
+      </if>
+      <if test="pencilPdf != null">
+        #{pencilPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCost != null">
+        #{totalCost,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.hj.oa.bean.ExternalDealExample" resultType="java.lang.Long">
+    select count(*) from t_external_deal
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_external_deal
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.applyCode != null">
+        apply_code = #{record.applyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pcbCost != null">
+        pcb_cost = #{record.pcbCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.pcbDate != null">
+        pcb_date = #{record.pcbDate,jdbcType=CHAR},
+      </if>
+      <if test="record.pcbPdf != null">
+        pcb_pdf = #{record.pcbPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bomCost != null">
+        bom_cost = #{record.bomCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.bomDate != null">
+        bom_date = #{record.bomDate,jdbcType=CHAR},
+      </if>
+      <if test="record.bomPdf != null">
+        bom_pdf = #{record.bomPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.weldCost != null">
+        weld_cost = #{record.weldCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.weldDate != null">
+        weld_date = #{record.weldDate,jdbcType=CHAR},
+      </if>
+      <if test="record.weldPdf != null">
+        weld_pdf = #{record.weldPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.steelCost != null">
+        steel_cost = #{record.steelCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.steelDate != null">
+        steel_date = #{record.steelDate,jdbcType=CHAR},
+      </if>
+      <if test="record.steelPdf != null">
+        steel_pdf = #{record.steelPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.glueCost != null">
+        glue_cost = #{record.glueCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.glueDate != null">
+        glue_date = #{record.glueDate,jdbcType=CHAR},
+      </if>
+      <if test="record.gluePdf != null">
+        glue_pdf = #{record.gluePdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.paintCost != null">
+        paint_cost = #{record.paintCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.paintDate != null">
+        paint_date = #{record.paintDate,jdbcType=CHAR},
+      </if>
+      <if test="record.paintPdf != null">
+        paint_pdf = #{record.paintPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.acrylicCost != null">
+        acrylic_cost = #{record.acrylicCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.acrylicDate != null">
+        acrylic_date = #{record.acrylicDate,jdbcType=CHAR},
+      </if>
+      <if test="record.acrylicPdf != null">
+        acrylic_pdf = #{record.acrylicPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chassisCost != null">
+        chassis_cost = #{record.chassisCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.chassisDate != null">
+        chassis_date = #{record.chassisDate,jdbcType=CHAR},
+      </if>
+      <if test="record.chassisPdf != null">
+        chassis_pdf = #{record.chassisPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pencilCost != null">
+        pencil_cost = #{record.pencilCost,jdbcType=DECIMAL},
+      </if>
+      <if test="record.pencilDate != null">
+        pencil_date = #{record.pencilDate,jdbcType=CHAR},
+      </if>
+      <if test="record.pencilPdf != null">
+        pencil_pdf = #{record.pencilPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="record.totalCost != null">
+        total_cost = #{record.totalCost,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_external_deal
+    set id = #{record.id,jdbcType=INTEGER},
+      apply_code = #{record.applyCode,jdbcType=VARCHAR},
+      pcb_cost = #{record.pcbCost,jdbcType=DECIMAL},
+      pcb_date = #{record.pcbDate,jdbcType=CHAR},
+      pcb_pdf = #{record.pcbPdf,jdbcType=VARCHAR},
+      bom_cost = #{record.bomCost,jdbcType=DECIMAL},
+      bom_date = #{record.bomDate,jdbcType=CHAR},
+      bom_pdf = #{record.bomPdf,jdbcType=VARCHAR},
+      weld_cost = #{record.weldCost,jdbcType=DECIMAL},
+      weld_date = #{record.weldDate,jdbcType=CHAR},
+      weld_pdf = #{record.weldPdf,jdbcType=VARCHAR},
+      steel_cost = #{record.steelCost,jdbcType=DECIMAL},
+      steel_date = #{record.steelDate,jdbcType=CHAR},
+      steel_pdf = #{record.steelPdf,jdbcType=VARCHAR},
+      glue_cost = #{record.glueCost,jdbcType=DECIMAL},
+      glue_date = #{record.glueDate,jdbcType=CHAR},
+      glue_pdf = #{record.gluePdf,jdbcType=VARCHAR},
+      paint_cost = #{record.paintCost,jdbcType=DECIMAL},
+      paint_date = #{record.paintDate,jdbcType=CHAR},
+      paint_pdf = #{record.paintPdf,jdbcType=VARCHAR},
+      acrylic_cost = #{record.acrylicCost,jdbcType=DECIMAL},
+      acrylic_date = #{record.acrylicDate,jdbcType=CHAR},
+      acrylic_pdf = #{record.acrylicPdf,jdbcType=VARCHAR},
+      chassis_cost = #{record.chassisCost,jdbcType=DECIMAL},
+      chassis_date = #{record.chassisDate,jdbcType=CHAR},
+      chassis_pdf = #{record.chassisPdf,jdbcType=VARCHAR},
+      pencil_cost = #{record.pencilCost,jdbcType=DECIMAL},
+      pencil_date = #{record.pencilDate,jdbcType=CHAR},
+      pencil_pdf = #{record.pencilPdf,jdbcType=VARCHAR},
+      total_cost = #{record.totalCost,jdbcType=DECIMAL}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hj.oa.bean.ExternalDeal">
+    update t_external_deal
+    <set>
+      <if test="applyCode != null">
+        apply_code = #{applyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pcbCost != null">
+        pcb_cost = #{pcbCost,jdbcType=DECIMAL},
+      </if>
+      <if test="pcbDate != null">
+        pcb_date = #{pcbDate,jdbcType=CHAR},
+      </if>
+      <if test="pcbPdf != null">
+        pcb_pdf = #{pcbPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="bomCost != null">
+        bom_cost = #{bomCost,jdbcType=DECIMAL},
+      </if>
+      <if test="bomDate != null">
+        bom_date = #{bomDate,jdbcType=CHAR},
+      </if>
+      <if test="bomPdf != null">
+        bom_pdf = #{bomPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="weldCost != null">
+        weld_cost = #{weldCost,jdbcType=DECIMAL},
+      </if>
+      <if test="weldDate != null">
+        weld_date = #{weldDate,jdbcType=CHAR},
+      </if>
+      <if test="weldPdf != null">
+        weld_pdf = #{weldPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="steelCost != null">
+        steel_cost = #{steelCost,jdbcType=DECIMAL},
+      </if>
+      <if test="steelDate != null">
+        steel_date = #{steelDate,jdbcType=CHAR},
+      </if>
+      <if test="steelPdf != null">
+        steel_pdf = #{steelPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="glueCost != null">
+        glue_cost = #{glueCost,jdbcType=DECIMAL},
+      </if>
+      <if test="glueDate != null">
+        glue_date = #{glueDate,jdbcType=CHAR},
+      </if>
+      <if test="gluePdf != null">
+        glue_pdf = #{gluePdf,jdbcType=VARCHAR},
+      </if>
+      <if test="paintCost != null">
+        paint_cost = #{paintCost,jdbcType=DECIMAL},
+      </if>
+      <if test="paintDate != null">
+        paint_date = #{paintDate,jdbcType=CHAR},
+      </if>
+      <if test="paintPdf != null">
+        paint_pdf = #{paintPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="acrylicCost != null">
+        acrylic_cost = #{acrylicCost,jdbcType=DECIMAL},
+      </if>
+      <if test="acrylicDate != null">
+        acrylic_date = #{acrylicDate,jdbcType=CHAR},
+      </if>
+      <if test="acrylicPdf != null">
+        acrylic_pdf = #{acrylicPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="chassisCost != null">
+        chassis_cost = #{chassisCost,jdbcType=DECIMAL},
+      </if>
+      <if test="chassisDate != null">
+        chassis_date = #{chassisDate,jdbcType=CHAR},
+      </if>
+      <if test="chassisPdf != null">
+        chassis_pdf = #{chassisPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="pencilCost != null">
+        pencil_cost = #{pencilCost,jdbcType=DECIMAL},
+      </if>
+      <if test="pencilDate != null">
+        pencil_date = #{pencilDate,jdbcType=CHAR},
+      </if>
+      <if test="pencilPdf != null">
+        pencil_pdf = #{pencilPdf,jdbcType=VARCHAR},
+      </if>
+      <if test="totalCost != null">
+        total_cost = #{totalCost,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hj.oa.bean.ExternalDeal">
+    update t_external_deal
+    set apply_code = #{applyCode,jdbcType=VARCHAR},
+      pcb_cost = #{pcbCost,jdbcType=DECIMAL},
+      pcb_date = #{pcbDate,jdbcType=CHAR},
+      pcb_pdf = #{pcbPdf,jdbcType=VARCHAR},
+      bom_cost = #{bomCost,jdbcType=DECIMAL},
+      bom_date = #{bomDate,jdbcType=CHAR},
+      bom_pdf = #{bomPdf,jdbcType=VARCHAR},
+      weld_cost = #{weldCost,jdbcType=DECIMAL},
+      weld_date = #{weldDate,jdbcType=CHAR},
+      weld_pdf = #{weldPdf,jdbcType=VARCHAR},
+      steel_cost = #{steelCost,jdbcType=DECIMAL},
+      steel_date = #{steelDate,jdbcType=CHAR},
+      steel_pdf = #{steelPdf,jdbcType=VARCHAR},
+      glue_cost = #{glueCost,jdbcType=DECIMAL},
+      glue_date = #{glueDate,jdbcType=CHAR},
+      glue_pdf = #{gluePdf,jdbcType=VARCHAR},
+      paint_cost = #{paintCost,jdbcType=DECIMAL},
+      paint_date = #{paintDate,jdbcType=CHAR},
+      paint_pdf = #{paintPdf,jdbcType=VARCHAR},
+      acrylic_cost = #{acrylicCost,jdbcType=DECIMAL},
+      acrylic_date = #{acrylicDate,jdbcType=CHAR},
+      acrylic_pdf = #{acrylicPdf,jdbcType=VARCHAR},
+      chassis_cost = #{chassisCost,jdbcType=DECIMAL},
+      chassis_date = #{chassisDate,jdbcType=CHAR},
+      chassis_pdf = #{chassisPdf,jdbcType=VARCHAR},
+      pencil_cost = #{pencilCost,jdbcType=DECIMAL},
+      pencil_date = #{pencilDate,jdbcType=CHAR},
+      pencil_pdf = #{pencilPdf,jdbcType=VARCHAR},
+      total_cost = #{totalCost,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

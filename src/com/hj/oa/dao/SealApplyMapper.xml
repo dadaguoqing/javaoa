@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.SealApplyMapper">
+	<resultMap id="BaseResultMap" type="SealApply">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="emp_id" jdbcType="INTEGER" property="empId" />
+		<result column="number" jdbcType="VARCHAR" property="number" />
+		<result column="dayStr" jdbcType="VARCHAR" property="daystr" />
+		<result column="seal_type" jdbcType="INTEGER" property="sealType" />
+		<result column="current_id" jdbcType="INTEGER" property="currentId" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="startDate" jdbcType="VARCHAR" property="startDate" />
+		<result column="endDate" jdbcType="VARCHAR" property="endDate" />
+		<result column="deal_status" jdbcType="INTEGER" property="dealStatus" />
+		<result column="ptr" jdbcType="VARCHAR" property="ptr" />
+		<result column="wdr" jdbcType="VARCHAR" property="wdr" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, emp_id, number, dayStr, seal_type, current_id, status, content,
+		startDate, endDate,deal_status,ptr,wdr
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_apply
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectByEmpId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_apply
+		where emp_id = #{id,jdbcType=INTEGER}
+		order by dayStr desc
+	</select>
+
+	<select id="selectByCurrentId" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_apply
+		where current_id = #{id,jdbcType=INTEGER}
+		and (status = 1 or status = 2)
+		order by dayStr desc
+	</select>
+
+	<select id="selectAllApply" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_apply
+		where status = 3 or status = -1
+		order by dayStr desc
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_seal_apply
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="SealApply">
+		insert into t_seal_apply (id, emp_id, number,
+		dayStr, seal_type, current_id,
+		status, content,startDate,endDate)
+		values (#{id,jdbcType=INTEGER}, #{empId,jdbcType=INTEGER},
+		#{number,jdbcType=VARCHAR},
+		#{daystr,jdbcType=VARCHAR}, #{sealType,jdbcType=INTEGER}, #{currentId,jdbcType=INTEGER},
+		#{status,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="insertSelective" parameterType="SealApply">
+		insert into t_seal_apply
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="empId != null">
+				emp_id,
+			</if>
+			<if test="number != null">
+				number,
+			</if>
+			<if test="daystr != null">
+				dayStr,
+			</if>
+			<if test="sealType != null">
+				seal_type,
+			</if>
+			<if test="currentId != null">
+				current_id,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="startDate != null">
+				startDate,
+			</if>
+			<if test="endDate != null">
+				endDate,
+			</if>
+			<if test="ptr != null">
+				ptr,
+			</if>
+			<if test="wdr != null">
+				wdr,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="empId != null">
+				#{empId,jdbcType=INTEGER},
+			</if>
+			<if test="number != null">
+				#{number,jdbcType=VARCHAR},
+			</if>
+			<if test="daystr != null">
+				#{daystr,jdbcType=VARCHAR},
+			</if>
+			<if test="sealType != null">
+				#{sealType,jdbcType=INTEGER},
+			</if>
+			<if test="currentId != null">
+				#{currentId,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="startDate != null">
+				#{startDate,jdbcType=VARCHAR},
+			</if>
+			<if test="endDate != null">
+				#{endDate,jdbcType=VARCHAR},
+			</if>
+			<if test="ptr != null">
+				#{ptr,jdbcType=VARCHAR},
+			</if>
+			<if test="wdr != null">
+				#{wdr,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="SealApply">
+		update t_seal_apply
+		<set>
+			<if test="empId != null">
+				emp_id = #{empId,jdbcType=INTEGER},
+			</if>
+			<if test="number != null">
+				number = #{number,jdbcType=VARCHAR},
+			</if>
+			<if test="daystr != null">
+				dayStr = #{daystr,jdbcType=VARCHAR},
+			</if>
+			<if test="sealType != null">
+				seal_type = #{sealType,jdbcType=INTEGER},
+			</if>
+			<if test="currentId != null">
+				current_id = #{currentId,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="dealStatus != null">
+				deal_status = #{dealStatus,jdbcType=INTEGER},
+			</if>
+			<if test="ptr != null">
+				ptr = #{ptr,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="SealApply">
+		update t_seal_apply
+		set emp_id = #{empId,jdbcType=INTEGER},
+		number = #{number,jdbcType=VARCHAR},
+		dayStr = #{daystr,jdbcType=VARCHAR},
+		seal_type = #{sealType,jdbcType=INTEGER},
+		current_id = #{currentId,jdbcType=INTEGER},
+		status = #{status,jdbcType=INTEGER},
+		content = #{content,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+</mapper>

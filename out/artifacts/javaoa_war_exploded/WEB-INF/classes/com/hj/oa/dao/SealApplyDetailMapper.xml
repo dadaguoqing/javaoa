@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hj.oa.dao.SealApplyDetailMapper">
+	<resultMap id="BaseResultMap" type="SealApplyDetail">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="number" jdbcType="VARCHAR" property="number" />
+		<result column="file_name" jdbcType="VARCHAR" property="fileName" />
+		<result column="seal_company" jdbcType="VARCHAR" property="sealCompany" />
+		<result column="seal_name" jdbcType="VARCHAR" property="sealName" />
+		<result column="file_num" jdbcType="INTEGER" property="fileNum" />
+		<result column="user_num" jdbcType="INTEGER" property="userNum" />
+		<result column="loaction" jdbcType="VARCHAR" property="loaction" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="fileDetail" jdbcType="VARCHAR" property="fileDetail" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, number, file_name, seal_company, seal_name, file_num, user_num,
+		loaction, content,fileDetail
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_apply_detail
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectByNumber" parameterType="String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_seal_apply_detail
+		where number = #{number}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_seal_apply_detail
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="SealApplyDetail">
+		insert into t_seal_apply_detail (id, number, file_name,
+		seal_company, seal_name, file_num,
+		user_num, loaction, content
+		)
+		values (#{id,jdbcType=INTEGER}, #{number,jdbcType=VARCHAR},
+		#{fileName,jdbcType=VARCHAR},
+		#{sealCompany,jdbcType=VARCHAR}, #{sealName,jdbcType=VARCHAR}, #{fileNum,jdbcType=INTEGER},
+		#{userNum,jdbcType=INTEGER}, #{loaction,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="SealApplyDetail">
+		insert into t_seal_apply_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="number != null">
+				number,
+			</if>
+			<if test="fileName != null">
+				file_name,
+			</if>
+			<if test="sealCompany != null">
+				seal_company,
+			</if>
+			<if test="sealName != null">
+				seal_name,
+			</if>
+			<if test="fileNum != null">
+				file_num,
+			</if>
+			<if test="userNum != null">
+				user_num,
+			</if>
+			<if test="loaction != null">
+				loaction,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="fileDetail != null">
+				fileDetail,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="number != null">
+				#{number,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName != null">
+				#{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="sealCompany != null">
+				#{sealCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="sealName != null">
+				#{sealName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileNum != null">
+				#{fileNum,jdbcType=INTEGER},
+			</if>
+			<if test="userNum != null">
+				#{userNum,jdbcType=INTEGER},
+			</if>
+			<if test="loaction != null">
+				#{loaction,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="fileDetail != null">
+				#{fileDetail,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="SealApplyDetail">
+		update t_seal_apply_detail
+		<set>
+			<if test="number != null">
+				number = #{number,jdbcType=VARCHAR},
+			</if>
+			<if test="fileName != null">
+				file_name = #{fileName,jdbcType=VARCHAR},
+			</if>
+			<if test="sealCompany != null">
+				seal_company = #{sealCompany,jdbcType=VARCHAR},
+			</if>
+			<if test="sealName != null">
+				seal_name = #{sealName,jdbcType=VARCHAR},
+			</if>
+			<if test="fileNum != null">
+				file_num = #{fileNum,jdbcType=INTEGER},
+			</if>
+			<if test="userNum != null">
+				user_num = #{userNum,jdbcType=INTEGER},
+			</if>
+			<if test="loaction != null">
+				loaction = #{loaction,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="status != 0">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="SealApplyDetail">
+		update t_seal_apply_detail
+		set number = #{number,jdbcType=VARCHAR},
+		file_name = #{fileName,jdbcType=VARCHAR},
+		seal_company = #{sealCompany,jdbcType=VARCHAR},
+		seal_name = #{sealName,jdbcType=VARCHAR},
+		file_num = #{fileNum,jdbcType=INTEGER},
+		user_num = #{userNum,jdbcType=INTEGER},
+		loaction = #{loaction,jdbcType=VARCHAR},
+		content = #{content,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	
+	<select id="selectByDealStatus" resultType="SealApplyDetail" parameterType="Integer">
+		select a.startDate yzDate,a.emp_id empId,a.seal_type sealType,a.endDate,
+		b.id id,b.number,b.file_name fileName,b.seal_company sealCompany,b.fileDetail,
+		b.seal_name sealName,b.file_num fileNum,b.user_num userNum,b.loaction,b.content
+		from t_seal_apply a
+		left join t_seal_apply_detail b
+		on a.number = b.number
+		where a.status = 3
+		and b.status = #{param1}
+		order by a.startDate,a.emp_id
+	</select>
+	
+</mapper>

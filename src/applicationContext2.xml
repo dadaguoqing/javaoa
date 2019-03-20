@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+     http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+
+	<task:scheduled-tasks>
+
+		<task:scheduled ref="taskUtil" method="checkOutAccessCode"
+			cron="0 * * * * ?" />
+		<task:scheduled ref="taskUtil" method="checkA3Status"
+			cron="0 * * * * ?" />
+		<task:scheduled ref="taskUtil" method="rijie" cron="0 30 0 * * ?" />
+
+		<task:scheduled ref="taskUtil" method="checkInEmail"
+			cron="0 40 8 * * ?" />
+		<task:scheduled ref="taskUtil" method="ninajiaClear"
+			cron="0 50 0 1 4 ?" />
+
+		<!-- 每个月1号早上1点1分自动结算新入职员工年假病假 -->
+		<task:scheduled ref="taskUtil" method="addNewEmpNianjia" cron="0 1 1 1 * ?" />
+		
+		<!-- 每个月1号早上2点自动清理超时印章申请 -->
+		<task:scheduled ref="taskUtil" method="cleanOutTimeSealApply" cron="0 0 2 1 * ?" />
+	</task:scheduled-tasks>
+
+	<bean id="taskUtil" class="com.hj.util.TaskUtil" autowire="byType"></bean>
+
+
+	<!-- 引入jdbc配置文件 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:config.properties" />
+	</bean>
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.user}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- 	加上rollback-for="java.lang.Exception" service抛Exception类型异常也事务回滚  -->
+			<tx:method name="*" propagation="REQUIRED" rollback-for="java.lang.Exception" />
+			<tx:method name="find*" propagation="SUPPORTS" />
+			<tx:method name="list*" propagation="SUPPORTS" />
+			<tx:method name="get*" propagation="SUPPORTS" />
+			<tx:method name="select*" propagation="SUPPORTS" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="beanPointcut" expression="execution(* com.hj.oa.service.*.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="beanPointcut" />
+	</aop:config>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis-config.xml" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath:com/hj/oa/dao/*.xml"></property>
+	</bean>
+	
+	<!-- 自动配置的Mapper -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hj.oa.dao" />
+	</bean>
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<!-- <property name="host" value="smtp.163.com"></property> <property name="username" 
+			value="msilicon@163.com"></property> <property name="password" value="ilove123Zhu"></property> -->
+		<property name="host" value="mail.macrosilicon.com"></property>
+		<property name="username" value="oa"></property>
+		<property name="password" value="Oa_2014"></property>
+		
+		<property name="defaultEncoding" value="utf-8"></property>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">false</prop>
+				<prop key="mail.smtp.timeout">20000</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="mailUtil" class="com.hj.util.MailUtil">
+		<property name="mailSender" ref="mailSender"></property>
+	</bean>
+
+	<bean id="mailTableUtil" class="com.hj.util.MailTableUtil" />
+
+
+	<context:component-scan base-package="com.hj.oa.service" />
+	<context:component-scan base-package="com.genius" />
+
+</beans>

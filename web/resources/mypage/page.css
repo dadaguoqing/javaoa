@@ -1,0 +1,29 @@
+.pager {
+	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+	border:1px solid #dddddd;
+	border-radius:3px;
+	display:inline-block;
+	clear:both;
+	background-color: white;
+	margin : 10px 30px;
+}
+.pager a,.pager span {
+	font-size:13px;
+	color:#428bca;
+	border-right:1px solid #dddddd;
+	padding:5px 9px;
+	float:left;
+	text-decoration:none;
+}
+.pager span {
+	color:#fff;
+	background:#428bca;
+	padding-bottom: 8px;
+}
+.pager a:hover {
+	color:#2a6496;
+	background:#f2f2f2;
+}
+.pager a.last {
+	border-right:0;
+}

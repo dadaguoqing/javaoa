@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hj.oa.dao.KqMapper">
+	<select id="findCheckInByEmpAndDay" resultType="CheckIn" parameterType="CheckIn">
+		select * from t_checkin where empId = #{proposer} 
+		and dayStr between #{begin} and #{end}
+		order by dayStr desc
+	</select>
+	
+	<select id="findByEmpAndDay" resultType="EmpDayVo">
+		select a.*, e.type, b.timeLen as jiaban, c.name as empName, d.checkin, d.checkout from t_emp_day_sum as a 
+		left join t_jiaban_record as b on a.empId = b.empId and a.dayStr = b.dayStr
+		left join t_emp as c on a.empId = c.id
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		left join t_day as e on e.dayStrChina = a.dayStr
+		where a.empId = #{empId} and c.status=0 and a.dayStr between #{begin} and #{end}
+		order by a.dayStr ${orderType}
+	</select>
+	
+	<select id="findUnEmpDay" resultType="EmpDayVo">
+		select a.*, c.name as empName,c.email from t_emp_day_sum as a 
+		left join t_emp as c on a.empId = c.id
+		where c.status=0 and a.uncLen>0 and a.dayStr between #{begin} and #{end} and a.dayStr != '2015年08月14日'
+		order by a.dayStr
+	</select>
+	
+	<select id="findByEmpAndDayHuiZong" resultType="java.util.HashMap">
+		select a.dayStr dayStr, a.timeLen as qingjiaLen, a.uncLen as uncLen, a.wcLen as wcLen, e.type as dayType, c.name as empName, d.checkin, d.checkout, qj.beginTime, qj.endTime, qj.type as qjType, qj.content as qj, bkq.content as bkq from 
+		t_emp_day_sum as a 
+		left join t_emp as c on a.empId = c.id 
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		left join t_day as e on e.dayStrChina = a.dayStr
+		left join t_qj as qj on qj.proposer = a.empId and (a.dayStr between qj.beginTime and qj.endTime or a.dayStr = left(qj.beginTime,11) or a.dayStr=left(qj.endTime,11) ) and qj.status = 4
+		left join t_sp_bkq as bkq on bkq.proposer = a.empId and bkq.dayStr = a.dayStr and bkq.status = 1
+		where a.empId = #{empId} and c.status=0 and a.dayStr between #{begin} and #{end}
+		order by a.dayStr
+	</select>
+	
+	<select id="findByEmpAndDayAll" resultType="EmpDayVo">
+		select a.*, e.type, b.timeLen as jiaban, c.name as empName, c.email, d.checkin, d.checkout from t_emp_day_sum as a 
+		left join t_jiaban_record as b on a.empId = b.empId and a.dayStr = b.dayStr
+		left join t_emp as c on a.empId = c.id
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		left join t_day as e on e.dayStrChina = a.dayStr
+		where c.status=0 and a.dayStr between #{begin} and #{end}
+		order by c.name, a.dayStr
+	</select>
+	
+	<select id="findEmpAndDayById" resultType="EmpDayVo">
+		select a.*, e.type, b.timeLen as jiaban, c.name as empName, c.email, d.checkin, d.checkout from t_emp_day_sum as a 
+		left join t_jiaban_record as b on a.empId = b.empId and a.dayStr = b.dayStr
+		left join t_emp as c on a.empId = c.id
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		left join t_day as e on e.dayStrChina = a.dayStr
+		where c.status=0 and c.id=#{empId} and a.dayStr between #{begin} and #{end}
+		order by c.name, a.dayStr
+	</select>
+	
+	<select id="findByEmpAll" parameterType="int" resultType="EmpDayVo">
+		select a.*, e.type, b.timeLen as jiaban, c.name as empName, d.checkin, d.checkout from t_emp_day_sum as a 
+		left join t_jiaban_record as b on a.empId = b.empId and a.dayStr = b.dayStr
+		left join t_emp as c on a.empId = c.id
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		left join t_day as e on e.dayStrChina = a.dayStr
+		where c.status=0 and c.id = #{empId}
+		order by a.dayStr
+	</select>
+	
+	<select id="findSumAll" resultType="EmpDayVo">
+		select a.empId, sum(a.timeLen) as timeLen, sum(a.sjLen) as sjLen,sum(a.wcLen) as wcLen, sum(a.uncLen) as uncLen, 
+		sum(b.timeLen) as jiaban, c.name as empName from t_emp_day_sum as a 
+		left join t_jiaban_record as b on a.empId = b.empId and a.dayStr = b.dayStr
+		left join t_emp as c on a.empId = c.id
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		where a.dayStr between #{begin} and #{end} and c.status=0 and c.id != 1
+		group by a.empId,c.name
+		order by c.pinyin
+	</select>
+	
+	<select id="findByDayAndDeptSum" resultType="EmpDayVo">
+		select a.empId, sum(a.timeLen) as timeLen, sum(a.sjLen) as sjLen, sum(a.wcLen) as wcLen, sum(a.uncLen) as uncLen, 
+		sum(b.timeLen) as jiaban, c.name as empName from t_emp_day_sum as a 
+		left join t_jiaban_record as b on a.empId = b.empId and a.dayStr = b.dayStr
+		left join t_emp as c on a.empId = c.id
+		left join t_checkin as d on a.empId = d.empId and a.dayStr = d.dayStr 
+		where c.deptId = #{deptId} and c.status=0 and a.dayStr between #{begin} and #{end}
+		group by a.empId,c.name
+		order by c.pinyin
+	</select>
+	
+	<insert id="addBKqSp" parameterType="BKqSp">
+		insert into t_sp_bkq
+			(proposer, proposerName,dailiId,dailiName ,createTime,cmt, content, spId, status, checkin, checkout, dayStr,style)
+		values
+			(#{proposer}, #{proposerName}, #{dailiId}, #{dailiName}, #{createTime}
+			, #{cmt}, #{content}, #{spId}, #{status}, #{checkin}, #{checkout}, #{dayStr},#{style})
+	</insert>
+	
+	<insert id="insertBKqSp" parameterType="BKqSp">
+		insert into t_sp_bkq
+			(proposer, proposerName,createTime, content, spId, status, checkin, checkout, dayStr,style)
+		values
+			(#{proposer}, #{proposerName}, #{createTime}
+			, #{content}, #{spId}, #{status}, #{checkin}, #{checkout}, #{dayStr},#{style})
+	</insert>
+	
+	<update id="updateBKqSp" parameterType="BKqSp">
+		update 
+			t_sp_bkq
+		set 
+			status = #{status},
+			<if test="dailiId!=null">
+			dailiId = #{dailiId},
+			</if>
+			<if test="dailiName!=null">
+			dailiName = #{dailiName},	
+			</if>
+			spTime = #{spTime},
+			cmt = #{cmt}
+		where
+			id = #{id}
+	</update>
+	
+	
+	<select id="findBKqById" parameterType="int" resultType="BKqSp">
+		select * from t_sp_bkq where id = #{id}
+	</select>
+	
+	<select id="findMySp" parameterType="int" resultType="BKqSp">
+		select * from t_sp_bkq where spId = #{empId} and status = 0 order by id desc
+	</select>
+	
+	<select id="findMySq" parameterType="int" resultType="BKqSp">
+		select * from t_sp_bkq where proposer = #{empId} order by dayStr desc
+	</select>
+	
+	<select id="findBKqSq" resultType="BKqSp">
+		select * from t_sp_bkq <if test="style!=null and style!=''"> where style=#{style} </if> order by dayStr desc limit #{begin},20
+	</select>
+	<select id="countBKqSq" parameterType="String" resultType="int">
+		select count(*) from t_sp_bkq <if test="style!=null and style!=''"> where style=#{style,jdbcType=VARCHAR} </if> 
+	</select>
+	
+	<select id="findMySpRecord" parameterType="int" resultType="BKqSp">
+		select * from t_sp_bkq where spId = #{empId} and status != 0 order by dayStr desc
+	</select>
+	
+	<select id="findRetroactiveRecord" parameterType="ParamBean" resultType="BKqSp">
+		select * from t_sp_bkq where style=#{style} and status != 0 
+		and dayStr between #{begin} and #{end} order by id desc
+	</select>
+	
+</mapper>
